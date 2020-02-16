@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\Services\Response\Responser;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use JMS\Serializer\SerializerInterface;
@@ -12,9 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ProfileController extends AbstractFOSRestController
 {
-    /**
-     * @var SerializerInterface
-     */
     private SerializerInterface $serializer;
 
     public function __construct(SerializerInterface $serializer)
@@ -24,10 +23,10 @@ class ProfileController extends AbstractFOSRestController
 
     /**
      * @Route("/profile", name="api.profile")
-     * @Rest\View(serializerGroups={"Default", "UserRoles", "Api"})
+     * @Rest\View(serializerGroups={"UserRoles", "Api"})
      */
-    public function index()
+    public function index(): array
     {
-        return $this->getUser();
+        return Responser::wrapSuccess($this->getUser());
     }
 }

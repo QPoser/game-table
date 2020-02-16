@@ -27,8 +27,11 @@ class AppAuthenticator extends AbstractFormLoginAuthenticator implements Passwor
     use TargetPathTrait;
 
     private EntityManagerInterface $entityManager;
+
     private UrlGeneratorInterface $urlGenerator;
+
     private CsrfTokenManagerInterface $csrfTokenManager;
+
     private UserPasswordEncoderInterface $passwordEncoder;
 
     public function __construct(

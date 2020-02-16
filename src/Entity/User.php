@@ -48,6 +48,12 @@ class User implements UserInterface
      */
     private ?string $username = null;
 
+    /**
+     * @ORM\Column(type="string", length=32, unique=true)
+     * @Serializer\Exclude
+     */
+    private ?string $verifyToken = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -110,5 +116,22 @@ class User implements UserInterface
     public function getUsername(): ?string
     {
         return $this->username;
+    }
+
+    public function getVerifyToken(): ?string
+    {
+        return $this->verifyToken;
+    }
+
+    public function setVerifyToken(?string $verifyToken): self
+    {
+        $this->verifyToken = $verifyToken;
+
+        return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return empty($this->verifyToken);
     }
 }

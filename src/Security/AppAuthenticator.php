@@ -88,6 +88,11 @@ class AppAuthenticator extends AbstractFormLoginAuthenticator implements Passwor
 
     public function checkCredentials($credentials, UserInterface $user): bool
     {
+        /** @var User $user */
+        if (!$user->isVerified()) {
+            throw new CustomUserMessageAuthenticationException('User is not active. Check your email.');
+        }
+
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
     }
 

@@ -42,4 +42,14 @@ class RegistrationController extends AbstractController
             'registrationForm' => $form->createView(),
         ]);
     }
+
+    /**
+     * @Route("/register/verify/{token}", name="app.register.verify")
+     */
+    public function registerVerify(string $token): Response
+    {
+        $this->registerService->verifyRegister($token);
+
+        return $this->redirectToRoute('app.login');
+    }
 }

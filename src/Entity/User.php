@@ -11,10 +11,17 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
+ * @UniqueEntity(fields={"verifyToken"}, message="There is already an account with this verify token")
  */
 class User implements UserInterface
 {
     const ROLE_USER = 'ROLE_USER';
+    const ROLE_ADMIN = 'ROLE_ADMIN';
+
+    const ROLES = [
+        self::ROLE_USER => self::ROLE_USER,
+        self::ROLE_ADMIN => self::ROLE_ADMIN,
+    ];
 
     /**
      * @ORM\Id
@@ -49,7 +56,7 @@ class User implements UserInterface
     private ?string $username = null;
 
     /**
-     * @ORM\Column(type="string", length=32, unique=true)
+     * @ORM\Column(type="string", length=32)
      * @Serializer\Exclude
      */
     private ?string $verifyToken = null;
@@ -82,6 +89,15 @@ class User implements UserInterface
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function addRole(string $role): self
+    {
+        if (in_array($role, self::ROLES)) {
+            $this->roles[] = $role;
+        }
 
         return $this;
     }
@@ -133,5 +149,17 @@ class User implements UserInterface
     public function isVerified(): bool
     {
         return empty($this->verifyToken);
+    }
+
+    public function isAdmin(): bool
+    {
+        return in_array(self::ROLE_ADMIN, $this->roles);
+    }
+
+    public function getFormattedRoles(): string
+    {
+        $callback = (fn($role) => mb_strtolower(str_replace('ROLE_', '', $role)));
+
+        return implode(', ', array_map($callback, $this->roles));
     }
 }

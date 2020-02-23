@@ -12,7 +12,7 @@ class Responser
     {
         return [
             'data' => $data,
-            'additional' => $additional,
+            'partials' => $additional,
             'status' => self::STATUS_SUCCESS,
         ];
     }

@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin users{% endblock %}
+
+{% block body %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="col">#</th>
+                <th class="col">Username</th>
+                <th class="col">Email</th>
+                <th class="col">Roles</th>
+                <th class="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td><span class="badge badge-primary">{{ user.formattedRoles }}</span></td>
+                    <td class="d-flex">
+                        <a href="#" class="ml-auto"><button class="btn btn-success">Edit</button></a>
+                        <a href="#" class="ml-2"><button class="btn btn-danger">Delete</button></a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

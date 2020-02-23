@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Services\User\RegisterService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,6 +23,7 @@ class RegistrationController extends AbstractController
 
     /**
      * @Route("/register", name="app.register")
+     * @Security("is_anonymous()")
      */
     public function register(Request $request): Response
     {
@@ -45,6 +47,7 @@ class RegistrationController extends AbstractController
 
     /**
      * @Route("/register/verify/{token}", name="app.register.verify")
+     * @Security("is_anonymous()")
      */
     public function registerVerify(string $token): Response
     {

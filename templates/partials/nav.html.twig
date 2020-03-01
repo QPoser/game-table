@@ -7,13 +7,13 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
+            <li class="nav-item {{ currentPath == path('homepage') ? 'active' }}">
                 <a class="nav-link" href="{{ path('homepage') }}">Games</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Rooms</a>
+            <li class="nav-item {{ currentPath == path('app.rooms') ? 'active' }}">
+                <a class="nav-link" href="{{ path('app.rooms') }}">Rooms</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item {{ currentPath == path('admin') ? 'active' }}">
                 <a class="nav-link disabled" href="#">Additional</a>
             </li>
         </ul>

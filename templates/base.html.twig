@@ -8,6 +8,9 @@
         {% endblock %}
     </head>
     <body>
+        {% set currentPath = path(app.request.attributes.get('_route'),
+            app.request.attributes.get('_route_params')) %}
+
         {% include 'partials/nav.html.twig' %}
         {% block body %}{% endblock %}
         {% block javascripts %}

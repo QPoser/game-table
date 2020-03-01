@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create room{% endblock %}
+
+{% block body %}
+    <h1>Create room</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.title) }}
+    {{ form_row(form.slots) }}
+    {{ form_row(form.rules) }}
+    {{ form_row(form.password) }}
+
+    <button class="btn">Create</button>
+    {{ form_end(form) }}
+{% endblock %}

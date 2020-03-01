@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Entity\Game\Room;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -60,6 +63,16 @@ class User implements UserInterface
      * @Serializer\Exclude
      */
     private ?string $verifyToken = null;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Game\Room", mappedBy="players")
+     */
+    private Collection $rooms;
+
+    public function __construct()
+    {
+        $this->rooms = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {

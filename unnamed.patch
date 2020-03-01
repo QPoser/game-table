@@ -1,0 +1,280 @@
+Index: src/Entity/Game/RoomPlayer.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Entity/Game/RoomPlayer.php	(date 1582460384672)
++++ src/Entity/Game/RoomPlayer.php	(date 1582460384672)
+@@ -0,0 +1,99 @@
++<?php
++declare(strict_types=1);
++
++namespace App\Entity\Game;
++
++use App\Entity\User;
++use Doctrine\ORM\Mapping as ORM;
++
++/**
++ * @ORM\Entity(repositoryClass="App\Repository\Game\RoomPlayerRepository")
++ */
++class RoomPlayer
++{
++    const STATUS_MASTER = 'master';
++    const STATUS_PLAYER = 'player';
++    const STATUS_BLOCKED = 'blocked';
++
++    /**
++     * @ORM\Id
++     * @ORM\GeneratedValue
++     * @ORM\Column(type="integer")
++     */
++    private ?int $id;
++
++    /**
++     * @ORM\ManyToOne(targetEntity="App\Entity\User")
++     * @ORM\JoinColumn(nullable=false)
++     */
++    private User $player;
++
++    /**
++     * @ORM\ManyToOne(targetEntity="App\Entity\Game\Room", inversedBy="roomPlayers")
++     * @ORM\JoinColumn(nullable=false)
++     */
++    private Room $room;
++
++    /**
++     * @ORM\Column(type="string", length=24)
++     */
++    private ?string $status;
++
++    /**
++     * @ORM\Column(type="string", length=32, nullable=true)
++     */
++    private ?string $role;
++
++    public function getId(): ?int
++    {
++        return $this->id;
++    }
++
++    public function getPlayer(): ?User
++    {
++        return $this->player;
++    }
++
++    public function setPlayer(?User $player): self
++    {
++        $this->player = $player;
++
++        return $this;
++    }
++
++    public function getRoom(): ?Room
++    {
++        return $this->room;
++    }
++
++    public function setRoom(?Room $room): self
++    {
++        $this->room = $room;
++
++        return $this;
++    }
++
++    public function getStatus(): ?string
++    {
++        return $this->status;
++    }
++
++    public function setStatus(string $status): self
++    {
++        $this->status = $status;
++
++        return $this;
++    }
++
++    public function getRole(): ?string
++    {
++        return $this->role;
++    }
++
++    public function setRole(?string $role): self
++    {
++        $this->role = $role;
++
++        return $this;
++    }
++}
+Index: templates/game/room/create.html.twig
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/game/room/create.html.twig	(date 1582461087642)
++++ templates/game/room/create.html.twig	(date 1582461087642)
+@@ -0,0 +1,16 @@
++{% extends 'base.html.twig' %}
++
++{% block title %}Create room{% endblock %}
++
++{% block body %}
++    <h1>Create room</h1>
++
++    {{ form_start(form) }}
++    {{ form_row(form.title) }}
++    {{ form_row(form.slots) }}
++    {{ form_row(form.rules) }}
++    {{ form_row(form.password) }}
++
++    <button class="btn">Create</button>
++    {{ form_end(form) }}
++{% endblock %}
+Index: templates/base.html.twig
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/base.html.twig	(revision c8f307667ca6f8feafc5bf1d41064955d3de8226)
++++ templates/base.html.twig	(date 1582460652379)
+@@ -8,6 +8,9 @@
+         {% endblock %}
+     </head>
+     <body>
++        {% set currentPath = path(app.request.attributes.get('_route'),
++            app.request.attributes.get('_route_params')) %}
++
+         {% include 'partials/nav.html.twig' %}
+         {% block body %}{% endblock %}
+         {% block javascripts %}
+Index: src/Entity/User.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Entity/User.php	(revision c8f307667ca6f8feafc5bf1d41064955d3de8226)
++++ src/Entity/User.php	(date 1582460306476)
+@@ -3,6 +3,9 @@
+ 
+ namespace App\Entity;
+ 
++use App\Entity\Game\Room;
++use Doctrine\Common\Collections\ArrayCollection;
++use Doctrine\Common\Collections\Collection;
+ use Doctrine\ORM\Mapping as ORM;
+ use JMS\Serializer\Annotation as Serializer;
+ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+@@ -61,6 +64,16 @@
+      */
+     private ?string $verifyToken = null;
+ 
++    /**
++     * @ORM\ManyToMany(targetEntity="App\Entity\Game\Room", mappedBy="players")
++     */
++    private Collection $rooms;
++
++    public function __construct()
++    {
++        $this->rooms = new ArrayCollection();
++    }
++
+     public function getId(): ?int
+     {
+         return $this->id;
+Index: templates/partials/nav.html.twig
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/partials/nav.html.twig	(revision c8f307667ca6f8feafc5bf1d41064955d3de8226)
++++ templates/partials/nav.html.twig	(date 1582460699775)
+@@ -7,13 +7,13 @@
+ 
+     <div class="collapse navbar-collapse" id="navbarSupportedContent">
+         <ul class="navbar-nav mr-auto">
+-            <li class="nav-item active">
++            <li class="nav-item {{ currentPath == path('homepage') ? 'active' }}">
+                 <a class="nav-link" href="{{ path('homepage') }}">Games</a>
+             </li>
+-            <li class="nav-item">
+-                <a class="nav-link" href="#">Rooms</a>
++            <li class="nav-item {{ currentPath == path('app.rooms') ? 'active' }}">
++                <a class="nav-link" href="{{ path('app.rooms') }}">Rooms</a>
+             </li>
+-            <li class="nav-item">
++            <li class="nav-item {{ currentPath == path('admin') ? 'active' }}">
+                 <a class="nav-link disabled" href="#">Additional</a>
+             </li>
+         </ul>
+Index: templates/registration/register.html.twig
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- templates/registration/register.html.twig	(revision c8f307667ca6f8feafc5bf1d41064955d3de8226)
++++ templates/registration/register.html.twig	(date 1582461053594)
+@@ -7,6 +7,7 @@
+ 
+     {{ form_start(registrationForm) }}
+         {{ form_row(registrationForm.email) }}
++        {{ form_row(registrationForm.username) }}
+         {{ form_row(registrationForm.plainPassword) }}
+         {{ form_row(registrationForm.agreeTerms) }}
+ 
+Index: src/Services/Game/RoomService.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/Services/Game/RoomService.php	(date 1582476344203)
++++ src/Services/Game/RoomService.php	(date 1582476344203)
+@@ -0,0 +1,49 @@
++<?php
++declare(strict_types=1);
++
++namespace App\Services\Game;
++
++use App\Entity\Game\Room;
++use App\Entity\Game\RoomPlayer;
++use App\Entity\User;
++use Doctrine\ORM\EntityManagerInterface;
++use Symfony\Component\Validator\Validator\ValidatorInterface;
++
++class RoomService
++{
++    private EntityManagerInterface $em;
++
++    private ValidatorInterface $validator;
++
++    public function __construct(EntityManagerInterface $em, ValidatorInterface $validator)
++    {
++        $this->em = $em;
++        $this->validator = $validator;
++    }
++
++    public function createRoom(User $creator, string $title, int $slots, string $rules, ?string $password = null): Room
++    {
++        $this->em->beginTransaction();
++
++        $room = new Room();
++        $room->setTitle($title);
++        $room->setSlots($slots);
++        $room->setRules($rules);
++        $room->setPassword($password);
++
++        $errors = $this->validator->validate($room);
++
++        $this->em->persist($room);
++
++
++        $this->em->flush($room);
++        $this->em->commit();
++
++        return $room;
++    }
++
++    public function createRoomPlayer(User $user, Room $room, string $status, string $role): RoomPlayer
++    {
++
++    }
++}
+\ No newline at end of file

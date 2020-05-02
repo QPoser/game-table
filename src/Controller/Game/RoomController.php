@@ -35,29 +35,6 @@ class RoomController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name=".room.visit")
-     */
-    public function roomVisit(Room $room): Response
-    {
-        $this->denyAccessUnlessGranted(RoomVoter::ATTRIBUTE_VISIT, $room);
-
-        return $this->render('game/room/room.html.twig', compact('room'));
-    }
-
-    /**
-     * @Route("/{id}/leave", name=".room.leave", methods={"POST"})
-     */
-    public function roomLeave(Room $room): Response
-    {
-        $this->denyAccessUnlessGranted(RoomVoter::ATTRIBUTE_VISIT, $room);
-        $user = $this->getUser();
-
-        $this->roomService->leaveRoom($user, $room);
-
-        return $this->redirectToRoute('app.rooms');
-    }
-
-    /**
      * @Route("/create", name=".create")
      */
     public function create(Request $request): Response
@@ -81,6 +58,29 @@ class RoomController extends AbstractController
         return $this->render('game/room/create.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/{id}", name=".room.visit")
+     */
+    public function roomVisit(Room $room): Response
+    {
+        $this->denyAccessUnlessGranted(RoomVoter::ATTRIBUTE_VISIT, $room);
+
+        return $this->render('game/room/room.html.twig', compact('room'));
+    }
+
+    /**
+     * @Route("/{id}/leave", name=".room.leave", methods={"POST"})
+     */
+    public function roomLeave(Room $room): Response
+    {
+        $this->denyAccessUnlessGranted(RoomVoter::ATTRIBUTE_VISIT, $room);
+        $user = $this->getUser();
+
+        $this->roomService->leaveRoom($user, $room);
+
+        return $this->redirectToRoute('app.rooms');
     }
 
     /**

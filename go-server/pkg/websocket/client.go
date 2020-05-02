@@ -11,7 +11,7 @@ import (
 type Client struct {
 	ID string
 	Conn *websocket.Conn
-	Pool *Pool
+	Room Room
 }
 
 type Message struct {
@@ -21,7 +21,7 @@ type Message struct {
 
 func (c *Client) Read() {
 	defer func() {
-		c.Pool.Unregister <- c
+		c.Room.Pool.Unregister <- c
 		c.Conn.Close()
 	}()
 
@@ -32,7 +32,6 @@ func (c *Client) Read() {
 		msg := dec.Decode(p)
 
 		log.Print(msg)
-		log.Print("MESSAGE")
 
 		if err != nil {
 			log.Println(err)
@@ -40,7 +39,7 @@ func (c *Client) Read() {
 		}
 
 		message := Message{Type: messageType, Body: string(p)}
-		c.Pool.Broadcast <- message
-		fmt.Printf("Message recieved: %+v\n", message)
+		c.Room.Pool.Broadcast <- message
+		fmt.Printf("Message recieved: %+v\n in room %d", message, c.Room.Id)
 	}
 }

@@ -53,7 +53,7 @@
         $("#chat").animate({ scrollTop: $("#chat")[0].scrollHeight}, 100);
 
         function connect(){
-            ws = new WebSocket('ws://127.0.0.1:8888/ws');
+            ws = new WebSocket('ws://127.0.0.1:8888/ws?room=' + {{ room.id }});
 
             ws.onopen = () => {
                 console.log('connected to chat');

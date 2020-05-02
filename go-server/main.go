@@ -4,9 +4,10 @@ import (
 	"chat-ws/backend/pkg/websocket"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
-func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
+func serveWs(room websocket.Room, w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Websocket Endpoint Hit")
 	ws, err := websocket.Upgrade(w, r)
 
@@ -16,19 +17,27 @@ func serveWs(pool *websocket.Pool, w http.ResponseWriter, r *http.Request) {
 
 	client := &websocket.Client{
 		Conn: ws,
-		Pool: pool,
+		Room: room,
 	}
 
-	pool.Register <- client
+	room.Pool.Register <- client
 	client.Read()
 }
 
 func setupRoutes() {
-	pool := websocket.NewPool()
-	go pool.Start()
-
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		serveWs(pool, w, r)
+		keys, ok := r.URL.Query()["room"]
+		key := keys[0]
+		roomId, err := strconv.Atoi(key)
+
+		if !ok || err != nil {
+			http.Error(w, "Room id must be setted and must be int", 404)
+			return
+		}
+
+		room := websocket.GetRoom(roomId)
+
+		serveWs(room, w, r)
 	})
 }
 

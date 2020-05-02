@@ -6,6 +6,8 @@ fos_rest:
   serializer:
     serialize_null: true
     groups: ['Default']
+  service:
+    serializer: fos_rest.serializer.symfony
   format_listener:
     rules:
       - { path: '^/api',  priorities: ['json'], fallback_format: json, prefer_extension: true }

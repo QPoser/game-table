@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y \
     mariadb-client \
     libzip-dev \
     nano \
+    librabbitmq-dev \
+    libssh-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
@@ -22,9 +24,12 @@ RUN apt-get update && apt-get install -y \
            zip \
            intl \
            opcache \
+           sockets \
     && pecl install apcu_bc \
     && pecl install imagick  \
+    && pecl install amqp  \
     && docker-php-ext-enable apcu \
+    && docker-php-ext-enable amqp \
     && docker-php-ext-enable imagick
 
 RUN touch /usr/local/etc/php/conf.d/custom.ini \

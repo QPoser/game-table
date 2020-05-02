@@ -1,6 +1,7 @@
 package main
 
 import (
+	"chat-ws/backend/pkg/chat"
 	"chat-ws/backend/pkg/websocket"
 	"fmt"
 	"net/http"
@@ -44,5 +45,6 @@ func setupRoutes() {
 func main() {
 	fmt.Println("Chat App v0.01")
 	setupRoutes()
+	go chat.AmpqInit()
 	http.ListenAndServe(":8888", nil)
 }

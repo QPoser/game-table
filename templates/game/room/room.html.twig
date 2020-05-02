@@ -66,13 +66,14 @@
                     return;
                 }
 
+                console.log('msg');
                 var msgBody = JSON.parse(JSON.parse(event.data).body);
-                var messageClass = msgBody.user == userId ? 'personal-message' : 'receieved-message';
-                var badgeClass = msgBody.user == userId ? 'badge-primary' : 'badge-danger';
+                var messageClass = msgBody.User.Id == userId ? 'personal-message' : 'receieved-message';
+                var badgeClass = msgBody.User.Id == userId ? 'badge-primary' : 'badge-danger';
 
                 $('.chat').append('<div class="message ' + messageClass + '">\n' +
-                    '<h4>' + msgBody.username + ' <span class="badge ' + badgeClass + '">Role</span></h4>\n' +
-                    '<p>' + msgBody.message + '</p>\n' +
+                    '<h4>' + msgBody.User.Username + ' <span class="badge ' + badgeClass + '">Role</span></h4>\n' +
+                    '<p>' + msgBody.Content + '</p>\n' +
                     '</div>'
                 );
 
@@ -88,16 +89,36 @@
 
         $('#send-box').on('keydown', function(e) {
             if (e.which == 13 || e.key == 13) {
-                msg = {"user": userId, "username": userUsername, "message": $('#send-box').val()};
-                ws.send(JSON.stringify(msg));
+                $.ajax({
+                    type: "POST",
+                    url: "/rooms/" + {{ room.id }} + "/message",
+                    // The key needs to match your method's input parameter (case-sensitive).
+                    data: JSON.stringify({"content": $('#send-box').val()}),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(data){},
+                    failure: function(errMsg) {
+                        console.log(errMsg);
+                    }
+                });
                 $('#send-box').val('');
                 e.preventDefault();
             }
         });
 
         $('.send-message-btn').on('click', function () {
-            msg = {"user": userId, "username": userUsername, "message": $('#send-box').val()};
-            ws.send(JSON.stringify(msg));
+            $.ajax({
+                type: "POST",
+                url: "/rooms/" + {{ room.id }} + "/message",
+                // The key needs to match your method's input parameter (case-sensitive).
+                data: JSON.stringify({"content": $('#send-box').val()}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(data){},
+                failure: function(errMsg) {
+                    console.log(errMsg);
+                }
+            });
             $('#send-box').val('');
         });
     </script>

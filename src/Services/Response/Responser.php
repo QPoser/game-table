@@ -16,4 +16,13 @@ class Responser
             'status' => self::STATUS_SUCCESS,
         ];
     }
+
+    public static function wrapError(string $message, int $code): array
+    {
+        return [
+            'message' => $message,
+            'code' => $code,
+            'status' => self::STATUS_ERROR,
+        ];
+    }
 }

@@ -3,11 +3,10 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Entity\Game\Room;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -30,42 +29,43 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Serializer\Groups({"Default", "Api"})
+     * @Groups({"Default", "Api", "AMPQ"})
      */
     private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=64, unique=true)
-     * @Serializer\Groups({"Api"})
+     * @Groups({"Api", "AMPQ"})
      */
     private ?string $email = null;
 
     /**
      * @ORM\Column(type="json")
-     * @Serializer\Groups({"UserRoles"})
+     * @Groups({"UserRoles"})
      */
     private array $roles = [];
 
     /**
      * @ORM\Column(type="string")
-     * @Serializer\Exclude
+     * @Groups({"Exclude"})
      */
     private ?string $password = null;
 
     /**
      * @ORM\Column(type="string", length=32, unique=true)
-     * @Serializer\Groups({"Api"})
+     * @Groups({"Api", "AMPQ"})
      */
     private ?string $username = null;
 
     /**
      * @ORM\Column(type="string", length=32)
-     * @Serializer\Exclude
+     * @Groups({"Exclude"})
      */
     private ?string $verifyToken = null;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Game\Room", mappedBy="players")
+     * @Groups({"Exclude"})
      */
     private Collection $rooms;
 

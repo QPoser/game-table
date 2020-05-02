@@ -3,11 +3,16 @@ declare(strict_types=1);
 
 namespace App\Controller\Game;
 
+use App\Entity\Game\Chat\Message;
 use App\Entity\Game\Room;
+use App\Form\MessageType;
 use App\Form\RoomType;
 use App\Security\Voter\RoomVoter;
+use App\Services\Chat\MessageService;
 use App\Services\Game\RoomService;
+use App\Services\Response\Responser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,9 +24,12 @@ class RoomController extends AbstractController
 {
     private RoomService $roomService;
 
-    public function __construct(RoomService $roomService)
+    private MessageService $messageService;
+
+    public function __construct(RoomService $roomService, MessageService $messageService)
     {
         $this->roomService = $roomService;
+        $this->messageService = $messageService;
     }
 
     /**
@@ -32,6 +40,28 @@ class RoomController extends AbstractController
         $rooms = $this->getDoctrine()->getRepository(Room::class)->findAll();
 
         return $this->render('game/room/index.html.twig', compact('rooms'));
+    }
+
+    /**
+     * @Route("/{id}/message", name=".message", methods={"POST"})
+     */
+    public function message(Room $room, Request $request): Response
+    {
+        $message = new Message();
+        $form = $this->createForm(MessageType::class, $message);
+        $form->handleRequest($request);
+        $form->submit($request->request->get($form->getName()));
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $this->getUser();
+            $content = $request->request->get('content');
+
+            $this->messageService->createMessage($room, $user, $content);
+
+            return new JsonResponse(Responser::wrapSuccess($message));
+        }
+
+        return new JsonResponse(Responser::wrapError('Message is not created', 1));
     }
 
     /**

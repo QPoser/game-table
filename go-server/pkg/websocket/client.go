@@ -1,11 +1,9 @@
 package websocket
 
 import (
-	json "encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
-	"strings"
 )
 
 type Client struct {
@@ -27,11 +25,6 @@ func (c *Client) Read() {
 
 	for {
 		messageType, p, err := c.Conn.ReadMessage()
-
-		dec := json.NewDecoder(strings.NewReader(string(p)))
-		msg := dec.Decode(p)
-
-		log.Print(msg)
 
 		if err != nil {
 			log.Println(err)

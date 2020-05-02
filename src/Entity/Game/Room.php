@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace App\Entity\Game;
 
+use App\Entity\Game\Chat\Message;
 use App\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\Game\RoomRepository")
@@ -20,6 +22,7 @@ class Room
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"Minimal", "Api", "AMPQ"})
      */
     private ?int $id;
 
@@ -31,17 +34,20 @@ class Room
      *     minMessage="Room title must be at least {{ limit }} characters long",
      *     maxMessage="Room title cannot be longer than {{ limit }} characters"
      * )
+     * @Groups({"Minimal", "Api"})
      */
     private ?string $title;
 
     /**
      * @ORM\Column(type="integer")
      * @Assert\Range(min="1", max="16", notInRangeMessage="Slots value should be between {{ min }} and {{ max }}")
+     * @Groups({"Minimal", "Api"})
      */
     private ?int $slots;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Groups({"Minimal", "Api"})
      */
     private ?string $rules;
 
@@ -52,13 +58,21 @@ class Room
      *     minMessage="Room password must be at least {{ limit }} characters long",
      *     maxMessage="Room password cannot be longer than {{ limit }} characters"
      * )
+     * @Groups({"Exclude"})
      */
     private ?string $password;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Game\RoomPlayer", mappedBy="room", orphanRemoval=true)
+     * @Groups({"Exclude"})
      */
     private Collection $roomPlayers;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Game\Chat\Message", mappedBy="room", orphanRemoval=true)
+     * @Groups({"Exclude"})
+     */
+    private $messages;
 
     public function __construct()
     {
@@ -67,6 +81,7 @@ class Room
         $this->password = null;
         $this->slots = self::MAX_SLOTS;
         $this->roomPlayers = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -195,5 +210,36 @@ class Room
         }
 
         return false;
+    }
+
+    /**
+     * @return Collection|Message[]
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): self
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages[] = $message;
+            $message->setRoom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): self
+    {
+        if ($this->messages->contains($message)) {
+            $this->messages->removeElement($message);
+            // set the owning side to null (unless already changed)
+            if ($message->getRoom() === $this) {
+                $message->setRoom(null);
+            }
+        }
+
+        return $this;
     }
 }

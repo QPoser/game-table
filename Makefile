@@ -11,3 +11,4 @@ init:
 	docker-compose up -d
 	docker-compose exec -u www-data php composer install
 	docker-compose exec -u www-data php php bin/console cache:clear --env=dev
+	docker-compose exec -u www-data php php bin/console d:s:u -f --env=dev

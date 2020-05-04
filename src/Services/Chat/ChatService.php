@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Services\Chat;
 
+use App\AmqpMessages\SocketRoomValidate;
 use App\Entity\Game\Chat\Message;
 use App\Entity\Game\Room;
 use App\Entity\User;
@@ -11,7 +12,7 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\SerializerStamp;
 
-class MessageService
+class ChatService
 {
     private EntityManagerInterface $em;
 
@@ -43,5 +44,18 @@ class MessageService
         );
 
         return $message;
+    }
+
+    public function validateSocketByRoom(?string $socketId, Room $room): void
+    {
+        if (empty($socketId)) {
+            return;
+        }
+
+        $this->messageBus->dispatch(
+            new Envelope(new SocketRoomValidate($socketId, $room), [
+                new SerializerStamp(['groups' => 'AMPQ']),
+            ])
+        );
     }
 }

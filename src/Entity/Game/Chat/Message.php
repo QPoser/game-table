@@ -7,7 +7,6 @@ use App\Entity\Game\Room;
 use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\Ex;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\Game\Chat\MessageRepository")

@@ -50,10 +50,11 @@
         var ws;
         var userId = {{ app.user.id }};
         var userUsername = "{{ app.user.username }}";
+        var roomId = {{ room.id }};
         $("#chat").animate({ scrollTop: $("#chat")[0].scrollHeight}, 100);
 
         function connect(){
-            ws = new WebSocket('ws://127.0.0.1:8888/ws?room=' + {{ room.id }});
+            ws = new WebSocket('ws://127.0.0.1:8888/ws?room=' + roomId);
 
             ws.onopen = () => {
                 console.log('connected to chat');
@@ -61,13 +62,32 @@
 
             ws.onmessage = (event) => {
                 var messageType = JSON.parse(event.data).type;
+                var msgBody = JSON.parse(event.data).body;
+
+                if (messageType == 0) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/rooms/" + {{ room.id }} + "/validate-socket",
+                        // The key needs to match your method's input parameter (case-sensitive).
+                        data: JSON.stringify({"socket-id": msgBody, "room": roomId}),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function(data){},
+                        failure: function(errMsg) {
+                            console.log(errMsg);
+                        }
+                    });
+
+                    return
+                }
 
                 if (messageType != 1) {
                     return;
                 }
 
+                msgBody = JSON.parse(msgBody)
+
                 console.log('msg');
-                var msgBody = JSON.parse(JSON.parse(event.data).body);
                 var messageClass = msgBody.User.Id == userId ? 'personal-message' : 'receieved-message';
                 var badgeClass = msgBody.User.Id == userId ? 'badge-primary' : 'badge-danger';
 

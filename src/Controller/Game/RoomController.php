@@ -8,7 +8,7 @@ use App\Entity\Game\Room;
 use App\Form\MessageType;
 use App\Form\RoomType;
 use App\Security\Voter\RoomVoter;
-use App\Services\Chat\MessageService;
+use App\Services\Chat\ChatService;
 use App\Services\Game\RoomService;
 use App\Services\Response\Responser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,12 +24,12 @@ class RoomController extends AbstractController
 {
     private RoomService $roomService;
 
-    private MessageService $messageService;
+    private ChatService $chatService;
 
-    public function __construct(RoomService $roomService, MessageService $messageService)
+    public function __construct(RoomService $roomService, ChatService $chatService)
     {
         $this->roomService = $roomService;
-        $this->messageService = $messageService;
+        $this->chatService = $chatService;
     }
 
     /**
@@ -56,12 +56,24 @@ class RoomController extends AbstractController
             $user = $this->getUser();
             $content = $request->request->get('content');
 
-            $this->messageService->createMessage($room, $user, $content);
+            $this->chatService->createMessage($room, $user, $content);
 
             return new JsonResponse(Responser::wrapSuccess($message));
         }
 
         return new JsonResponse(Responser::wrapError('Message is not created', 1));
+    }
+
+    /**
+     * @Route("/{id}/validate-socket", name=".validate.socket", methods={"POST"})
+     */
+    public function validateSocket(Room $room, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted(RoomVoter::ATTRIBUTE_VISIT, $room);
+
+        $this->chatService->validateSocketByRoom($request->request->get('socket-id'), $room);
+
+        return new JsonResponse(Responser::wrapError('Socket validated', 1));
     }
 
     /**

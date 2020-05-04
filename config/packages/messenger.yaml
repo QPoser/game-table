@@ -13,5 +13,12 @@ framework:
                 options:
                     queue_name: chat
 
+            validate_queue:
+                dsn: '%env(MESSENGER_TRANSPORT_VALIDATE_DSN)%'
+                serializer: messenger.transport.symfony_serializer
+                options:
+                    queue_name: validation
+
         routing:
             'App\Entity\Game\Chat\Message': chat_queue
+            'App\AmqpMessages\SocketRoomValidate': validate_queue

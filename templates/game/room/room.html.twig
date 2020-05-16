@@ -33,7 +33,13 @@
                     </div>
                 </div>
                 <div class="col-md-9 messages">
-                    <div class="chat overflow-auto" id="chat">
+                    <div class="chat" id="chat">
+                        {% for message in messages %}
+                            <div class="message {{ message.user.id == app.user.id ? 'personal-message' : 'receieved-message' }}">
+                            <h4>{{ message.user.username }} <span class="badge {{ message.user.id == app.user.id ? 'badge-primary' : 'badge-danger' }}">Role</span></h4>
+                            <p> {{ message.content }} </p>
+                            </div>
+                        {% endfor %}
                     </div>
 
                     <div class="chat-send-box input-group mt-auto">
@@ -51,81 +57,127 @@
         var userId = {{ app.user.id }};
         var userUsername = "{{ app.user.username }}";
         var roomId = {{ room.id }};
-        $("#chat").animate({ scrollTop: $("#chat")[0].scrollHeight}, 100);
+        var token = "{{ token }}";
+        var loaded = false;
+        var offset = 60;
 
-        $.ajax({
-            type: "POST",
-            url: "/api/login_check",
-            // The key needs to match your method's input parameter (case-sensitive).
-            data: JSON.stringify({"username": 'andystory@mail.ru', "password": 'secret'}),
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function(data){
-                var token = data.token;
+        sockets();
+        chatSend();
+        scrolls();
 
-                var socket = io('http://127.0.0.1:8888', {
-                    transports: ['websocket']
-                });
+        function sockets() {
+            var socket = io('http://127.0.0.1:8888', {
+                transports: ['websocket']
+            });
 
-                socket.emit('chat', { // subscribe to private channel
-                    'token': token
-                });
+            socket.emit('chat', { // subscribe to private channel
+                'token': token
+            });
 
-                socket.on('chat', function (data) {
-                    var msgBody = JSON.parse(data);
+            socket.on('chat', function (data) {
+                var msgBody = JSON.parse(data);
 
-                    console.log('msg');
-                    var messageClass = msgBody.User.Id == userId ? 'personal-message' : 'receieved-message';
-                    var badgeClass = msgBody.User.Id == userId ? 'badge-primary' : 'badge-danger';
+                var messageClass = msgBody.User.Id == userId ? 'personal-message' : 'receieved-message';
+                var badgeClass = msgBody.User.Id == userId ? 'badge-primary' : 'badge-danger';
 
-                    $('.chat').append('<div class="message ' + messageClass + '">\n' +
-                        '<h4>' + msgBody.User.Username + ' <span class="badge ' + badgeClass + '">Role</span></h4>\n' +
-                        '<p>' + msgBody.Content + '</p>\n' +
-                        '</div>'
-                    );
+                $('.chat').append('<div class="message ' + messageClass + '">\n' +
+                    '<h4>' + msgBody.User.Username + ' <span class="badge ' + badgeClass + '">Role</span></h4>\n' +
+                    '<p>' + msgBody.Content + '</p>\n' +
+                    '</div>'
+                );
 
-                    $("#chat").animate({ scrollTop: $("#chat")[0].scrollHeight}, 100);
-                });
-            },
-            failure: function(errMsg) {
-                console.log(errMsg);
-            }
-        });
+                $("#chat").animate({scrollTop: $("#chat")[0].scrollHeight}, 100);
+            });
+        }
 
-        $('#send-box').on('keydown', function(e) {
-            if (e.which == 13 || e.key == 13) {
+        function chatSend() {
+            $('#send-box').on('keydown', function(e) {
+                if (e.which == 13 || e.key == 13) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/chat/" + {{ room.id }} + "/message",
+                        // The key needs to match your method's input parameter (case-sensitive).
+                        data: JSON.stringify({"content": $('#send-box').val()}),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        headers: {
+                            "Authorization": "Bearer " + token,
+                        },
+                        success: function(data){},
+                        failure: function(errMsg) {
+                            console.log(errMsg);
+                        }
+                    });
+                    $('#send-box').val('');
+                    e.preventDefault();
+                }
+            });
+
+            $('.send-message-btn').on('click', function () {
                 $.ajax({
                     type: "POST",
-                    url: "/rooms/" + {{ room.id }} + "/message",
+                    url: "/api/chat/" + {{ room.id }} + "/message",
                     // The key needs to match your method's input parameter (case-sensitive).
                     data: JSON.stringify({"content": $('#send-box').val()}),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                    },
                     success: function(data){},
                     failure: function(errMsg) {
                         console.log(errMsg);
                     }
                 });
                 $('#send-box').val('');
-                e.preventDefault();
-            }
-        });
-
-        $('.send-message-btn').on('click', function () {
-            $.ajax({
-                type: "POST",
-                url: "/rooms/" + {{ room.id }} + "/message",
-                // The key needs to match your method's input parameter (case-sensitive).
-                data: JSON.stringify({"content": $('#send-box').val()}),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function(data){},
-                failure: function(errMsg) {
-                    console.log(errMsg);
-                }
             });
-            $('#send-box').val('');
-        });
+        }
+
+        function scrolls() {
+            $("#chat").animate({ scrollTop: $("#chat")[0].scrollHeight}, 100);
+
+            setTimeout(function () {
+                $("#chat").on('scroll', function (pos) {
+                    if (!loaded && $(this).scrollTop() < 3000) {
+                        loaded = true;
+
+                        $.ajax({
+                            type: "GET",
+                            url: "/api/chat/" + {{ room.id }} + "/messages",
+                            // The key needs to match your method's input parameter (case-sensitive).
+                            data: {"offset": offset, "limit": 60},
+                            headers: {
+                                "Authorization": "Bearer " + token,
+                            },
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function(data) {
+                                console.log(data);
+
+                                $.each(data.data, function (i, elem) {
+                                    var messageClass = elem.user.id == userId ? 'personal-message' : 'receieved-message';
+                                    var badgeClass = elem.user.id == userId ? 'badge-primary' : 'badge-danger';
+
+                                    $("#chat").prepend('<div class="message ' + messageClass + '">\n' +
+                                        '<h4>' + elem.user.username + ' <span class="badge ' + badgeClass + '">Role</span></h4>\n' +
+                                        '<p>' + elem.content + '</p>\n' +
+                                        '</div>'
+                                    );
+                                });
+
+                                if (data.data.length > 0) {
+                                    loaded = false;
+                                    offset += 60;
+                                }
+                            },
+                            failure: function(errMsg) {
+                                console.log(errMsg);
+                            }
+                        });
+                    }
+                });
+            }, 200);
+        }
 
     </script>
 {% endblock %}

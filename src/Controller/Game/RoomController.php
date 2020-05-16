@@ -5,14 +5,11 @@ namespace App\Controller\Game;
 
 use App\Entity\Game\Chat\Message;
 use App\Entity\Game\Room;
-use App\Form\MessageType;
 use App\Form\RoomType;
 use App\Security\Voter\RoomVoter;
-use App\Services\Chat\ChatService;
 use App\Services\Game\RoomService;
-use App\Services\Response\Responser;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,12 +21,12 @@ class RoomController extends AbstractController
 {
     private RoomService $roomService;
 
-    private ChatService $chatService;
+    private JWTTokenManagerInterface $JWTManager;
 
-    public function __construct(RoomService $roomService, ChatService $chatService)
+    public function __construct(RoomService $roomService, JWTTokenManagerInterface $JWTManager)
     {
         $this->roomService = $roomService;
-        $this->chatService = $chatService;
+        $this->JWTManager = $JWTManager;
     }
 
     /**
@@ -40,40 +37,6 @@ class RoomController extends AbstractController
         $rooms = $this->getDoctrine()->getRepository(Room::class)->findAll();
 
         return $this->render('game/room/index.html.twig', compact('rooms'));
-    }
-
-    /**
-     * @Route("/{id}/message", name=".message", methods={"POST"})
-     */
-    public function message(Room $room, Request $request): Response
-    {
-        $message = new Message();
-        $form = $this->createForm(MessageType::class, $message);
-        $form->handleRequest($request);
-        $form->submit($request->request->get($form->getName()));
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->getUser();
-            $content = $request->request->get('content');
-
-            $this->chatService->createMessage($room, $user, $content);
-
-            return new JsonResponse(Responser::wrapSuccess($message));
-        }
-
-        return new JsonResponse(Responser::wrapError('Message is not created', 1));
-    }
-
-    /**
-     * @Route("/{id}/validate-socket", name=".validate.socket", methods={"POST"})
-     */
-    public function validateSocket(Room $room, Request $request): Response
-    {
-        $this->denyAccessUnlessGranted(RoomVoter::ATTRIBUTE_VISIT, $room);
-
-        $this->chatService->validateSocketByRoom($request->request->get('socket-id'), $room);
-
-        return new JsonResponse(Responser::wrapError('Socket validated', 1));
     }
 
     /**
@@ -109,7 +72,11 @@ class RoomController extends AbstractController
     {
         $this->denyAccessUnlessGranted(RoomVoter::ATTRIBUTE_VISIT, $room);
 
-        return $this->render('game/room/room.html.twig', compact('room'));
+        $messages = $this->getDoctrine()->getRepository(Message::class)->findBy(['room' => $room], ['id' => 'DESC'], 60);
+        $messages = array_reverse($messages);
+        $token = $this->JWTManager->create($this->getUser());
+
+        return $this->render('game/room/room.html.twig', compact('room', 'messages', 'token'));
     }
 
     /**

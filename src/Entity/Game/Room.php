@@ -22,7 +22,7 @@ class Room
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"Minimal", "Api", "AMPQ"})
+     * @Groups({"Minimal", "Api", "AMQP"})
      */
     private ?int $id;
 

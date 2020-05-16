@@ -29,13 +29,13 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"Default", "Api", "AMPQ"})
+     * @Groups({"Default", "Api", "AMQP"})
      */
     private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=64, unique=true)
-     * @Groups({"Api", "AMPQ"})
+     * @Groups({"Api", "AMQP"})
      */
     private ?string $email = null;
 
@@ -53,7 +53,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=32, unique=true)
-     * @Groups({"Api", "AMPQ"})
+     * @Groups({"Api", "AMQP"})
      */
     private ?string $username = null;
 
@@ -64,14 +64,14 @@ class User implements UserInterface
     private ?string $verifyToken = null;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Game\Room", mappedBy="players")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Game\RoomPlayer", mappedBy="player")
      * @Groups({"Exclude"})
      */
-    private Collection $rooms;
+    private Collection $roomPlayers;
 
     public function __construct()
     {
-        $this->rooms = new ArrayCollection();
+        $this->roomPlayers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -166,7 +166,7 @@ class User implements UserInterface
 
     public function isAdmin(): bool
     {
-        return in_array(self::ROLE_ADMIN, $this->roles);
+        return in_array(self::ROLE_ADMIN, $this->roles, true);
     }
 
     public function getFormattedRoles(): string

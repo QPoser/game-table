@@ -87,6 +87,9 @@
             "ref": "cad41ef93d6150067ae2bb3c7fd729492dff6f0a"
         }
     },
+    "gesdinet/jwt-refresh-token-bundle": {
+        "version": "v0.9.1"
+    },
     "hoa/compiler": {
         "version": "3.17.08.08"
     },

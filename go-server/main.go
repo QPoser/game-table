@@ -1,50 +1,51 @@
 package main
 
 import (
-	"chat-ws/backend/pkg/chat"
-	"chat-ws/backend/pkg/websocket"
 	"fmt"
+	socketio "github.com/googollee/go-socket.io"
+	"go-socketio-chat/pkg/chat"
+	"go-socketio-chat/pkg/controllers"
+	"log"
 	"net/http"
-	"strconv"
 )
 
-func serveWs(room websocket.Room, w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Websocket Endpoint Hit")
-	ws, err := websocket.Upgrade(w, r)
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		allowHeaders := "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization"
 
-	if err != nil {
-		fmt.Fprintf(w, "%+V\n", err)
-	}
+		if origin := r.Header.Get("Origin"); origin != "" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Vary", "Origin")
+			w.Header().Set("Access-Control-Allow-Methods", "POST, PUT, PATCH, GET, DELETE")
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Allow-Headers", allowHeaders)
+		}
 
-	client := &websocket.Client{
-		Conn: ws,
-		Room: room,
-	}
-
-	room.Pool.Register <- client
-	client.Read()
-}
-
-func setupRoutes() {
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		keys, ok := r.URL.Query()["room"]
-		key := keys[0]
-		roomId, err := strconv.Atoi(key)
-
-		if !ok || err != nil {
-			http.Error(w, "Room id must be setted and must be int", 404)
+		if r.Method == "OPTIONS" {
 			return
 		}
 
-		room := websocket.GetRoom(roomId)
+		r.Header.Del("Origin")
 
-		serveWs(room, w, r)
+		next.ServeHTTP(w, r)
 	})
 }
 
 func main() {
-	fmt.Println("Chat App v0.01")
-	setupRoutes()
-	go chat.AmpqInit()
-	http.ListenAndServe(":8888", nil)
+	fmt.Println("App Started")
+
+	server, err := socketio.NewServer(nil)
+
+	if err != nil {
+		log.Print(err)
+	}
+
+	controllers.RegisterSocketHandlers(server)
+
+	go server.Serve()
+	defer server.Close()
+	go chat.AmpqInit(server)
+
+	http.Handle("/socket.io/", corsMiddleware(server))
+	log.Fatal(http.ListenAndServe(":8888", nil))
 }

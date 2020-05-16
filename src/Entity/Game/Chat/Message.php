@@ -13,33 +13,42 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 class Message
 {
+    const TYPE_ROOM = 'room';
+    const TYPE_PRIVATE = 'private';
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"Minimal", "Api", "AMPQ"})
+     * @Groups({"Minimal", "Api", "AMQP"})
      */
     private ?int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Game\Room", inversedBy="messages")
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"Minimal", "Api", "AMPQ"})
+     * @ORM\JoinColumn(nullable=true)
+     * @Groups({"Minimal", "Api", "AMQP"})
      */
     private ?Room $room;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"Minimal", "Api", "AMPQ"})
+     * @Groups({"Minimal", "Api", "AMQP"})
      */
     private ?User $user;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"Minimal", "Api", "AMPQ"})
+     * @Groups({"Minimal", "Api", "AMQP"})
      */
     private ?string $content = null;
+
+    /**
+     * @ORM\Column(type="text")
+     * @Groups({"Minimal", "Api", "AMQP"})
+     */
+    private ?string $type = self::TYPE_ROOM;
 
     public function getId(): ?int
     {
@@ -80,5 +89,15 @@ class Message
         $this->content = $content;
 
         return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(?string $type): void
+    {
+        $this->type = $type;
     }
 }

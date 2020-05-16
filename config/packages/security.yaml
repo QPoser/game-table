@@ -13,6 +13,11 @@ security:
                 property: email
 
     firewalls:
+        refresh:
+            pattern: ^/api/token/refresh
+            stateless: true
+            anonymous: true
+
         login:
             pattern:  ^/api/login
             stateless: true

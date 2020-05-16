@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Services\Chat;
 
-use App\AmqpMessages\SocketRoomValidate;
+use App\AmqpMessages\AmqpChatMessage;
 use App\Entity\Game\Chat\Message;
 use App\Entity\Game\Room;
 use App\Entity\User;
@@ -30,32 +30,24 @@ class ChatService
         $message->setRoom($room);
         $message->setUser($user);
         $message->setContent($content);
+        $message->setType(Message::TYPE_ROOM);
 
         $this->em->persist($message);
         $this->em->flush($message);
 
+        $emails = $this->em->getRepository(User::class)->findUserEmailsByRoom($room);
+        $emails = array_column($emails, 'email');
+        $amqpMessage = new AmqpChatMessage($message, $emails);
+
         $this->messageBus->dispatch(
             new Envelope(
-                $message,
+                $amqpMessage,
                 [
-                    new SerializerStamp(['groups' => 'AMPQ']),
+                    new SerializerStamp(['groups' => 'AMQP']),
                 ]
             )
         );
 
         return $message;
-    }
-
-    public function validateSocketByRoom(?string $socketId, Room $room): void
-    {
-        if (empty($socketId)) {
-            return;
-        }
-
-        $this->messageBus->dispatch(
-            new Envelope(new SocketRoomValidate($socketId, $room), [
-                new SerializerStamp(['groups' => 'AMPQ']),
-            ])
-        );
     }
 }

@@ -39,14 +39,6 @@ services:
         networks:
             - app
 
-    adminer:
-        image: adminer
-        restart: always
-        ports:
-            - 8080:8080
-        networks:
-            - app
-
     rabbitmq:
         container_name: rabbitmq
         hostname: rabbitmq
@@ -68,6 +60,22 @@ services:
         volumes: 
             - ./:/workdir
         working_dir: /workdir
+
+    websockets:
+        image: golang:1.14-alpine
+        volumes:
+            - ./go-server:/go/src/websockets
+        working_dir: /go/src/websockets
+        command: go run main.go
+        environment:
+            JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+        ports:
+            - 8888:8888
+        networks:
+            - app
+        depends_on:
+            - rabbitmq
+        restart: on-failure
 
 networks:
     app:

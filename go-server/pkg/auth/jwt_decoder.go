@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"os"
 )
 
 func ExtractClaims(tokenStr string) (jwt.MapClaims, bool) {
@@ -12,8 +13,14 @@ func ExtractClaims(tokenStr string) (jwt.MapClaims, bool) {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
+		secret, exists := os.LookupEnv("JWT_SECRET_KEY")
+
+		if !exists {
+			fmt.Println("Jwt secret key is not exists")
+		}
+
 		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return []byte("JWTSECRETKEY"), nil
+		return []byte(secret), nil
 	})
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {

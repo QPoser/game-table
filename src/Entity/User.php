@@ -58,7 +58,7 @@ class User implements UserInterface
     private ?string $username = null;
 
     /**
-     * @ORM\Column(type="string", length=32)
+     * @ORM\Column(type="string", length=32, nullable=true)
      * @Groups({"Exclude"})
      */
     private ?string $verifyToken = null;

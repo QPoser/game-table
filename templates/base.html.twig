@@ -11,6 +11,26 @@
                     integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
                     crossorigin="anonymous"></script>
         {% endblock %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+        <script>
+            var token = "{{ app.user ? jwt_service.create(app.user) : '' }}";
+
+            var socket = io('http://127.0.0.1:8888', {
+                transports: ['websocket']
+            });
+
+            socket.emit('private', { // subscribe to private channel
+                'token': token
+            });
+
+            socket.on('notifications', function (data) {
+                var msgBody = JSON.parse(data);
+
+                if (msgBody.Template === 'room_created') {
+                    alert('Room was created ' + msgBody.JsonValues.room)
+                }
+            });
+        </script>
     </head>
     <body>
         {% set currentPath = path(app.request.attributes.get('_route'),

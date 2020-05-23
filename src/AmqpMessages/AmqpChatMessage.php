@@ -6,27 +6,17 @@ namespace App\AmqpMessages;
 use App\Entity\Game\Chat\Message;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-class AmqpChatMessage
+class AmqpChatMessage extends BaseAmqpMessage
 {
     /**
      * @Groups({"AMQP"})
      */
     private ?Message $message = null;
 
-    /**
-     * @Groups({"AMQP"})
-     */
-    private array $emails;
-
     public function __construct(Message $message, array $emails)
     {
         $this->message = $message;
-        $this->emails = $emails;
-    }
-
-    public function getEmails(): array
-    {
-        return $this->emails;
+        parent::__construct($emails);
     }
 
     public function getMessage(): ?Message

@@ -1,2 +1,4 @@
 twig:
     default_path: '%kernel.project_dir%/templates'
+    globals:
+        jwt_service: '@lexik_jwt_authentication.jwt_manager'

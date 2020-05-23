@@ -17,7 +17,7 @@ func RegisterSocketHandlers(server *socketio.Server) {
 		return nil
 	})
 
-	server.OnEvent("/", "chat", func(s socketio.Conn, token SubscribeToken) string {
+	server.OnEvent("/", "private", func(s socketio.Conn, token SubscribeToken) string {
 		claims, result := auth.ExtractClaims(token.Token)
 
 		if !result {
@@ -26,9 +26,7 @@ func RegisterSocketHandlers(server *socketio.Server) {
 
 		s.Join(claims["email"].(string))
 
-		//server.BroadcastToRoom("", claims["email"].(string), "wex", "BYE BYE wex")
-		//server.BroadcastToRoom("", claims["email"].(string), "chat", "BYE BYE chat")
-		return "Joined to chat"
+		return "Joined to private room"
 	})
 
 	server.OnError("/", func(s socketio.Conn, e error) {

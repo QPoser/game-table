@@ -7,28 +7,31 @@
     <table class="table">
         <thead>
         <tr>
-            <th class="col">#</th>
-            <th class="col">Room</th>
-            <th class="col">Players</th>
-            <th class="col">Actions</th>
+            <th class="col" style="width: 5%">#</th>
+            <th class="col" style="width: 75%">Room</th>
+            <th class="col" style="width: 5%">Players</th>
+            <th class="col" style="width: 15%">Actions</th>
         </tr>
         </thead>
         <tbody>
         {% for room in rooms %}
             <tr>
                 <td>{{ room.id }}</td>
-                <td>{{ room.title }}</td>
+                <td>{{ room.title }} <i class="fas fa-{{ room.password ? 'lock' : 'lock-open' }}"></i></td>
                 <td><span class="badge badge-primary">{{ room.roomPlayersCount }} / {{ room.slots }}</span></td>
                 <td class="d-flex">
                     {% if room.hasUser(app.user, true) %}
                         <a href="{{ path('app.rooms.room.visit', {'id' : room.id}) }}" class="ml-auto"><button class="btn btn-primary">Enter</button></a>
 
-                        <form action="{{ path('app.rooms.room.leave', {'id' : room.id}) }}" class="ml-3" method="post">
-                            <button class="btn btn-warning">Leave</button>
+                        <form action="{{ path('app.rooms.room.leave', {'id' : room.id}) }}" class="ml-3 input-group" method="post">
+                            <button class="btn btn-warning ">Leave</button>
                         </form>
                     {% else %}
-                        <form action="{{ path('app.rooms.room.join', {'id' : room.id}) }}" method="post">
-                            <button class="btn btn-success">Join</button>
+                        <form action="{{ path('app.rooms.room.join', {'id' : room.id}) }}" method="post" class="input-group">
+                            {% if room.password %}
+                                <input type="password" name="password" class="form-control" placeholder="password">
+                            {% endif %}
+                            <button class="btn btn-success input-group-append">Join</button>
                         </form>
                     {% endif %}
                 </td>

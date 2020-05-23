@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimeStampTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -24,6 +25,8 @@ class User implements UserInterface
         self::ROLE_USER => self::ROLE_USER,
         self::ROLE_ADMIN => self::ROLE_ADMIN,
     ];
+
+    use TimeStampTrait;
 
     /**
      * @ORM\Id

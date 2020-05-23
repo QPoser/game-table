@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\FriendRequest;
 use App\Entity\Game\Room;
 use App\Entity\Game\RoomPlayer;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query\Expr\Join;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -49,5 +51,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ]);
 
         return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function getUserFriends(UserInterface $user): array
+    {
+        $qb  =  $this->createQueryBuilder('u');
+
+        $qb
+            ->innerJoin(FriendRequest::class, 'fr', Join::WITH, '(fr.userFrom = u.id AND fr.userTo = :user) OR (fr.userTo = u.id AND fr.userFrom = :user)')
+            ->setParameter('user', $user);
+
+        return  $qb->getQuery()->getResult();
     }
 }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Game;
 
+use App\Entity\Traits\TimeStampTrait;
 use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -22,6 +23,8 @@ class RoomPlayer
         self::STATUS_MASTER,
         self::STATUS_PLAYER,
     ];
+
+    use TimeStampTrait;
 
     /**
      * @ORM\Id

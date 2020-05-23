@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Entity\Game;
 
 use App\Entity\Game\Chat\Message;
+use App\Entity\Traits\TimeStampTrait;
 use App\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,6 +18,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Room
 {
     const MAX_SLOTS = 16;
+
+    use TimeStampTrait;
 
     /**
      * @ORM\Id

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Entity\Game\Chat;
 
 use App\Entity\Game\Room;
+use App\Entity\Traits\TimeStampTrait;
 use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -13,8 +14,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 class Message
 {
-    const TYPE_ROOM = 'room';
-    const TYPE_PRIVATE = 'private';
+    public const TYPE_ROOM = 'room';
+    public const TYPE_PRIVATE = 'private';
+
+    use TimeStampTrait;
 
     /**
      * @ORM\Id

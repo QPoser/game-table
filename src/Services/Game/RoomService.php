@@ -6,6 +6,8 @@ namespace App\Services\Game;
 use App\Entity\Game\Room;
 use App\Entity\Game\RoomPlayer;
 use App\Entity\User;
+use App\Exception\AppException;
+use App\Services\Response\ErrorCode;
 use App\Services\Validation\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -67,8 +69,12 @@ class RoomService
         $this->em->flush($roomPlayer);
     }
 
-    public function joinRoom(User $user, Room $room): void
+    public function joinRoom(User $user, Room $room, ?string $password): void
     {
+        if ($room->getPassword() && (!$password || $room->getPassword() !== $password)) {
+            throw new AppException(ErrorCode::ROOM_PASSWORD_IS_INVALID);
+        }
+
         $roomPlayer = $room->getRoomPlayerByUser($user);
 
         if (!$roomPlayer) {

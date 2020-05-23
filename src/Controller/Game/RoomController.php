@@ -8,6 +8,8 @@ use App\Entity\Game\Room;
 use App\Form\RoomType;
 use App\Security\Voter\RoomVoter;
 use App\Services\Game\RoomService;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Request\ParamFetcher;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -94,13 +96,15 @@ class RoomController extends AbstractController
 
     /**
      * @Route("/{id}/join", name=".room.join", methods={"POST"})
+     * @Rest\RequestParam(name="password", requirements="\w+", nullable=true, strict=true, description="Password")
      */
-    public function roomJoin(Room $room): Response
+    public function roomJoin(Room $room, ParamFetcher $paramFetcher): Response
     {
         $this->denyAccessUnlessGranted(RoomVoter::ATTRIBUTE_JOIN, $room);
+        $password = $paramFetcher->get('password');
         $user = $this->getUser();
 
-        $this->roomService->joinRoom($user, $room);
+        $this->roomService->joinRoom($user, $room, $password);
 
         return $this->redirectToRoute('app.rooms.room.visit', ['id' => $room->getId()]);
     }

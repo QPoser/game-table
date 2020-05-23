@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace App\Services\User;
 
 use App\Entity\User;
+use App\Exception\AppException;
 use App\Services\Mailer\UserRegisterMailer;
+use App\Services\Response\ErrorCode;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -29,7 +31,7 @@ class RegisterService
         $userRepository = $this->em->getRepository(User::class);
 
         if ($userRepository->findOneBy(['email' => $email]) || $userRepository->findOneBy(['username' => $username])) {
-            throw new \RuntimeException('User already exists in database');
+            throw new AppException(ErrorCode::USER_ALREADY_EXISTS_IN_DATABASE);
         }
 
         $user = new User();
@@ -59,7 +61,7 @@ class RegisterService
         $user = $this->em->getRepository(User::class)->findOneBy(['verifyToken' => $token]);
 
         if (!$user) {
-            throw new \RuntimeException('User not found by token');
+            throw new AppException(ErrorCode::USER_NOT_FOUND_BY_TOKEN);
         }
 
         $user->setVerifyToken(null);

@@ -7,6 +7,7 @@ use App\Entity\Game\Room;
 use App\Entity\Game\RoomPlayer;
 use App\Entity\User;
 use App\Exception\AppException;
+use App\Services\Notification\RoomNotificationTemplateHelper;
 use App\Services\Response\ErrorCode;
 use App\Services\Validation\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,10 +18,13 @@ class RoomService
 
     private ValidationService $validator;
 
-    public function __construct(EntityManagerInterface $em, ValidationService $validator)
+    private RoomNotificationTemplateHelper $roomNTH;
+
+    public function __construct(EntityManagerInterface $em, ValidationService $validator, RoomNotificationTemplateHelper $roomNTH)
     {
         $this->em = $em;
         $this->validator = $validator;
+        $this->roomNTH = $roomNTH;
     }
 
     public function createRoom(User $creator, string $title, int $slots, string $rules, ?string $password = null): Room
@@ -41,6 +45,8 @@ class RoomService
         $this->createRoomPlayer($creator, $room, RoomPlayer::STATUS_MASTER);
 
         $this->em->commit();
+
+        $this->roomNTH->createRoomCreatedNotifications($creator, $room);
 
         return $room;
     }

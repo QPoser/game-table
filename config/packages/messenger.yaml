@@ -12,6 +12,12 @@ framework:
                 serializer: messenger.transport.symfony_serializer
                 options:
                     queue_name: chat
+            notification_queue:
+                dsn: '%env(MESSENGER_NOTIFICATION_TRANSPORT_DSN)%'
+                serializer: messenger.transport.symfony_serializer
+                options:
+                    queue_name: notifications
 
         routing:
             'App\AmqpMessages\AmqpChatMessage': chat_queue
+            'App\AmqpMessages\AmqpNotification': notification_queue

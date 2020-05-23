@@ -52,12 +52,10 @@
             </div>
         </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <script>
         var userId = {{ app.user.id }};
         var userUsername = "{{ app.user.username }}";
         var roomId = {{ room.id }};
-        var token = "{{ token }}";
         var loaded = false;
         var offset = 60;
 
@@ -66,14 +64,6 @@
         scrolls();
 
         function sockets() {
-            var socket = io('http://127.0.0.1:8888', {
-                transports: ['websocket']
-            });
-
-            socket.emit('chat', { // subscribe to private channel
-                'token': token
-            });
-
             socket.on('chat', function (data) {
                 var msgBody = JSON.parse(data);
 

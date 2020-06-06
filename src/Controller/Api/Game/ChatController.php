@@ -11,15 +11,17 @@ use App\Services\Chat\ChatService;
 use App\Services\Response\Responser;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
+use Swagger\Annotations as SWG;
 
 /**
- * @Route("/api/chat", name="api.chat")
+ * @Route("/api/chat", name="api.chat.")
  */
 class ChatController extends AbstractController
 {
@@ -31,7 +33,16 @@ class ChatController extends AbstractController
     }
 
     /**
-     * @Route("/{room}/message", name=".message", methods={"POST"})
+     * @Route("/{room}/message", name="message", methods={"POST"})
+     * @Rest\View(serializerGroups={"Chat", "Api"})
+     * @SWG\Post(
+     *     tags={"Chat"},
+     *     @SWG\Response(
+     *      response="200",
+     *      description="Create room message",
+     *      @Model(type=Message::class, groups={"Chat", "Api"})
+     *     )
+     * )
      */
     public function roomMessage(Room $room, Request $request): Response
     {
@@ -55,10 +66,21 @@ class ChatController extends AbstractController
     }
 
     /**
-     * @Route("/{room}/messages", name=".messages", methods={"GET"})
+     * @Route("/{room}/messages", name="messages", methods={"GET"})
      * @Rest\View(serializerGroups={"Chat", "Api"})
      * @QueryParam(name="offset", nullable=true, default="60", requirements="\d+", strict=true)
      * @QueryParam(name="limit", nullable=true, default="60", requirements="\d+", strict=true)
+     * @SWG\Get(
+     *     tags={"Chat"},
+     *     @SWG\Response(
+     *      response="200",
+     *      description="Get room messages",
+     *      @SWG\Schema(
+     *          type="array",
+     *          @Model(type=Message::class, groups={"Chat", "Api"})
+     *      )
+     *     )
+     * )
      */
     public function getRoomMessages(Room $room, ParamFetcher $paramFetcher): array
     {

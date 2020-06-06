@@ -5,14 +5,15 @@ namespace App\Controller\Api;
 
 use App\Services\Response\Responser;
 use App\Services\User\RegisterService;
-use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Request\ParamFetcher;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Routing\Annotation\Route;
+use Swagger\Annotations as SWG;
 
 /**
- * @Rest\Route("/api")
+ * @Route("/api", name="api.")
  */
 class RegisterController extends AbstractController
 {
@@ -24,10 +25,17 @@ class RegisterController extends AbstractController
     }
 
     /**
-     * @Rest\Route("/register", name="api.register", methods={"POST"})
+     * @Route("/register", name="register", methods={"POST"})
      * @RequestParam(name="email", requirements=@Assert\Email(), nullable=false, strict=true, description="Email")
      * @RequestParam(name="username", requirements="\w+", nullable=false, strict=true, description="Username")
      * @RequestParam(name="password", requirements="\w+", nullable=false, strict=true, description="Password")
+     * @SWG\Post(
+     *     tags={"Auth"},
+     *     @SWG\Response(
+     *      response="200",
+     *      description="Register action"
+     *     )
+     * )
      */
     public function actionApiRegister(ParamFetcher $paramFetcher): array
     {

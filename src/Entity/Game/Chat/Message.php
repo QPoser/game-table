@@ -42,7 +42,7 @@ class Message
      * @ORM\Column(type="text")
      * @Groups({"Minimal", "Api", "AMQP"})
      */
-    private ?string $content;
+    private ?string $content = null;
 
     /**
      * @ORM\Column(type="text")

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Services\Validation;
 
 use App\Exception\ApiException;
+use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ValidationService
@@ -21,6 +22,7 @@ class ValidationService
 
     public function validateEntity(object $entity): void
     {
+        /** @var ConstraintViolationList $errors */
         $errors = $this->validator->validate($entity);
 
         if ($errors !== null) {
@@ -32,7 +34,9 @@ class ValidationService
                 }
             }
 
-            throw new ApiException(0, implode(';', $errorMessages));
+            if (!empty($errorMessages)) {
+                throw new ApiException(0, implode(';', $errorMessages));
+            }
         }
     }
 }

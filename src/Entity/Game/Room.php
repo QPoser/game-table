@@ -16,7 +16,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 class Room
 {
-    const MAX_SLOTS = 16;
+    public const MAX_SLOTS = 16;
+
+    public const ACCESS_PUBLIC = 'public';
+    public const ACCESS_PRIVATE = 'private';
+
+    public const ACCESS_TYPES = [
+        self::ACCESS_PUBLIC => self::ACCESS_PUBLIC,
+        self::ACCESS_PRIVATE => self::ACCESS_PRIVATE,
+    ];
 
     /**
      * @ORM\Id
@@ -70,9 +78,16 @@ class Room
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Game\Chat\Message", mappedBy="room", orphanRemoval=true)
-     * @Groups({"Exclude"})
+     * @ORM\OrderBy({"id" = "DESC"})
+     * @Groups({"RoomMessages"})
      */
-    private $messages;
+    private Collection $messages;
+
+    /**
+     * @ORM\Column(type="string", length=32, nullable=true)
+     * @Groups({"RoomAccess"})
+     */
+    private ?string $access;
 
     public function __construct()
     {
@@ -82,6 +97,7 @@ class Room
         $this->slots = self::MAX_SLOTS;
         $this->roomPlayers = new ArrayCollection();
         $this->messages = new ArrayCollection();
+        $this->access = self::ACCESS_PUBLIC;
     }
 
     public function getId(): ?int
@@ -241,5 +257,37 @@ class Room
         }
 
         return $this;
+    }
+
+    public function isPublic(): bool
+    {
+        return $this->access === self::ACCESS_PUBLIC;
+    }
+
+    public function isPrivate(): bool
+    {
+        return $this->access === self::ACCESS_PRIVATE;
+    }
+
+    public function getAccess(): ?string
+    {
+        return $this->access;
+    }
+
+    public function setAccess(?string $access): self
+    {
+        if (in_array($access, self::ACCESS_TYPES, true)) {
+            $this->access = $access;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @Groups({"Api"})
+     */
+    public function isSecure(): bool
+    {
+        return $this->getPassword() ? true : false;
     }
 }

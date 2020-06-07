@@ -27,7 +27,7 @@ class RoomService
         $this->roomNTH = $roomNTH;
     }
 
-    public function createRoom(User $creator, string $title, int $slots, string $rules, ?string $password = null): Room
+    public function createRoom(User $creator, string $title, int $slots, ?string $rules, ?string $password = null): Room
     {
         $this->em->beginTransaction();
 

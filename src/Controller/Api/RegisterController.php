@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Swagger\Annotations as SWG;
 
 /**
- * @Route("/api", name="api.")
+ * @Route("/api", name="api")
  */
 class RegisterController extends AbstractController
 {
@@ -25,7 +25,7 @@ class RegisterController extends AbstractController
     }
 
     /**
-     * @Route("/register", name="register", methods={"POST"})
+     * @Route("/register", name=".register", methods={"POST"})
      * @RequestParam(name="email", requirements=@Assert\Email(), nullable=false, strict=true, description="Email")
      * @RequestParam(name="username", requirements="\w+", nullable=false, strict=true, description="Username")
      * @RequestParam(name="password", requirements="\w+", nullable=false, strict=true, description="Password")

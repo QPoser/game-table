@@ -12,12 +12,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Swagger\Annotations as SWG;
 
 /**
- * @Route("/api/profile", name="api.")
+ * @Route("/api/profile", name="api")
  */
 class ProfileController extends AbstractFOSRestController
 {
     /**
-     * @Route("", name="profile", methods={"GET"})
+     * @Route("", name=".profile", methods={"GET"})
      * @Rest\View(serializerGroups={"UserRoles", "Api"})
      * @SWG\Get(
      *     tags={"User profile"},

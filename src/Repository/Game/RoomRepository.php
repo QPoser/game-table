@@ -5,8 +5,10 @@ namespace App\Repository\Game;
 
 use App\Entity\Game\Room;
 use App\Entity\User;
+use App\Helper\PaginationHelper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use function Doctrine\ORM\QueryBuilder;
 
 class RoomRepository extends ServiceEntityRepository
@@ -16,17 +18,26 @@ class RoomRepository extends ServiceEntityRepository
         parent::__construct($registry, Room::class);
     }
 
-    public function findRoomBySlugForUser(string $slug, User $user, bool $strict = true): ?Room
+    public function getRoomsWithPagination(int $limit, int $offset, string $access = Room::ACCESS_PUBLIC, ?array $sorting = []): array
     {
-        $qb = $this->createQueryBuilder('r');
+        $queryBuilder = $this->createQueryBuilder('r');
 
-        $qb
-            ->innerJoin('r.roomPlayers', 'rp')
-            ->innerJoin('rp.player', 'rpp')
+        $queryBuilder
             ->andWhere(
-                $qb->expr()->eq('rpp.id', ':player'),
-                $qb->expr()->in('rp.role', ':roles'),
-                $qb->expr()->in('r.slug', ':slug'),
-            );
+                $queryBuilder->expr()->eq('r.access', ':access')
+            )
+            ->setParameter('access', $access);
+
+        $queryBuilder
+            ->setFirstResult($offset)
+            ->setMaxResults($limit);
+
+        $paginator = new Paginator($queryBuilder);
+        $total = count($paginator);
+
+        return [
+            $queryBuilder->getQuery()->getResult(),
+            PaginationHelper::createPaginationArray($total, $limit, $offset),
+        ];
     }
 }

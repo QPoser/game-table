@@ -13,15 +13,13 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use Swagger\Annotations as SWG;
 
 /**
- * @Route("/api/chat", name="api.chat.")
+ * @Route("/api/chat", name="api.chat")
  */
 class ChatController extends AbstractController
 {
@@ -33,7 +31,7 @@ class ChatController extends AbstractController
     }
 
     /**
-     * @Route("/{room}/message", name="message", methods={"POST"})
+     * @Route("/{room}/message", name=".message", methods={"POST"})
      * @Rest\View(serializerGroups={"Chat", "Api"})
      * @SWG\Post(
      *     tags={"Chat"},
@@ -44,7 +42,7 @@ class ChatController extends AbstractController
      *     )
      * )
      */
-    public function roomMessage(Room $room, Request $request): Response
+    public function roomMessage(Room $room, Request $request): array
     {
         $this->denyAccessUnlessGranted(RoomVoter::ATTRIBUTE_VISIT, $room);
 
@@ -57,18 +55,18 @@ class ChatController extends AbstractController
             $user = $this->getUser();
             $content = $request->request->get('content');
 
-            $this->chatService->createMessage($room, $user, $content);
+            $message = $this->chatService->createMessage($room, $user, $content);
 
-            return new JsonResponse(Responser::wrapSuccess($message));
+            return Responser::wrapSuccess($message);
         }
 
-        return new JsonResponse(Responser::wrapError('Message is not created', 1));
+        return Responser::wrapError('Message is not created', 1);
     }
 
     /**
-     * @Route("/{room}/messages", name="messages", methods={"GET"})
+     * @Route("/{room}/messages", name=".messages", methods={"GET"})
      * @Rest\View(serializerGroups={"Chat", "Api"})
-     * @QueryParam(name="offset", nullable=true, default="60", requirements="\d+", strict=true)
+     * @QueryParam(name="offset", nullable=true, default="0", requirements="\d+", strict=true)
      * @QueryParam(name="limit", nullable=true, default="60", requirements="\d+", strict=true)
      * @SWG\Get(
      *     tags={"Chat"},
@@ -86,11 +84,13 @@ class ChatController extends AbstractController
     {
         $this->denyAccessUnlessGranted(RoomVoter::ATTRIBUTE_VISIT, $room);
 
-        $offset = $paramFetcher->get('offset');
-        $limit = $paramFetcher->get('limit');
+        $offset = (int)$paramFetcher->get('offset');
+        $limit = (int)$paramFetcher->get('limit');
 
-        $messages = $this->getDoctrine()->getRepository(Message::class)->findBy(['room' => $room], ['id' => 'DESC'], $limit, $offset);
+        [$messages, $pagination] = $this->getDoctrine()
+            ->getRepository(Message::class)
+            ->getMessagesByRoomWithPagination($room, $limit, $offset);
 
-        return Responser::wrapSuccess($messages);
+        return Responser::wrapSuccess($messages, ['pagination' => $pagination]);
     }
 }

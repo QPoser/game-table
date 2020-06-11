@@ -84,7 +84,7 @@
             $('#send-box').on('keydown', function(e) {
                 if (e.which == 13 || e.key == 13) {
                     $.ajax({
-                        type: "POST",
+                        method: "POST",
                         url: "/api/chat/" + {{ room.id }} + "/message",
                         // The key needs to match your method's input parameter (case-sensitive).
                         data: JSON.stringify({"content": $('#send-box').val()}),
@@ -105,7 +105,7 @@
 
             $('.send-message-btn').on('click', function () {
                 $.ajax({
-                    type: "POST",
+                    method: "POST",
                     url: "/api/chat/" + {{ room.id }} + "/message",
                     // The key needs to match your method's input parameter (case-sensitive).
                     data: JSON.stringify({"content": $('#send-box').val()}),

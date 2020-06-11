@@ -11,12 +11,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Swagger\Annotations as SWG;
 
 /**
- * @Route("/api/token", name="api.token.")
+ * @Route("/api/token", name="api.token")
  */
 class TokenController extends AbstractController
 {
     /**
-     * @Route("/refresh", name="refresh", methods={"POST"})
+     * @Route("/refresh", name=".refresh", methods={"POST"})
      * @SWG\Post(
      *     tags={"Auth"},
      *     @SWG\Response(

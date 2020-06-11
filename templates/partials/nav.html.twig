@@ -30,7 +30,9 @@
                     {% if app.user %}
                         <a class="dropdown-item" href="{{ path('app.profile') }}">Profile</a>
                         {% if app.user.isAdmin %}
+                            <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ path('admin') }}">Admin</a>
+                            <a class="dropdown-item" href="{{ path('app.swagger_ui') }}">Api doc</a>
                         {% endif %}
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{ path('app.logout') }}">Logout</a>

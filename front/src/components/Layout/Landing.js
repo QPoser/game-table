@@ -17,7 +17,7 @@ class Landing extends Component {
             <div className="row">
               <div className="col-md-12 text-center">
                 <h1 className="display-3 mb-4">
-                    Login to start play
+                    Login to start play!!!
                 </h1>
                 <hr />
                 <Link className="btn btn-lg btn-primary mr-2" to="/register">

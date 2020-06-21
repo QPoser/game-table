@@ -15,17 +15,17 @@
                         <h3 class="stats-main-title badge badge-primary">Game {{ game.title }}</h3>
                         <p>
                             <span class="badge badge-white">
-                                <i class="fa fa-user"></i> {{ game.gamePlayersCount }} / {{ game.slots }}
+                                <i class="fa fa-user"></i> 0 / 0
                             </span>
                         </p>
                     </div>
 
                     <div class="users-list overflow-auto">
                         <hr>
-                        {% for player in game.gamePlayers %}
-                            <p><i class="fa fa-user"></i> {{ player.player.username }}</p>
-                            <hr>
-                        {% endfor %}
+{#                        {% for player in game.gamePlayers %}#}
+{#                            <p><i class="fa fa-user"></i> {{ player.player.username }}</p>#}
+{#                            <hr>#}
+{#                        {% endfor %}#}
                     </div>
 
                     <div class="stats-description">
@@ -66,6 +66,10 @@
         function sockets() {
             socket.on('chat', function (data) {
                 var msgBody = JSON.parse(data);
+
+                if (msgBody.Game.Id !== gameId) {
+                    return;
+                }
 
                 var messageClass = msgBody.User.Id == userId ? 'personal-message' : 'receieved-message';
                 var badgeClass = msgBody.User.Id == userId ? 'badge-primary' : 'badge-danger';

@@ -21,7 +21,7 @@
                     {% if game.hasUser(app.user, true) %}
                         {% for team in game.teams %}
                             {% if team.hasUser(app.user, true) %}
-                                <a href="{{ path('api.games.visit', {'id' : game.id}) }}" class="ml-auto mr-2">
+                                <a href="{{ path('app.games.game.visit', {'id' : game.id}) }}" class="ml-auto mr-2">
                                     <button class="btn btn-primary">
                                         <i class="fa fa-group mr-2"></i> {{ team.playersCount }} / {{ team.slots }} Enter
                                     </button>

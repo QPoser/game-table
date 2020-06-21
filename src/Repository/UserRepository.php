@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Game\Game;
-use App\Entity\Game\GamePlayer;
+use App\Entity\Game\Team\GameTeamPlayer;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -37,15 +37,14 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         $queryBuilder
             ->select('u.email')
-            ->innerJoin('u.gamePlayers', 'urp')
-            ->innerJoin('urp.game', 'ur')
+            ->innerJoin(GameTeamPlayer::class, 'gtp', 'WITH', 'gtp.user = u.id')
+            ->innerJoin('gtp.team', 'gtpt')
+            ->innerJoin('gtpt.game', 'game')
             ->andWhere(
-                $queryBuilder->expr()->eq('ur.id', ':gameId'),
-                $queryBuilder->expr()->in('urp.status', ':activeStatuses')
+                $queryBuilder->expr()->eq('game.id', ':gameId')
             )
             ->setParameters([
-                'gameId' => $game->getId(),
-                'activeStatuses' => GamePlayer::ACTIVE_STATUSES
+                'gameId' => $game->getId()
             ]);
 
         return $queryBuilder->getQuery()->getResult();

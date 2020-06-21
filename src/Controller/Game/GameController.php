@@ -6,7 +6,6 @@ namespace App\Controller\Game;
 use App\Entity\Game\Chat\Message;
 use App\Entity\Game\Game;
 use App\Security\Voter\GameVoter;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,13 +15,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class GameController extends AbstractController
 {
-    private JWTTokenManagerInterface $JWTManager;
-
-    public function __construct(JWTTokenManagerInterface $JWTManager)
-    {
-        $this->JWTManager = $JWTManager;
-    }
-
     /**
      * @Route("/", name="")
      */
@@ -42,8 +34,7 @@ class GameController extends AbstractController
 
         $messages = $this->getDoctrine()->getRepository(Message::class)->findBy(['game' => $game], ['id' => 'DESC'], 60);
         $messages = array_reverse($messages);
-        $token = $this->JWTManager->create($this->getUser());
 
-        return $this->render('game/game/game.html.twig', compact('game', 'messages', 'token'));
+        return $this->render('game/game/game.html.twig', compact('game', 'messages'));
     }
 }

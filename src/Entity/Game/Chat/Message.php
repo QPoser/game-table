@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Entity\Game\Chat;
 
 use App\Entity\Game\Game;
+use App\Entity\Game\Team\GameTeam;
 use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -13,8 +14,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 class Message
 {
-    const TYPE_GAME = 'game';
-    const TYPE_PRIVATE = 'private';
+    public const TYPE_GAME = 'game';
+    public const TYPE_TEAM = 'team';
+    public const TYPE_PRIVATE = 'private';
+
+    public const TYPES = [
+        self::TYPE_GAME => self::TYPE_GAME,
+        self::TYPE_TEAM => self::TYPE_TEAM,
+        self::TYPE_PRIVATE => self::TYPE_PRIVATE,
+    ];
 
     /**
      * @ORM\Id
@@ -49,6 +57,13 @@ class Message
      * @Groups({"Minimal", "Api", "AMQP"})
      */
     private ?string $type = self::TYPE_GAME;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=GameTeam::class)
+     * @ORM\JoinColumn(fieldName="team_id", referencedColumnName="id", nullable=true)
+     * @Groups({"AMQP"})
+     */
+    private ?GameTeam $team = null;
 
     public function getId(): ?int
     {
@@ -99,5 +114,17 @@ class Message
     public function setType(?string $type): void
     {
         $this->type = $type;
+    }
+
+    public function getTeam(): ?GameTeam
+    {
+        return $this->team;
+    }
+
+    public function setTeam(?GameTeam $team): self
+    {
+        $this->team = $team;
+
+        return $this;
     }
 }

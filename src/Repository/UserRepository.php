@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Game\Game;
+use App\Entity\Game\Team\GameTeam;
 use App\Entity\Game\Team\GameTeamPlayer;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -45,6 +46,24 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             )
             ->setParameters([
                 'gameId' => $game->getId()
+            ]);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function findUserEmailsByTeam(GameTeam $team): array
+    {
+        $queryBuilder = $this->createQueryBuilder('u');
+
+        $queryBuilder
+            ->select('u.email')
+            ->innerJoin(GameTeamPlayer::class, 'gtp', 'WITH', 'gtp.user = u.id')
+            ->innerJoin('gtp.team', 'gtpt')
+            ->andWhere(
+                $queryBuilder->expr()->eq('gtpt.id', ':teamId')
+            )
+            ->setParameters([
+                'teamId' => $team->getId()
             ]);
 
         return $queryBuilder->getQuery()->getResult();

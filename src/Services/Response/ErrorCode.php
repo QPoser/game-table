@@ -15,6 +15,7 @@ class ErrorCode
     public const FAIL_ON_CREATE_TEAM_PLAYER = 7;
     public const USER_IS_NOT_IN_GAME = 8;
     public const GAME_TYPE_NOT_FOUND = 9;
+    public const INCORRECT_MESSAGE_TYPE = 10;
 
     private const MESSAGES = [
         self::USER_NOT_FOUND_BY_TOKEN => 'User not found by token',
@@ -27,6 +28,7 @@ class ErrorCode
         self::FAIL_ON_CREATE_TEAM_PLAYER => 'Fail on create team player',
         self::USER_IS_NOT_IN_GAME => 'User is not in game',
         self::GAME_TYPE_NOT_FOUND => 'Game type not found',
+        self::INCORRECT_MESSAGE_TYPE => 'Incorrect message type',
     ];
 
     public static function getMessage(int $code): ?string

@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use Swagger\Annotations as SWG;
+use FOS\RestBundle\Controller\Annotations\RequestParam;
 
 /**
  * @Route("/api/chat", name="api.chat")
@@ -33,6 +34,8 @@ class ChatController extends AbstractController
     /**
      * @Route("/{game}/message", name=".message", methods={"POST"})
      * @Rest\View(serializerGroups={"Chat", "Api"})
+     * @RequestParam(name="content", requirements="\w+", nullable=false, strict=true, description="Message content")
+     * @RequestParam(name="type", requirements="team|game", nullable=true, default="public", strict=true, description="Message type")
      * @SWG\Post(
      *     tags={"Chat"},
      *     @SWG\Response(
@@ -42,25 +45,16 @@ class ChatController extends AbstractController
      *     )
      * )
      */
-    public function gameMessage(Game $game, Request $request): array
+    public function gameMessage(Game $game, ParamFetcher $paramFetcher): array
     {
         $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
 
-        $message = new Message();
-        $form = $this->createForm(MessageType::class, $message);
-        $form->handleRequest($request);
-        $form->submit($request->request->get($form->getName()));
+        $content = $paramFetcher->get('content');
+        $type = $paramFetcher->get('type');
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->getUser();
-            $content = $request->request->get('content');
+        $message = $this->chatService->createMessage($game, $this->getUser(), $content, $type);
 
-            $message = $this->chatService->createMessage($game, $user, $content);
-
-            return Responser::wrapSuccess($message);
-        }
-
-        return Responser::wrapError('Message is not created', 1);
+        return Responser::wrapSuccess($message);
     }
 
     /**
@@ -86,10 +80,11 @@ class ChatController extends AbstractController
 
         $offset = (int)$paramFetcher->get('offset');
         $limit = (int)$paramFetcher->get('limit');
+        $user = $this->getUser();
 
         [$messages, $pagination] = $this->getDoctrine()
             ->getRepository(Message::class)
-            ->getMessagesByGameWithPagination($game, $limit, $offset);
+            ->getMessagesByGameWithPagination($game, $user, $limit, $offset);
 
         return Responser::wrapSuccess($messages, ['pagination' => $pagination]);
     }

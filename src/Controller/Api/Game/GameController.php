@@ -84,7 +84,7 @@ class GameController extends AbstractController
 
     /**
      * @Route("/{id}", name=".visit", methods={"GET"})
-     * @Rest\View(serializerGroups={"Api", "GameMessages"})
+     * @Rest\View(serializerGroups={"Api"})
      * @SWG\Get(
      *     tags={"Games"},
      *     @SWG\Response(

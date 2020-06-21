@@ -32,9 +32,6 @@ class GameController extends AbstractController
     {
         $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
 
-        $messages = $this->getDoctrine()->getRepository(Message::class)->findBy(['game' => $game], ['id' => 'DESC'], 60);
-        $messages = array_reverse($messages);
-
-        return $this->render('game/game/game.html.twig', compact('game', 'messages'));
+        return $this->render('game/game/game.html.twig', compact('game'));
     }
 }

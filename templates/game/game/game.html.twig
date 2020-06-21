@@ -34,15 +34,13 @@
                 </div>
                 <div class="col-md-9 messages">
                     <div class="chat" id="chat">
-                        {% for message in messages %}
-                            <div class="message {{ message.user.id == app.user.id ? 'personal-message' : 'receieved-message' }}">
-                            <h4>{{ message.user.username }} <span class="badge {{ message.user.id == app.user.id ? 'badge-primary' : 'badge-danger' }}">Role</span></h4>
-                            <p> {{ message.content }} </p>
-                            </div>
-                        {% endfor %}
                     </div>
 
                     <div class="chat-send-box input-group mt-auto">
+                        <select name="type" id="send-type" class="form-control">
+                            <option value="game">game</option>
+                            <option value="team">team</option>
+                        </select>
                         <textarea name="send-box" id="send-box" class="form-control"></textarea>
                         <div class="input-group-prepend">
                             <button class="send-message-btn btn btn-primary"><i class="fab fa-telegram-plane"></i></button>
@@ -57,7 +55,7 @@
         var userUsername = "{{ app.user.username }}";
         var gameId = {{ game.id }};
         var loaded = false;
-        var offset = 60;
+        var offset = 0;
 
         sockets();
         chatSend();
@@ -91,7 +89,7 @@
                         method: "POST",
                         url: "/api/chat/" + {{ game.id }} + "/message",
                         // The key needs to match your method's input parameter (case-sensitive).
-                        data: JSON.stringify({"content": $('#send-box').val()}),
+                        data: JSON.stringify({"content": $('#send-box').val(), "type": $('#send-type').val()}),
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
                         headers: {
@@ -112,7 +110,7 @@
                     method: "POST",
                     url: "/api/chat/" + {{ game.id }} + "/message",
                     // The key needs to match your method's input parameter (case-sensitive).
-                    data: JSON.stringify({"content": $('#send-box').val()}),
+                    data: JSON.stringify({"content": $('#send-box').val(), "type": $('#send-type').val()}),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     headers: {
@@ -126,6 +124,44 @@
                 $('#send-box').val('');
             });
         }
+
+        $.ajax({
+            type: "GET",
+            url: "/api/chat/" + {{ game.id }} + "/messages",
+            // The key needs to match your method's input parameter (case-sensitive).
+            data: {"offset": offset, "limit": 60},
+            headers: {
+                "Authorization": "Bearer " + token,
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(data) {
+                console.log(data);
+
+                $.each(data.data, function (i, elem) {
+                    var messageClass = elem.user.id == userId ? 'personal-message' : 'receieved-message';
+                    var badgeClass = elem.user.id == userId ? 'badge-primary' : 'badge-danger';
+
+                    $("#chat").prepend('<div class="message ' + messageClass + '">\n' +
+                        '<h4>' + elem.user.username + ' <span class="badge ' + badgeClass + '">Role</span></h4>\n' +
+                        '<p>' + elem.content + '</p>\n' +
+                        '</div>'
+                    );
+                });
+
+                if (data.data.length > 0) {
+                    loaded = false;
+                    offset += 60;
+                }
+
+                $("#chat").animate({scrollTop: $("#chat")[0].scrollHeight}, 100);
+            },
+            failure: function(errMsg) {
+                console.log(errMsg);
+            }
+        });
+
+
 
         function scrolls() {
             $("#chat").animate({ scrollTop: $("#chat")[0].scrollHeight}, 100);

@@ -26,9 +26,27 @@
             socket.on('notifications', function (data) {
                 var msgBody = JSON.parse(data);
 
-                if (msgBody.Template === 'room_created') {
-                    alert('Room was created ' + msgBody.JsonValues.room)
+                if (msgBody.Template === 'game_created') {
+                    alert('Game was created ' + msgBody.JsonValues.game)
                 }
+            });
+        </script>
+
+        <script>
+            $(document).on('submit', 'form', function(e) {
+                e.preventDefault();
+
+                var form = $(this);
+                var url = form.attr('action');
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: form.serialize(),
+                    headers: {
+                        "Authorization": "Bearer " + token,
+                    },
+                })
             });
         </script>
     </head>

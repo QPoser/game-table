@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Game\Chat;
 
-use App\Entity\Game\Room;
+use App\Entity\Game\Game;
 use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 class Message
 {
-    const TYPE_ROOM = 'room';
+    const TYPE_GAME = 'game';
     const TYPE_PRIVATE = 'private';
 
     /**
@@ -25,11 +25,11 @@ class Message
     private ?int $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Game\Room", inversedBy="messages")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Game\Game", inversedBy="messages")
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"Minimal", "Api", "AMQP"})
      */
-    private ?Room $room;
+    private ?Game $game;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
@@ -48,21 +48,21 @@ class Message
      * @ORM\Column(type="text")
      * @Groups({"Minimal", "Api", "AMQP"})
      */
-    private ?string $type = self::TYPE_ROOM;
+    private ?string $type = self::TYPE_GAME;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getRoom(): ?Room
+    public function getGame(): ?Game
     {
-        return $this->room;
+        return $this->game;
     }
 
-    public function setRoom(?Room $room): self
+    public function setGame(?Game $game): self
     {
-        $this->room = $room;
+        $this->game = $game;
 
         return $this;
     }

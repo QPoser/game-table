@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\Game\Room;
-use App\Entity\Game\RoomPlayer;
+use App\Entity\Game\Game;
+use App\Entity\Game\GamePlayer;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -31,21 +31,21 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
-    public function findUserEmailsByRoom(Room $room): array
+    public function findUserEmailsByGame(Game $game): array
     {
         $queryBuilder = $this->createQueryBuilder('u');
 
         $queryBuilder
             ->select('u.email')
-            ->innerJoin('u.roomPlayers', 'urp')
-            ->innerJoin('urp.room', 'ur')
+            ->innerJoin('u.gamePlayers', 'urp')
+            ->innerJoin('urp.game', 'ur')
             ->andWhere(
-                $queryBuilder->expr()->eq('ur.id', ':roomId'),
+                $queryBuilder->expr()->eq('ur.id', ':gameId'),
                 $queryBuilder->expr()->in('urp.status', ':activeStatuses')
             )
             ->setParameters([
-                'roomId' => $room->getId(),
-                'activeStatuses' => RoomPlayer::ACTIVE_STATUSES
+                'gameId' => $game->getId(),
+                'activeStatuses' => GamePlayer::ACTIVE_STATUSES
             ]);
 
         return $queryBuilder->getQuery()->getResult();

@@ -5,7 +5,7 @@ namespace App\Services\Chat;
 
 use App\AmqpMessages\AmqpChatMessage;
 use App\Entity\Game\Chat\Message;
-use App\Entity\Game\Room;
+use App\Entity\Game\Game;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Envelope;
@@ -24,18 +24,18 @@ class ChatService
         $this->messageBus = $messageBus;
     }
 
-    public function createMessage(Room $room, User $user, string $content): Message
+    public function createMessage(Game $game, User $user, string $content): Message
     {
         $message = new Message();
-        $message->setRoom($room);
+        $message->setGame($game);
         $message->setUser($user);
         $message->setContent($content);
-        $message->setType(Message::TYPE_ROOM);
+        $message->setType(Message::TYPE_GAME);
 
         $this->em->persist($message);
         $this->em->flush($message);
 
-        $emails = $this->em->getRepository(User::class)->findUserEmailsByRoom($room);
+        $emails = $this->em->getRepository(User::class)->findUserEmailsByGame($game);
         $emails = array_column($emails, 'email');
         $amqpMessage = new AmqpChatMessage($message, $emails);
 

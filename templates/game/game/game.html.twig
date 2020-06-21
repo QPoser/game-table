@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Room {{ room.title }}{% endblock %}
+{% block title %}Game {{ game.title }}{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -12,17 +12,17 @@
             <div class="row">
                 <div class="col-md-3 stats">
                     <div class="stats-main">
-                        <h3 class="stats-main-title badge badge-primary">Room {{ room.title }}</h3>
+                        <h3 class="stats-main-title badge badge-primary">Game {{ game.title }}</h3>
                         <p>
                             <span class="badge badge-white">
-                                <i class="fa fa-user"></i> {{ room.roomPlayersCount }} / {{ room.slots }}
+                                <i class="fa fa-user"></i> {{ game.gamePlayersCount }} / {{ game.slots }}
                             </span>
                         </p>
                     </div>
 
                     <div class="users-list overflow-auto">
                         <hr>
-                        {% for player in room.roomPlayers %}
+                        {% for player in game.gamePlayers %}
                             <p><i class="fa fa-user"></i> {{ player.player.username }}</p>
                             <hr>
                         {% endfor %}
@@ -55,7 +55,7 @@
     <script>
         var userId = {{ app.user.id }};
         var userUsername = "{{ app.user.username }}";
-        var roomId = {{ room.id }};
+        var gameId = {{ game.id }};
         var loaded = false;
         var offset = 60;
 
@@ -85,7 +85,7 @@
                 if (e.which == 13 || e.key == 13) {
                     $.ajax({
                         method: "POST",
-                        url: "/api/chat/" + {{ room.id }} + "/message",
+                        url: "/api/chat/" + {{ game.id }} + "/message",
                         // The key needs to match your method's input parameter (case-sensitive).
                         data: JSON.stringify({"content": $('#send-box').val()}),
                         contentType: "application/json; charset=utf-8",
@@ -106,7 +106,7 @@
             $('.send-message-btn').on('click', function () {
                 $.ajax({
                     method: "POST",
-                    url: "/api/chat/" + {{ room.id }} + "/message",
+                    url: "/api/chat/" + {{ game.id }} + "/message",
                     // The key needs to match your method's input parameter (case-sensitive).
                     data: JSON.stringify({"content": $('#send-box').val()}),
                     contentType: "application/json; charset=utf-8",
@@ -133,7 +133,7 @@
 
                         $.ajax({
                             type: "GET",
-                            url: "/api/chat/" + {{ room.id }} + "/messages",
+                            url: "/api/chat/" + {{ game.id }} + "/messages",
                             // The key needs to match your method's input parameter (case-sensitive).
                             data: {"offset": offset, "limit": 60},
                             headers: {

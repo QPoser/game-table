@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Repository\Game\Chat;
 
 use App\Entity\Game\Chat\Message;
-use App\Entity\Game\Room;
+use App\Entity\Game\Game;
 use App\Helper\PaginationHelper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -17,15 +17,15 @@ class MessageRepository extends ServiceEntityRepository
         parent::__construct($registry, Message::class);
     }
 
-    public function getMessagesByRoomWithPagination(Room $room, int $limit, int $offset, ?array $sorting = []): array
+    public function getMessagesByGameWithPagination(Game $game, int $limit, int $offset, ?array $sorting = []): array
     {
         $queryBuilder = $this->createQueryBuilder('m');
 
         $queryBuilder
             ->andWhere(
-                $queryBuilder->expr()->eq('m.room', ':room')
+                $queryBuilder->expr()->eq('m.game', ':game')
             )
-            ->setParameter('room', $room);
+            ->setParameter('game', $game);
 
         $queryBuilder
             ->setFirstResult($offset)

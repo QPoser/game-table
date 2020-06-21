@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace App\Controller\Api\Game;
 
 use App\Entity\Game\Chat\Message;
-use App\Entity\Game\Room;
+use App\Entity\Game\Game;
 use App\Form\MessageType;
-use App\Security\Voter\RoomVoter;
+use App\Security\Voter\GameVoter;
 use App\Services\Chat\ChatService;
 use App\Services\Response\Responser;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -31,20 +31,20 @@ class ChatController extends AbstractController
     }
 
     /**
-     * @Route("/{room}/message", name=".message", methods={"POST"})
+     * @Route("/{game}/message", name=".message", methods={"POST"})
      * @Rest\View(serializerGroups={"Chat", "Api"})
      * @SWG\Post(
      *     tags={"Chat"},
      *     @SWG\Response(
      *      response="200",
-     *      description="Create room message",
+     *      description="Create game message",
      *      @Model(type=Message::class, groups={"Chat", "Api"})
      *     )
      * )
      */
-    public function roomMessage(Room $room, Request $request): array
+    public function gameMessage(Game $game, Request $request): array
     {
-        $this->denyAccessUnlessGranted(RoomVoter::ATTRIBUTE_VISIT, $room);
+        $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
 
         $message = new Message();
         $form = $this->createForm(MessageType::class, $message);
@@ -55,7 +55,7 @@ class ChatController extends AbstractController
             $user = $this->getUser();
             $content = $request->request->get('content');
 
-            $message = $this->chatService->createMessage($room, $user, $content);
+            $message = $this->chatService->createMessage($game, $user, $content);
 
             return Responser::wrapSuccess($message);
         }
@@ -64,7 +64,7 @@ class ChatController extends AbstractController
     }
 
     /**
-     * @Route("/{room}/messages", name=".messages", methods={"GET"})
+     * @Route("/{game}/messages", name=".messages", methods={"GET"})
      * @Rest\View(serializerGroups={"Chat", "Api"})
      * @QueryParam(name="offset", nullable=true, default="0", requirements="\d+", strict=true)
      * @QueryParam(name="limit", nullable=true, default="60", requirements="\d+", strict=true)
@@ -72,7 +72,7 @@ class ChatController extends AbstractController
      *     tags={"Chat"},
      *     @SWG\Response(
      *      response="200",
-     *      description="Get room messages",
+     *      description="Get game messages",
      *      @SWG\Schema(
      *          type="array",
      *          @Model(type=Message::class, groups={"Chat", "Api"})
@@ -80,16 +80,16 @@ class ChatController extends AbstractController
      *     )
      * )
      */
-    public function getRoomMessages(Room $room, ParamFetcher $paramFetcher): array
+    public function getGameMessages(Game $game, ParamFetcher $paramFetcher): array
     {
-        $this->denyAccessUnlessGranted(RoomVoter::ATTRIBUTE_VISIT, $room);
+        $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
 
         $offset = (int)$paramFetcher->get('offset');
         $limit = (int)$paramFetcher->get('limit');
 
         [$messages, $pagination] = $this->getDoctrine()
             ->getRepository(Message::class)
-            ->getMessagesByRoomWithPagination($room, $limit, $offset);
+            ->getMessagesByGameWithPagination($game, $limit, $offset);
 
         return Responser::wrapSuccess($messages, ['pagination' => $pagination]);
     }

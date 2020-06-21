@@ -49,6 +49,11 @@ class GameTeam
      */
     private Collection $players;
 
+    /**
+     * @Groups({"Api"})
+     */
+    private bool $userInTeam = false;
+
     public function __construct()
     {
         $this->players = new ArrayCollection();
@@ -158,5 +163,17 @@ class GameTeam
     public function hasSlot(): bool
     {
         return $this->slots > $this->players->count();
+    }
+
+    public function isUserInTeam(): bool
+    {
+        return $this->userInTeam;
+    }
+
+    public function setUserInTeam(bool $userInTeam): self
+    {
+        $this->userInTeam = $userInTeam;
+
+        return $this;
     }
 }

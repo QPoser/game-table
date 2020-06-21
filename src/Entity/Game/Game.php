@@ -104,6 +104,11 @@ abstract class Game
     /**
      * @Groups({"Api"})
      */
+    private bool $userInGame = false;
+
+    /**
+     * @Groups({"Api"})
+     */
     abstract public function getType(): string;
 
     public function __construct()
@@ -320,6 +325,18 @@ abstract class Game
     public function setCreator(?User $creator): self
     {
         $this->creator = $creator;
+
+        return $this;
+    }
+
+    public function isUserInGame(): bool
+    {
+        return $this->userInGame;
+    }
+
+    public function setUserInGame(bool $userInGame): self
+    {
+        $this->userInGame = $userInGame;
 
         return $this;
     }

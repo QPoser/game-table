@@ -1,0 +1,12 @@
+services:
+    app.team_normalizer:
+        class: App\Serializer\Normalizer\GameTeamNormalizer
+        arguments: ['@serializer.normalizer.object', '@security.token_storage']
+        tags:
+            - { name: serializer.normalizer }
+
+    app.game_normalizer:
+        class: App\Serializer\Normalizer\GameNormalizer
+        arguments: ['@serializer.normalizer.object', '@security.token_storage']
+        tags:
+            - { name: serializer.normalizer }

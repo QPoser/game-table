@@ -31,7 +31,7 @@ class GameTeamPlayer
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"Excluded"})
      */
-    private ?string $role;
+    private ?string $role = null;
 
     /**
      * @ORM\Column(type="boolean")

@@ -9,6 +9,8 @@ use App\Entity\Game\Team\GameTeamPlayer;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -34,21 +36,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function findUserEmailsByGame(Game $game): array
     {
-        $queryBuilder = $this->createQueryBuilder('u');
+        $queryBuilder = $this->getSearchQueryBuilderByGame($game);
+        $queryBuilder->select('u.email');
 
-        $queryBuilder
-            ->select('u.email')
-            ->innerJoin(GameTeamPlayer::class, 'gtp', 'WITH', 'gtp.user = u.id')
-            ->innerJoin('gtp.team', 'gtpt')
-            ->innerJoin('gtpt.game', 'game')
-            ->andWhere(
-                $queryBuilder->expr()->eq('game.id', ':gameId')
-            )
-            ->setParameters([
-                'gameId' => $game->getId()
-            ]);
-
-        return $queryBuilder->getQuery()->getResult();
+        return array_column($queryBuilder->getQuery()->getResult(), 'email');
     }
 
     public function findUserEmailsByTeam(GameTeam $team): array
@@ -66,6 +57,29 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                 'teamId' => $team->getId()
             ]);
 
-        return $queryBuilder->getQuery()->getResult();
+        return array_column($queryBuilder->getQuery()->getResult(), 'email');
+    }
+
+    public function findUsersByGame(Game $game): array
+    {
+        return $this->getSearchQueryBuilderByGame($game)->getQuery()->getResult();
+    }
+
+    private function getSearchQueryBuilderByGame(Game $game): QueryBuilder
+    {
+        $queryBuilder = $this->createQueryBuilder('u');
+
+        $queryBuilder
+            ->innerJoin(GameTeamPlayer::class, 'gtp', 'WITH', 'gtp.user = u.id')
+            ->innerJoin('gtp.team', 'gtpt')
+            ->innerJoin('gtpt.game', 'game')
+            ->andWhere(
+                $queryBuilder->expr()->eq('game.id', ':gameId')
+            )
+            ->setParameters([
+                'gameId' => $game->getId()
+            ]);
+
+        return $queryBuilder;
     }
 }

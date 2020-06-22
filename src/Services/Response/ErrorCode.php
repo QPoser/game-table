@@ -16,6 +16,8 @@ class ErrorCode
     public const USER_IS_NOT_IN_GAME = 8;
     public const GAME_TYPE_NOT_FOUND = 9;
     public const INCORRECT_MESSAGE_TYPE = 10;
+    public const INCORRECT_GAME_ACTION_TYPE = 11;
+    public const USER_ALREADY_HAS_GAME_IN_PROGRESS = 12;
 
     private const MESSAGES = [
         self::USER_NOT_FOUND_BY_TOKEN => 'User not found by token',
@@ -29,6 +31,8 @@ class ErrorCode
         self::USER_IS_NOT_IN_GAME => 'User is not in game',
         self::GAME_TYPE_NOT_FOUND => 'Game type not found',
         self::INCORRECT_MESSAGE_TYPE => 'Incorrect message type',
+        self::INCORRECT_GAME_ACTION_TYPE => 'Incorrect game action type',
+        self::USER_ALREADY_HAS_GAME_IN_PROGRESS => 'User already has game in progress',
     ];
 
     public static function getMessage(int $code): ?string

@@ -26,7 +26,13 @@ class GameActionService
         $this->messageBus = $messageBus;
     }
 
-    public function createGameAction(Game $game, array $values, string $template, ?User $user = null): void
+    public function createGameAction(
+        Game $game,
+        array $values,
+        string $template,
+        ?User $user = null,
+        bool $sentToAll = false
+    ): void
     {
         if (!in_array($template, GameAction::TEMPLATES, true)) {
             throw new AppException(ErrorCode::INCORRECT_GAME_ACTION_TYPE);
@@ -45,9 +51,13 @@ class GameActionService
         $this->em->persist($action);
         $this->em->flush($action);
 
-        $emails = $this->em->getRepository(User::class)->findUserEmailsByGame($game);
+        $emails = [];
 
-        $amqpGameAction = new AmqpGameAction($action, $emails);
+        if (!$sentToAll) {
+            $emails = $this->em->getRepository(User::class)->findUserEmailsByGame($game);
+        }
+
+        $amqpGameAction = new AmqpGameAction($action, $emails, $sentToAll);
 
         $this->messageBus->dispatch(
             new Envelope(

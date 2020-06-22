@@ -88,7 +88,7 @@ class QuizGameService
             'url' => $this->router->generate('api.games.visit', ['id' => $game->getId()]),
         ];
 
-        $this->gameActionService->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_GAME_STARTED, $user);
+        $this->gameActionService->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_GAME_STARTED, $user, true);
         $this->gameNTH->createGameStartedNotifications($game);
     }
 }

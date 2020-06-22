@@ -13,10 +13,10 @@ class AmqpGameAction extends BaseAmqpMessage
      */
     private ?GameAction $action = null;
 
-    public function __construct(GameAction $action, array $emails)
+    public function __construct(GameAction $action, array $emails, bool $sentToAll = false)
     {
         $this->action = $action;
-        parent::__construct($emails);
+        parent::__construct($emails, $sentToAll);
     }
 
     public function getAction(): ?GameAction

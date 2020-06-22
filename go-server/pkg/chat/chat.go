@@ -16,10 +16,10 @@ type Message struct {
 	User User
 	Content string
 	Type string
-	Room Room
+	Game Game
 }
 
-type Room struct {
+type Game struct {
 	Id int
 }
 

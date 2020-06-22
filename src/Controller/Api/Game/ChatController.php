@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace App\Controller\Api\Game;
 
 use App\Entity\Game\Chat\Message;
-use App\Entity\Game\Room;
+use App\Entity\Game\Game;
 use App\Form\MessageType;
-use App\Security\Voter\RoomVoter;
+use App\Security\Voter\GameVoter;
 use App\Services\Chat\ChatService;
 use App\Services\Response\Responser;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use Swagger\Annotations as SWG;
+use FOS\RestBundle\Controller\Annotations\RequestParam;
 
 /**
  * @Route("/api/chat", name="api.chat")
@@ -31,40 +32,33 @@ class ChatController extends AbstractController
     }
 
     /**
-     * @Route("/{room}/message", name=".message", methods={"POST"})
+     * @Route("/{game}/message", name=".message", methods={"POST"})
      * @Rest\View(serializerGroups={"Chat", "Api"})
+     * @RequestParam(name="content", requirements="\w+", nullable=false, strict=true, description="Message content")
+     * @RequestParam(name="type", requirements="team|game", nullable=true, default="public", strict=true, description="Message type")
      * @SWG\Post(
      *     tags={"Chat"},
      *     @SWG\Response(
      *      response="200",
-     *      description="Create room message",
+     *      description="Create game message",
      *      @Model(type=Message::class, groups={"Chat", "Api"})
      *     )
      * )
      */
-    public function roomMessage(Room $room, Request $request): array
+    public function gameMessage(Game $game, ParamFetcher $paramFetcher): array
     {
-        $this->denyAccessUnlessGranted(RoomVoter::ATTRIBUTE_VISIT, $room);
+        $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
 
-        $message = new Message();
-        $form = $this->createForm(MessageType::class, $message);
-        $form->handleRequest($request);
-        $form->submit($request->request->get($form->getName()));
+        $content = $paramFetcher->get('content');
+        $type = $paramFetcher->get('type');
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->getUser();
-            $content = $request->request->get('content');
+        $message = $this->chatService->createMessage($game, $this->getUser(), $content, $type);
 
-            $message = $this->chatService->createMessage($room, $user, $content);
-
-            return Responser::wrapSuccess($message);
-        }
-
-        return Responser::wrapError('Message is not created', 1);
+        return Responser::wrapSuccess($message);
     }
 
     /**
-     * @Route("/{room}/messages", name=".messages", methods={"GET"})
+     * @Route("/{game}/messages", name=".messages", methods={"GET"})
      * @Rest\View(serializerGroups={"Chat", "Api"})
      * @QueryParam(name="offset", nullable=true, default="0", requirements="\d+", strict=true)
      * @QueryParam(name="limit", nullable=true, default="60", requirements="\d+", strict=true)
@@ -72,7 +66,7 @@ class ChatController extends AbstractController
      *     tags={"Chat"},
      *     @SWG\Response(
      *      response="200",
-     *      description="Get room messages",
+     *      description="Get game messages",
      *      @SWG\Schema(
      *          type="array",
      *          @Model(type=Message::class, groups={"Chat", "Api"})
@@ -80,16 +74,17 @@ class ChatController extends AbstractController
      *     )
      * )
      */
-    public function getRoomMessages(Room $room, ParamFetcher $paramFetcher): array
+    public function getGameMessages(Game $game, ParamFetcher $paramFetcher): array
     {
-        $this->denyAccessUnlessGranted(RoomVoter::ATTRIBUTE_VISIT, $room);
+        $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
 
         $offset = (int)$paramFetcher->get('offset');
         $limit = (int)$paramFetcher->get('limit');
+        $user = $this->getUser();
 
         [$messages, $pagination] = $this->getDoctrine()
             ->getRepository(Message::class)
-            ->getMessagesByRoomWithPagination($room, $limit, $offset);
+            ->getMessagesByGameWithPagination($game, $user, $limit, $offset);
 
         return Responser::wrapSuccess($messages, ['pagination' => $pagination]);
     }

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Room {{ room.title }}{% endblock %}
+{% block title %}Game {{ game.title }}{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -12,20 +12,20 @@
             <div class="row">
                 <div class="col-md-3 stats">
                     <div class="stats-main">
-                        <h3 class="stats-main-title badge badge-primary">Room {{ room.title }}</h3>
+                        <h3 class="stats-main-title badge badge-primary">Game {{ game.title }}</h3>
                         <p>
                             <span class="badge badge-white">
-                                <i class="fa fa-user"></i> {{ room.roomPlayersCount }} / {{ room.slots }}
+                                <i class="fa fa-user"></i> 0 / 0
                             </span>
                         </p>
                     </div>
 
                     <div class="users-list overflow-auto">
                         <hr>
-                        {% for player in room.roomPlayers %}
-                            <p><i class="fa fa-user"></i> {{ player.player.username }}</p>
-                            <hr>
-                        {% endfor %}
+{#                        {% for player in game.gamePlayers %}#}
+{#                            <p><i class="fa fa-user"></i> {{ player.player.username }}</p>#}
+{#                            <hr>#}
+{#                        {% endfor %}#}
                     </div>
 
                     <div class="stats-description">
@@ -34,15 +34,13 @@
                 </div>
                 <div class="col-md-9 messages">
                     <div class="chat" id="chat">
-                        {% for message in messages %}
-                            <div class="message {{ message.user.id == app.user.id ? 'personal-message' : 'receieved-message' }}">
-                            <h4>{{ message.user.username }} <span class="badge {{ message.user.id == app.user.id ? 'badge-primary' : 'badge-danger' }}">Role</span></h4>
-                            <p> {{ message.content }} </p>
-                            </div>
-                        {% endfor %}
                     </div>
 
                     <div class="chat-send-box input-group mt-auto">
+                        <select name="type" id="send-type" class="form-control">
+                            <option value="game">game</option>
+                            <option value="team">team</option>
+                        </select>
                         <textarea name="send-box" id="send-box" class="form-control"></textarea>
                         <div class="input-group-prepend">
                             <button class="send-message-btn btn btn-primary"><i class="fab fa-telegram-plane"></i></button>
@@ -55,9 +53,9 @@
     <script>
         var userId = {{ app.user.id }};
         var userUsername = "{{ app.user.username }}";
-        var roomId = {{ room.id }};
+        var gameId = {{ game.id }};
         var loaded = false;
-        var offset = 60;
+        var offset = 0;
 
         sockets();
         chatSend();
@@ -66,6 +64,10 @@
         function sockets() {
             socket.on('chat', function (data) {
                 var msgBody = JSON.parse(data);
+
+                if (msgBody.Game.Id !== gameId) {
+                    return;
+                }
 
                 var messageClass = msgBody.User.Id == userId ? 'personal-message' : 'receieved-message';
                 var badgeClass = msgBody.User.Id == userId ? 'badge-primary' : 'badge-danger';
@@ -85,9 +87,9 @@
                 if (e.which == 13 || e.key == 13) {
                     $.ajax({
                         method: "POST",
-                        url: "/api/chat/" + {{ room.id }} + "/message",
+                        url: "/api/chat/" + {{ game.id }} + "/message",
                         // The key needs to match your method's input parameter (case-sensitive).
-                        data: JSON.stringify({"content": $('#send-box').val()}),
+                        data: JSON.stringify({"content": $('#send-box').val(), "type": $('#send-type').val()}),
                         contentType: "application/json; charset=utf-8",
                         dataType: "json",
                         headers: {
@@ -106,9 +108,9 @@
             $('.send-message-btn').on('click', function () {
                 $.ajax({
                     method: "POST",
-                    url: "/api/chat/" + {{ room.id }} + "/message",
+                    url: "/api/chat/" + {{ game.id }} + "/message",
                     // The key needs to match your method's input parameter (case-sensitive).
-                    data: JSON.stringify({"content": $('#send-box').val()}),
+                    data: JSON.stringify({"content": $('#send-box').val(), "type": $('#send-type').val()}),
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     headers: {
@@ -123,6 +125,44 @@
             });
         }
 
+        $.ajax({
+            type: "GET",
+            url: "/api/chat/" + {{ game.id }} + "/messages",
+            // The key needs to match your method's input parameter (case-sensitive).
+            data: {"offset": offset, "limit": 60},
+            headers: {
+                "Authorization": "Bearer " + token,
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function(data) {
+                console.log(data);
+
+                $.each(data.data, function (i, elem) {
+                    var messageClass = elem.user.id == userId ? 'personal-message' : 'receieved-message';
+                    var badgeClass = elem.user.id == userId ? 'badge-primary' : 'badge-danger';
+
+                    $("#chat").prepend('<div class="message ' + messageClass + '">\n' +
+                        '<h4>' + elem.user.username + ' <span class="badge ' + badgeClass + '">Role</span></h4>\n' +
+                        '<p>' + elem.content + '</p>\n' +
+                        '</div>'
+                    );
+                });
+
+                if (data.data.length > 0) {
+                    loaded = false;
+                    offset += 60;
+                }
+
+                $("#chat").animate({scrollTop: $("#chat")[0].scrollHeight}, 100);
+            },
+            failure: function(errMsg) {
+                console.log(errMsg);
+            }
+        });
+
+
+
         function scrolls() {
             $("#chat").animate({ scrollTop: $("#chat")[0].scrollHeight}, 100);
 
@@ -133,7 +173,7 @@
 
                         $.ajax({
                             type: "GET",
-                            url: "/api/chat/" + {{ room.id }} + "/messages",
+                            url: "/api/chat/" + {{ game.id }} + "/messages",
                             // The key needs to match your method's input parameter (case-sensitive).
                             data: {"offset": offset, "limit": 60},
                             headers: {

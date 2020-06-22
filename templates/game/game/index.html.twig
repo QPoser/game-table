@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Games{% endblock %}
+
+{% block body %}
+    <a class="btn btn-primary" href="#">Create game</a>
+    <table class="table">
+        <thead>
+        <tr>
+            <th class="col" style="width: 5%">#</th>
+            <th class="col" style="width: 35%">Game</th>
+            <th class="col" style="width: 60%">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for game in games %}
+            <tr>
+                <td>{{ game.id }}</td>
+                <td>{{ game.title }} <i class="fas fa-{{ game.password ? 'lock' : 'lock-open' }}"></i></td>
+                <td class="d-flex">
+                    {% if game.hasUser(app.user, true) %}
+                        {% for team in game.teams %}
+                            {% if team.hasUser(app.user, true) %}
+                                <a href="{{ path('app.games.game.visit', {'id' : game.id}) }}" class="ml-auto mr-2">
+                                    <button class="btn btn-primary">
+                                        <i class="fa fa-group mr-2"></i> {{ team.playersCount }} / {{ team.slots }} Enter
+                                    </button>
+                                </a>
+                            {% else %}
+                                <form action="{{ path('api.games.game.join', {'id' : game.id}) }}" method="post" class="input-group">
+                                    <input type="hidden" class="form-control mr-2" name="team" value="{{ team.id }}">
+
+                                    <button name="team" value="{{ team.id }}" class="btn btn-primary input-group-append mr-2">
+                                        <i class="fa fa-group mr-2"></i> {{ team.playersCount }} / {{ team.slots }} Join
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% endfor %}
+
+                        <form action="{{ path('api.games.game.leave', {'id' : game.id}) }}" class="ml-3 input-group" method="post">
+                            <button class="btn btn-warning ">Leave</button>
+                        </form>
+                    {% else %}
+                    <form action="{{ path('api.games.game.join', {'id' : game.id}) }}" method="post" class="input-group">
+                        {% if game.password %}
+                            <input type="password" name="password" class="form-control mr-2" placeholder="password">
+                        {% endif %}
+
+                        <input type="text" class="form-control mr-2" name="team" placeholder="{% for team in game.teams %} {{ team.id }} {% endfor %}">
+
+                        {% for team in game.teams %}
+                            <button name="team" value="{{ team.id }}" class="btn btn-primary input-group-append mr-2">
+                                <i class="fa fa-group mr-2"></i> {{ team.playersCount }} / {{ team.slots }} Join
+                            </button>
+                        {% endfor %}
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

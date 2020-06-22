@@ -2,25 +2,25 @@
 
 namespace App\Repository\Game;
 
-use App\Entity\Game\RoomPlayer;
+use App\Entity\Game\GamePlayer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
- * @method RoomPlayer|null find($id, $lockMode = null, $lockVersion = null)
- * @method RoomPlayer|null findOneBy(array $criteria, array $orderBy = null)
- * @method RoomPlayer[]    findAll()
- * @method RoomPlayer[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method GamePlayer|null find($id, $lockMode = null, $lockVersion = null)
+ * @method GamePlayer|null findOneBy(array $criteria, array $orderBy = null)
+ * @method GamePlayer[]    findAll()
+ * @method GamePlayer[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class RoomPlayerRepository extends ServiceEntityRepository
+class GamePlayerRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, RoomPlayer::class);
+        parent::__construct($registry, GamePlayer::class);
     }
 
     // /**
-    //  * @return RoomPlayer[] Returns an array of RoomPlayer objects
+    //  * @return GamePlayer[] Returns an array of GamePlayer objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class RoomPlayerRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?RoomPlayer
+    public function findOneBySomeField($value): ?GamePlayer
     {
         return $this->createQueryBuilder('r')
             ->andWhere('r.exampleField = :val')

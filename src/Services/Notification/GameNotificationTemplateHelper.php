@@ -6,14 +6,14 @@ namespace App\Services\Notification;
 use App\AmqpMessages\AmqpChatMessage;
 use App\AmqpMessages\AmqpNotification;
 use App\Entity\Core\Notification;
-use App\Entity\Game\Room;
+use App\Entity\Game\Game;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\SerializerStamp;
 
-class RoomNotificationTemplateHelper
+class GameNotificationTemplateHelper
 {
     private EntityManagerInterface $em;
 
@@ -25,13 +25,13 @@ class RoomNotificationTemplateHelper
         $this->messageBus = $messageBus;
     }
 
-    public function createRoomCreatedNotifications(User $creator, Room $room): void
+    public function createGameCreatedNotifications(User $creator, Game $game): void
     {
         $notification = new Notification();
 
         $notification->setType(Notification::TYPE_PUSH);
-        $notification->setTemplate(Notification::TEMPLATE_ROOM_CREATED);
-        $notification->setJsonValues(['room' => $room->getTitle()]);
+        $notification->setTemplate(Notification::TEMPLATE_GAME_CREATED);
+        $notification->setJsonValues(['game' => $game->getTitle()]);
         $notification->setUser($creator);
 
         $this->em->persist($notification);

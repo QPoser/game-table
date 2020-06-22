@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\Game\Room;
-use App\Entity\Game\RoomPlayer;
+use App\Entity\Game\Game;
+use App\Entity\Game\Team\GameTeam;
+use App\Entity\Game\Team\GameTeamPlayer;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -31,21 +32,38 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->_em->flush();
     }
 
-    public function findUserEmailsByRoom(Room $room): array
+    public function findUserEmailsByGame(Game $game): array
     {
         $queryBuilder = $this->createQueryBuilder('u');
 
         $queryBuilder
             ->select('u.email')
-            ->innerJoin('u.roomPlayers', 'urp')
-            ->innerJoin('urp.room', 'ur')
+            ->innerJoin(GameTeamPlayer::class, 'gtp', 'WITH', 'gtp.user = u.id')
+            ->innerJoin('gtp.team', 'gtpt')
+            ->innerJoin('gtpt.game', 'game')
             ->andWhere(
-                $queryBuilder->expr()->eq('ur.id', ':roomId'),
-                $queryBuilder->expr()->in('urp.status', ':activeStatuses')
+                $queryBuilder->expr()->eq('game.id', ':gameId')
             )
             ->setParameters([
-                'roomId' => $room->getId(),
-                'activeStatuses' => RoomPlayer::ACTIVE_STATUSES
+                'gameId' => $game->getId()
+            ]);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    public function findUserEmailsByTeam(GameTeam $team): array
+    {
+        $queryBuilder = $this->createQueryBuilder('u');
+
+        $queryBuilder
+            ->select('u.email')
+            ->innerJoin(GameTeamPlayer::class, 'gtp', 'WITH', 'gtp.user = u.id')
+            ->innerJoin('gtp.team', 'gtpt')
+            ->andWhere(
+                $queryBuilder->expr()->eq('gtpt.id', ':teamId')
+            )
+            ->setParameters([
+                'teamId' => $team->getId()
             ]);
 
         return $queryBuilder->getQuery()->getResult();

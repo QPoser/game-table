@@ -26,7 +26,7 @@ func RegisterSocketHandlers(server *socketio.Server) {
 
 		s.Join(claims["email"].(string))
 
-		return "Joined to private room"
+		return "Joined to private game"
 	})
 
 	server.OnError("/", func(s socketio.Conn, e error) {

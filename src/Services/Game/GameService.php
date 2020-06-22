@@ -4,17 +4,17 @@ declare(strict_types=1);
 namespace App\Services\Game;
 
 use App\Entity\Game\Game;
-use App\Entity\Game\GamePlayer;
-use App\Entity\Game\Quiz\QuizGame;
-use App\Entity\Game\Team\GameTeam;
 use App\Entity\Game\Team\GameTeamPlayer;
+use App\Entity\Game\Team\GameTeam;
 use App\Entity\User;
+use App\Events\GameUserJoinedEvent;
 use App\Exception\AppException;
 use App\Services\Game\Quiz\QuizGameService;
 use App\Services\Notification\GameNotificationTemplateHelper;
 use App\Services\Response\ErrorCode;
 use App\Services\Validation\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class GameService
 {
@@ -26,17 +26,21 @@ class GameService
 
     private QuizGameService $quizGameService;
 
+    private EventDispatcherInterface $dispatcher;
+
     public function __construct(
         EntityManagerInterface $em,
         ValidationService $validator,
         QuizGameService $quizGameService,
-        GameNotificationTemplateHelper $gameNTH
+        GameNotificationTemplateHelper $gameNTH,
+        EventDispatcherInterface $dispatcher
     )
     {
         $this->em = $em;
         $this->validator = $validator;
         $this->gameNTH = $gameNTH;
         $this->quizGameService = $quizGameService;
+        $this->dispatcher = $dispatcher;
     }
 
     public function createGame(string $title, string $type, ?User $creator = null, ?string $password = null): Game
@@ -76,7 +80,7 @@ class GameService
 
         $teamPlayer = new GameTeamPlayer();
         $teamPlayer->setUser($user);
-        $teamPlayer->setTeam($team);
+        $team->addPlayer($teamPlayer);
 
         $this->validator->validateEntity($teamPlayer);
 
@@ -111,6 +115,12 @@ class GameService
             throw new AppException(ErrorCode::GAME_PASSWORD_IS_INVALID);
         }
 
+        $userCurrentGame = $this->em->getRepository(Game::class)->getCurrentUserGame($user);
+
+        if ($userCurrentGame) {
+            throw new AppException(ErrorCode::USER_ALREADY_HAS_GAME_IN_PROGRESS);
+        }
+
         if ($game::STRICT_TEAMS) {
             if (!$teamId) {
                 throw new AppException(ErrorCode::TEAM_ID_MUST_BE_SET_FOR_ROOM);
@@ -130,5 +140,21 @@ class GameService
         }
 
         $this->createTeamPlayer($user, $team);
+
+        $event = new GameUserJoinedEvent($game, $user);
+        $this->dispatcher->dispatch($event, GameUserJoinedEvent::NAME);
+    }
+
+    public function startGame(Game $game, ?User $user = null): void
+    {
+        switch ($game->getType()) {
+            case Game::TYPE_QUIZ:
+                $this->quizGameService->startGame($game, $user);
+                break;
+
+            default:
+                throw new AppException(ErrorCode::GAME_TYPE_NOT_FOUND);
+                break;
+        }
     }
 }

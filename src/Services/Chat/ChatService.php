@@ -54,7 +54,6 @@ class ChatService
         $this->em->persist($message);
         $this->em->flush($message);
 
-        $emails = array_column($emails, 'email');
         $amqpMessage = new AmqpChatMessage($message, $emails);
 
         $this->messageBus->dispatch(

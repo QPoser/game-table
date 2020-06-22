@@ -17,7 +17,13 @@ framework:
                 serializer: messenger.transport.symfony_serializer
                 options:
                     queue_name: notifications
+            game_action_queue:
+                dsn: '%env(MESSENGER_GAME_ACTION_TRANSPORT_DSN)%'
+                serializer: messenger.transport.symfony_serializer
+                options:
+                    queue_name: game_action
 
         routing:
             'App\AmqpMessages\AmqpChatMessage': chat_queue
             'App\AmqpMessages\AmqpNotification': notification_queue
+            'App\AmqpMessages\AmqpGameAction': game_action_queue

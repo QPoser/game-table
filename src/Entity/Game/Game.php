@@ -33,9 +33,21 @@ abstract class Game
     public const ACCESS_PUBLIC = 'public';
     public const ACCESS_PRIVATE = 'private';
 
+    public const STATUS_CREATED = 'created';
+    public const STATUS_STARTED = 'started';
+    public const STATUS_FINISHED = 'finished';
+    public const STATUS_CLOSED = 'closed';
+
     public const ACCESS_TYPES = [
         self::ACCESS_PUBLIC => self::ACCESS_PUBLIC,
         self::ACCESS_PRIVATE => self::ACCESS_PRIVATE,
+    ];
+
+    public const STATUSES = [
+        self::STATUS_CREATED => self::STATUS_CREATED,
+        self::STATUS_STARTED => self::STATUS_STARTED,
+        self::STATUS_FINISHED => self::STATUS_FINISHED,
+        self::STATUS_CLOSED => self::STATUS_CLOSED,
     ];
 
     /**
@@ -54,7 +66,7 @@ abstract class Game
      *     minMessage="Game title must be at least {{ limit }} characters long",
      *     maxMessage="Game title cannot be longer than {{ limit }} characters"
      * )
-     * @Groups({"Minimal", "Api"})
+     * @Groups({"Minimal", "Api", "AMQP"})
      */
     private ?string $title;
 
@@ -84,20 +96,20 @@ abstract class Game
 
     /**
      * @ORM\OneToMany(targetEntity=GameTeam::class, mappedBy="game", orphanRemoval=true)
-     * @Groups({"Api"})
+     * @Groups({"Api", "AMQP"})
      */
     private Collection $teams;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"Api"})
+     * @Groups({"Api", "AMQP"})
      */
     private bool $autoCreated;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class)
      * @ORM\JoinColumn(name="creator_id", referencedColumnName="id")
-     * @Groups({"Api"})
+     * @Groups({"Api", "AMQP"})
      */
     private ?User $creator;
 
@@ -105,6 +117,17 @@ abstract class Game
      * @Groups({"Api"})
      */
     private bool $userInGame = false;
+
+    /**
+     * @ORM\Column(type="string", length=32, nullable=true)
+     * @Groups({"Api", "AMQP"})
+     */
+    private string $status = self::STATUS_CREATED;
+
+    /**
+     * @ORM\OneToMany(targetEntity=GameAction::class, mappedBy="game", orphanRemoval=true)
+     */
+    private Collection $actions;
 
     /**
      * @Groups({"Api"})
@@ -119,6 +142,7 @@ abstract class Game
         $this->access = self::ACCESS_PUBLIC;
         $this->teams = new ArrayCollection();
         $this->autoCreated = true;
+        $this->actions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -297,10 +321,8 @@ abstract class Game
 //            return false;
 //        }
 
-        foreach ($this->teams as $team) {
-            if (!$team->hasSlot()) {
-                return false;
-            }
+        if ($this->isFull()) {
+            return false;
         }
 
         return true;
@@ -339,5 +361,58 @@ abstract class Game
         $this->userInGame = $userInGame;
 
         return $this;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        if (in_array($status, self::STATUSES, true)) {
+            $this->status = $status;
+        }
+
+        return $this;
+    }
+
+    public function getActions(): Collection
+    {
+        return $this->actions;
+    }
+
+    public function addAction(GameAction $action): self
+    {
+        if (!$this->actions->contains($action)) {
+            $this->actions[] = $action;
+            $action->setGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAction(GameAction $action): self
+    {
+        if ($this->actions->contains($action)) {
+            $this->actions->removeElement($action);
+            // set the owning side to null (unless already changed)
+            if ($action->getGame() === $this) {
+                $action->setGame(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isFull(): bool
+    {
+        foreach ($this->teams as $team) {
+            if ($team->hasSlot()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

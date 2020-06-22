@@ -31,13 +31,53 @@ class GameNotificationTemplateHelper
 
         $notification->setType(Notification::TYPE_PUSH);
         $notification->setTemplate(Notification::TEMPLATE_GAME_CREATED);
-        $notification->setJsonValues(['game' => $game->getTitle()]);
+        $notification->setJsonValues(['game' => $game->getTitle(), 'type' => $game->getType()]);
         $notification->setUser($creator);
 
         $this->em->persist($notification);
         $this->em->flush();
 
         $amqpNotification = new AmqpNotification($notification, [$creator->getEmail()]);
+
+        $this->messageBus->dispatch(
+            new Envelope(
+                $amqpNotification,
+                [
+                    new SerializerStamp(['groups' => 'AMQP']),
+                ]
+            )
+        );
+    }
+
+    public function createGameStartedNotifications(Game $game): void
+    {
+        $users = $this->em->getRepository(User::class)->findUsersByGame($game);
+        $notification = null;
+
+        foreach ($users as $user) {
+            /** @var User $user */
+            $notification = new Notification();
+
+            $notification->setType(Notification::TYPE_PUSH);
+            $notification->setTemplate(Notification::TEMPLATE_GAME_STARTED);
+            $notification->setJsonValues(['game' => $game->getTitle(), 'type' => $game->getType()]);
+            $notification->setUser($user);
+
+            $this->em->persist($notification);
+        }
+
+        $this->em->flush();
+
+        if (!$notification) {
+            return;
+        }
+
+        $emails = array_map(static function ($user) {
+            /** @var User $user */
+            return $user->getEmail();
+        }, $users);
+
+        $amqpNotification = new AmqpNotification($notification, $emails);
 
         $this->messageBus->dispatch(
             new Envelope(

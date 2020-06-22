@@ -34,3 +34,7 @@ services:
     App\EventListener\ExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
+
+    App\EventListener\GameListener:
+        tags:
+            - { name: kernel.event_listener, event: game.user.joined, method: onUserJoined }

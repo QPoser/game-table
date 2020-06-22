@@ -5,6 +5,7 @@ import (
 	socketio "github.com/googollee/go-socket.io"
 	"go-socketio-chat/pkg/chat"
 	"go-socketio-chat/pkg/controllers"
+	"go-socketio-chat/pkg/game_actions"
 	"go-socketio-chat/pkg/notifications"
 	"log"
 	"net/http"
@@ -47,6 +48,7 @@ func main() {
 	defer server.Close()
 	go chat.AmpqInit(server)
 	go notifications.AmpqInit(server)
+	go game_actions.AmpqInit(server)
 
 	http.Handle("/socket.io/", corsMiddleware(server))
 	log.Fatal(http.ListenAndServe(":8888", nil))

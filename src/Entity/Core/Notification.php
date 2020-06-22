@@ -16,6 +16,7 @@ class Notification
     public const TYPE_PUSH = 'push';
 
     public const TEMPLATE_GAME_CREATED = 'game_created';
+    public const TEMPLATE_GAME_STARTED = 'game_started';
 
     /**
      * @ORM\Id

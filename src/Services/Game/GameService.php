@@ -141,7 +141,7 @@ class GameService
 
         $this->createTeamPlayer($user, $team);
 
-        $event = new GameUserJoinedEvent($game, $user);
+        $event = new GameUserJoinedEvent($team, $user);
         $this->dispatcher->dispatch($event, GameUserJoinedEvent::NAME);
     }
 

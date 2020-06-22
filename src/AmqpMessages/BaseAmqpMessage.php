@@ -12,13 +12,24 @@ abstract class BaseAmqpMessage
      */
     private array $emails;
 
-    public function __construct(array $emails)
+    /**
+     * @Groups({"AMQP"})
+     */
+    private bool $sentToAll;
+
+    public function __construct(array $emails, bool $sentToAll = false)
     {
         $this->emails = $emails;
+        $this->sentToAll = $sentToAll;
     }
 
     public function getEmails(): array
     {
         return $this->emails;
+    }
+
+    public function isSentToAll(): bool
+    {
+        return $this->sentToAll;
     }
 }

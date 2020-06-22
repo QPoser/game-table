@@ -14,9 +14,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class GameAction
 {
     public const TEMPLATE_GAME_STARTED = 'game_started';
+    public const TEMPLATE_USER_JOINED_TO_GAME = 'user_joined_to_game';
 
     public const TEMPLATES = [
           self::TEMPLATE_GAME_STARTED => self::TEMPLATE_GAME_STARTED,
+          self::TEMPLATE_USER_JOINED_TO_GAME => self::TEMPLATE_USER_JOINED_TO_GAME,
     ];
 
     /**

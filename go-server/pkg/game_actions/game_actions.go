@@ -10,6 +10,7 @@ import (
 type AMQPGameAction struct {
 	Action GameAction
 	Emails []string
+	SentToAll bool
 }
 
 type GameAction struct {
@@ -72,8 +73,12 @@ func AmpqInit(server *socketio.Server) {
 			var amqpGameAction AMQPGameAction
 			json.Unmarshal([]byte(d.Body), &amqpGameAction)
 
-			for _, email := range amqpGameAction.Emails {
-				server.BroadcastToRoom("", email, "game_action", amqpGameAction.Action.JsonFormat())
+			if (amqpGameAction.SentToAll) {
+				server.BroadcastToRoom("", "default", "game_action", amqpGameAction.Action.JsonFormat())
+			} else {
+				for _, email := range amqpGameAction.Emails {
+					server.BroadcastToRoom("", email, "game_action", amqpGameAction.Action.JsonFormat())
+				}
 			}
 		}
 	}()

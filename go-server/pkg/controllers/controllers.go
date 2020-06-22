@@ -25,6 +25,7 @@ func RegisterSocketHandlers(server *socketio.Server) {
 		}
 
 		s.Join(claims["email"].(string))
+		s.Join("default")
 
 		return "Joined to private game"
 	})

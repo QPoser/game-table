@@ -17,7 +17,17 @@ class Header extends Component {
         <ul className="navbar-nav ml-auto">
           <li className="nav-item">
             <Link className="nav-link" to="/dashboard">
-              Start play
+              Rooms
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link" to="/profile">
+              Profile
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link" to="/roomchat">
+              Room
             </Link>
           </li>
           <li className="nav-item">

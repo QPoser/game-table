@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import "./App.css";
 import Dashboard from "./components/Dashboard";
+import AddRoom from "./components/AddRoom";
+import RoomChat from "./components/RoomChat";
+import Profile from "./components/Profile";
 import Header from "./components/Layout/Header";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -52,6 +55,9 @@ class App extends Component {
             }
             <Switch>
               <SecuredRoute exact path="/dashboard" component={Dashboard} />
+              <SecuredRoute exact path="/addroom" component={AddRoom} />
+              <SecuredRoute exact path="/roomchat" component={RoomChat} />
+              <SecuredRoute exact path="/profile" component={Profile} />
             </Switch>
           </div>
         </Router>

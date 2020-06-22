@@ -1,18 +1,17 @@
 import React, { Component } from "react";
-import { createNewUser } from "../../actions/securityActions";
-import PropTypes from "prop-types";
+import { createNewRoom } from "../actions/roomsActions";
 import { connect } from "react-redux";
 import classnames from "classnames";
 
-class Register extends Component {
+class AddRoom extends Component {
   constructor() {
     super();
 
     this.state = {
-      username: "",
-      fullName: "",
+      title: "",
+      slots: "",
+      rules: "",
       password: "",
-      term: false,
       errors: {}
     };
     this.onChange = this.onChange.bind(this);
@@ -20,9 +19,9 @@ class Register extends Component {
   }
 
   componentDidMount() {
-    if (this.props.security.validToken) {
-      this.props.history.push("/dashboard");
-    }
+    //if (this.props.security.validToken) {
+    //  this.props.history.push("/dashboard");
+    //}
   }
 
   componentWillReceiveProps(nextProps) {
@@ -33,18 +32,18 @@ class Register extends Component {
 
   onSubmit(e) {
     e.preventDefault();
-    const newUser = {
-      username: this.state.username,
-      fullName: this.state.fullName,
-      password: this.state.password,
-      term: this.state.term
+    const newRoom = {
+        title: this.state.title,
+        slots: this.state.slots,
+        rules: this.state.rules,
+        password: this.state.password
     };
 
-    this.props.createNewUser(newUser, this.props.history);
+    this.props.createNewRoom(newRoom, this.props.history);
   }
 
   onChange(e) {
-    const value =  e.target.name == "term" ? e.target.checked : e.target.value;
+    const value = e.target.value;
     this.setState({ [e.target.name]: value });
   }
 
@@ -55,37 +54,51 @@ class Register extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h1 className="display-4 text-center">Sign Up</h1>
-              <p className="lead text-center">Create your Account</p>
+              <p className="lead text-center">Create room</p>
               <form onSubmit={this.onSubmit}>
                 <div className="form-group">
                   <input
                     type="text"
                     className={classnames("form-control form-control-lg", {
-                      "is-invalid": errors.username
+                      "is-invalid": errors.title
                     })}
-                    placeholder="Email Address (Username)"
-                    name="username"
-                    value={this.state.username}
+                    placeholder="Title"
+                    name="title"
+                    value={this.state.title}
                     onChange={this.onChange}
                   />
                   {errors.username && (
-                    <div className="invalid-feedback">{errors.username}</div>
+                    <div className="invalid-feedback">{errors.title}</div>
                   )}
                 </div>
                 <div className="form-group">
                   <input
                     type="text"
                     className={classnames("form-control form-control-lg", {
-                      "is-invalid": errors.fullName
+                      "is-invalid": errors.slots
                     })}
-                    placeholder="Full Name"
-                    name="fullName"
+                    placeholder="Slots"
+                    name="slots"
                     value={this.state.fullName}
                     onChange={this.onChange}
                   />
                   {errors.fullName && (
-                    <div className="invalid-feedback">{errors.fullName}</div>
+                    <div className="invalid-feedback">{errors.slots}</div>
+                  )}
+                </div>
+                <div className="form-group">
+                  <input
+                    type="text"
+                    className={classnames("form-control form-control-lg", {
+                      "is-invalid": errors.rules
+                    })}
+                    placeholder="Rules"
+                    name="rules"
+                    value={this.state.fullName}
+                    onChange={this.onChange}
+                  />
+                  {errors.fullName && (
+                    <div className="invalid-feedback">{errors.rules}</div>
                   )}
                 </div>
                 <div className="form-group">
@@ -103,15 +116,6 @@ class Register extends Component {
                     <div className="invalid-feedback">{errors.password}</div>
                   )}
                 </div>
-                <div className="form-check">
-                    <input 
-                    type="checkbox" 
-                    name="term" 
-                    checked={this.state.term}
-                    onChange={this.onChange}
-                    className="form-check-input" />
-                    <label className="form-check-label" htmlFor="exampleCheck1">Term</label>
-                </div>
                 <input type="submit" className="btn btn-info btn-block mt-4" />
               </form>
             </div>
@@ -122,17 +126,12 @@ class Register extends Component {
   }
 }
 
-Register.propTypes = {
-  createNewUser: PropTypes.func.isRequired,
-  errors: PropTypes.object.isRequired,
-  security: PropTypes.object.isRequired
-};
+
 
 const mapStateToProps = state => ({
-  errors: state.errors,
-  security: state.security
+  errors: state.errors
 });
 export default connect(
   mapStateToProps,
-  { createNewUser }
-)(Register);
+  { createNewRoom }
+)(AddRoom);

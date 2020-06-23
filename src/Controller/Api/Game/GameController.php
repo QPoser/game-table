@@ -114,7 +114,7 @@ class GameController extends AbstractController
      */
     public function gameLeave(Game $game): array
     {
-        $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
+        $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_LEAVE, $game);
         $user = $this->getUser();
 
         $this->gameService->leaveGame($user, $game);

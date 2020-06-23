@@ -8,6 +8,7 @@ use App\Entity\Game\Team\GameTeamPlayer;
 use App\Entity\Game\Team\GameTeam;
 use App\Entity\User;
 use App\Events\GameUserJoinedEvent;
+use App\Events\GameUserLeavedEvent;
 use App\Exception\AppException;
 use App\Services\Game\Quiz\QuizGameService;
 use App\Services\Notification\GameNotificationTemplateHelper;
@@ -105,8 +106,13 @@ class GameService
             throw new AppException(ErrorCode::USER_IS_NOT_IN_GAME);
         }
 
+        $team = $teamPlayer->getTeam();
+
         $this->em->remove($teamPlayer);
         $this->em->flush();
+
+        $event = new GameUserLeavedEvent($team, $user);
+        $this->dispatcher->dispatch($event, GameUserLeavedEvent::NAME);
     }
 
     public function joinGame(User $user, Game $game, ?int $teamId, ?string $password): void

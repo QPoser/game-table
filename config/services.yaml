@@ -38,3 +38,4 @@ services:
     App\EventListener\GameListener:
         tags:
             - { name: kernel.event_listener, event: game.user.joined, method: onUserJoined }
+            - { name: kernel.event_listener, event: game.user.leaved, method: onUserLeaved }

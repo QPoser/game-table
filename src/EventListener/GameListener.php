@@ -3,24 +3,20 @@ declare(strict_types=1);
 
 namespace App\EventListener;
 
-use App\Entity\Game\GameAction;
 use App\Events\GameUserJoinedEvent;
+use App\Events\GameUserLeavedEvent;
 use App\Services\Game\GameActionService;
 use App\Services\Game\GameService;
-use Doctrine\ORM\EntityManagerInterface;
 
 class GameListener
 {
     private GameService $gameService;
 
-    private EntityManagerInterface $em;
-
     private GameActionService $gameActionService;
 
-    public function __construct(EntityManagerInterface $em, GameService $gameService, GameActionService $gameActionService)
+    public function __construct(GameService $gameService, GameActionService $gameActionService)
     {
         $this->gameService = $gameService;
-        $this->em = $em;
         $this->gameActionService = $gameActionService;
     }
 
@@ -34,19 +30,23 @@ class GameListener
             return;
         }
 
-        $gameActionValues = [
-            'team' => $team->getId(),
-        ];
-
-        $this->gameActionService->createGameAction(
-            $game,
-            $gameActionValues,
-            GameAction::TEMPLATE_USER_JOINED_TO_GAME, $user,
-            true
-        );
+        $this->gameActionService->createUserJoinedToGameAction($game, $team, $user);
 
         if ($game->isFull()) {
             $this->gameService->startGame($game, $user);
         }
+    }
+
+    public function onUserLeaved(GameUserLeavedEvent $event): void
+    {
+        $team = $event->getGameTeam();
+        $game = $team->getGame();
+        $user = $event->getUser();
+
+        if (!$game) {
+            return;
+        }
+
+        $this->gameActionService->createUserLeavedFromGameAction($game, $team, $user);
     }
 }

@@ -29,7 +29,7 @@ class GameVoter extends Voter
 
         switch ($attribute) {
             case self::ATTRIBUTE_LEAVE:
-                return $subject->hasUser($user);
+                return $subject->hasUser($user) && $subject->getStatus() === Game::STATUS_CREATED;
                 break;
             case self::ATTRIBUTE_VISIT:
                 return $subject->hasUser($user) && $subject->getStatus() === Game::STATUS_STARTED;

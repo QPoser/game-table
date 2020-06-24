@@ -23,6 +23,10 @@ export class RoomChat extends Component {
             transports: ["websocket"]
         });
 
+        socket.on("connect", function () {
+            alert("connect");
+        }) 
+
         //this.socket = io(server);
 
         /*

@@ -1,4 +1,4 @@
-package notifications
+package game_actions
 
 import (
 	"encoding/json"
@@ -7,14 +7,27 @@ import (
 	"log"
 )
 
-type AMQPNotification struct {
-	Notification Notification
+type AMQPGameAction struct {
+	Action GameAction
 	Emails []string
+	SentToAll bool
 }
 
-type Notification struct {
+type GameAction struct {
+	Game Game
+	User User
 	JsonValues map[string]json.RawMessage
 	Template string
+}
+
+type Game struct {
+	Id int
+}
+
+type User struct {
+	Id int
+	Email string
+	Username string
 }
 
 func failOnError(err error, msg string) {
@@ -33,7 +46,7 @@ func AmpqInit(server *socketio.Server) {
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
-		"notifications",
+		"game_action",
 		true,
 		false,
 		false,
@@ -57,11 +70,15 @@ func AmpqInit(server *socketio.Server) {
 
 	go func() {
 		for d := range msgs {
-			var amqpNotification AMQPNotification
-			json.Unmarshal([]byte(d.Body), &amqpNotification)
+			var amqpGameAction AMQPGameAction
+			json.Unmarshal([]byte(d.Body), &amqpGameAction)
 
-			for _, email := range amqpNotification.Emails {
-				server.BroadcastToRoom("", email, "notifications", amqpNotification.Notification.JsonFormat())
+			if (amqpGameAction.SentToAll) {
+				server.BroadcastToRoom("", "default", "game_action", amqpGameAction.Action.JsonFormat())
+			} else {
+				for _, email := range amqpGameAction.Emails {
+					server.BroadcastToRoom("", email, "game_action", amqpGameAction.Action.JsonFormat())
+				}
 			}
 		}
 	}()
@@ -70,7 +87,7 @@ func AmpqInit(server *socketio.Server) {
 	<-forever
 }
 
-func (n *Notification) JsonFormat() string {
+func (n *GameAction) JsonFormat() string {
 	var jsonData []byte
 	jsonData, err := json.Marshal(n)
 

@@ -111,9 +111,13 @@ class Message
         return $this->type;
     }
 
-    public function setType(?string $type): void
+    public function setType(?string $type): self
     {
-        $this->type = $type;
+        if (in_array($type, self::TYPES, true)) {
+            $this->type = $type;
+        }
+
+        return $this;
     }
 
     public function getTeam(): ?GameTeam

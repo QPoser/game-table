@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import "./App.css";
 import Dashboard from "./components/Dashboard";
-import AddRoom from "./components/AddRoom";
-import RoomChat from "./components/RoomChat";
+import AddGame from "./components/AddGame";
+import GameChat from "./components/GameChat";
 import Profile from "./components/Profile";
 import Header from "./components/Layout/Header";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -55,8 +55,8 @@ class App extends Component {
             }
             <Switch>
               <SecuredRoute exact path="/dashboard" component={Dashboard} />
-              <SecuredRoute exact path="/addroom" component={AddRoom} />
-              <SecuredRoute exact path="/roomchat" component={RoomChat} />
+              <SecuredRoute exact path="/addgame" component={AddGame} />
+              <SecuredRoute exact path="/gamechat" component={GameChat} />
               <SecuredRoute exact path="/profile" component={Profile} />
             </Switch>
           </div>

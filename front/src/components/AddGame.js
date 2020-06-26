@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import { createNewRoom } from "../actions/roomsActions";
+import { createNewGame } from "../actions/gamesActions";
 import { connect } from "react-redux";
 import classnames from "classnames";
 
-class AddRoom extends Component {
+class AddGame extends Component {
   constructor() {
     super();
 
@@ -39,7 +39,7 @@ class AddRoom extends Component {
         password: this.state.password
     };
 
-    this.props.createNewRoom(newRoom, this.props.history);
+    this.props.createNewGame(newRoom, this.props.history);
   }
 
   onChange(e) {
@@ -133,5 +133,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { createNewRoom }
-)(AddRoom);
+  { createNewGame }
+)(AddGame);

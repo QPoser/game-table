@@ -9,7 +9,7 @@ import ChatCard from "./ChatCard"
 //import Dropzone from 'react-dropzone';
 import Axios from 'axios';
 
-export class RoomChat extends Component {
+export class GameChat extends Component {
     state = {
         chatMessage: "",
     }
@@ -196,4 +196,4 @@ const mapStateToProps = state => {
 export default connect(
     mapStateToProps,
     { getMessage }
-    )(RoomChat);
+    )(GameChat);

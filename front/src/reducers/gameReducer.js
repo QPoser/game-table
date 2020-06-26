@@ -1,16 +1,16 @@
-import { GET_ROOMS } from "../actions/types";
+import { GET_GAMES } from "../actions/types";
 
 const initialState = {
-  rooms: [],
-  room: {}
+  games: [],
+  game: {}
 };
 
 export default function(state = initialState, action) {
   switch (action.type) {
-    case GET_ROOMS:
+    case GET_GAMES:
       return {
         ...state,
-        rooms: action.payload
+        games: action.payload
       };
     default:
       return state;

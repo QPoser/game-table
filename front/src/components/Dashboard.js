@@ -2,19 +2,19 @@ import React, { Component } from "react";
 //import ProjectItem from "./Project/ProjectItem";
 //import CreateProjectButton from "./Project/CreateProjectButton";
 import { connect } from "react-redux";
-import { getRooms } from "../actions/roomsActions";
+import { getGames } from "../actions/gamesActions";
 import PropTypes from "prop-types";
 import Spinner from "./Spinner";
-import Room from "./Room";
+import Game from "./Game";
 import { Link } from 'react-router-dom';
 
 class Dashboard extends Component {
   componentDidMount() {
-    this.props.getRooms();
+    this.props.getGames();
   }
 
   render() {
-    const { data = [] } = this.props.rooms.rooms;
+    const { data = [] } = this.props.games.games;
 
     
 
@@ -23,10 +23,10 @@ class Dashboard extends Component {
       <div className="container">
         <div className="row">
           <div className="col-md-12">
-            <h1 className="display-4 text-center">Rooms</h1>
+            <h1 className="display-4 text-center">Games</h1>
             <br />
-              <Link to="/addroom">
-                  <span className="btn btn-primary">Create room</span>
+              <Link to="/addgame">
+                  <span className="btn btn-primary">Create game</span>
               </Link>
             <br />
             <hr />
@@ -35,17 +35,11 @@ class Dashboard extends Component {
                   #
                 </div>
                 <div className="col-md-6">
-                  Room
-                </div>
-                <div className="col-md-2">
-                  Players
-                </div>
-                <div className="col-md-2">
-                  Actions
+                  Game
                 </div>
             </div>
-            {data.map(room => (
-              <Room key={room.id} room={room} />
+            {data.map(game => (
+              <Game key={game.id} game={game} />
             ))}
           </div>
         </div>
@@ -66,15 +60,15 @@ class Dashboard extends Component {
 }
 
 Dashboard.propTypes = {
-  rooms: PropTypes.object.isRequired,
-  getRooms: PropTypes.func.isRequired
+  games: PropTypes.object.isRequired,
+  getGames: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-  rooms: state.rooms
+  games: state.games
 });
 
 export default connect(
   mapStateToProps,
-  { getRooms }
+  { getGames }
 )(Dashboard);

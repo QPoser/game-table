@@ -1,9 +1,4 @@
 import React, { Component } from "react";
-//import ProjectItem from "./Project/ProjectItem";
-//import CreateProjectButton from "./Project/CreateProjectButton";
-import { connect } from "react-redux";
-import { getRooms } from "../actions/roomsActions";
-import PropTypes from "prop-types";
 
 class Spinner extends Component {
 

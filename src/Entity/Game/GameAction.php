@@ -17,12 +17,16 @@ class GameAction
     public const TEMPLATE_YOUR_GAME_STARTED = 'your_game_started';
     public const TEMPLATE_USER_JOINED_TO_GAME = 'user_joined_to_game';
     public const TEMPLATE_USER_LEAVED_FROM_GAME = 'user_leaved_from_game';
+    public const TEMPLATE_USER_CHOSE_PHASE_IN_QUIZ = 'user_chose_phase_in_quiz';
+    public const TEMPLATE_QUIZ_PLAYING_STARTED = 'quiz_playing_started';
 
     public const TEMPLATES = [
           self::TEMPLATE_GAME_STARTED => self::TEMPLATE_GAME_STARTED,
           self::TEMPLATE_YOUR_GAME_STARTED => self::TEMPLATE_YOUR_GAME_STARTED,
           self::TEMPLATE_USER_JOINED_TO_GAME => self::TEMPLATE_USER_JOINED_TO_GAME,
           self::TEMPLATE_USER_LEAVED_FROM_GAME => self::TEMPLATE_USER_LEAVED_FROM_GAME,
+          self::TEMPLATE_USER_CHOSE_PHASE_IN_QUIZ => self::TEMPLATE_USER_CHOSE_PHASE_IN_QUIZ,
+          self::TEMPLATE_QUIZ_PLAYING_STARTED => self::TEMPLATE_QUIZ_PLAYING_STARTED,
     ];
 
     /**

@@ -18,7 +18,7 @@ class QuestionsPhase extends BasePhase
     /**
      * @ORM\OneToMany(targetEntity=QuestionsPhaseQuestion::class, mappedBy="phase", orphanRemoval=true)
      */
-    private $questions;
+    private Collection $questions;
 
     public function __construct()
     {
@@ -30,9 +30,6 @@ class QuestionsPhase extends BasePhase
         return self::TYPE_QUESTIONS;
     }
 
-    /**
-     * @return Collection|QuestionsPhaseQuestion[]
-     */
     public function getQuestions(): Collection
     {
         return $this->questions;
@@ -59,5 +56,14 @@ class QuestionsPhase extends BasePhase
         }
 
         return $this;
+    }
+
+    public function play(): void
+    {
+        /** @var QuestionsPhaseQuestion $question */
+        $question = $this->questions->first();
+        $question->setStatus(QuestionsPhaseQuestion::STATUS_CURRENT);
+
+        parent::play();
     }
 }

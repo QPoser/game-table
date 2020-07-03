@@ -18,6 +18,8 @@ class ErrorCode
     public const INCORRECT_MESSAGE_TYPE = 10;
     public const INCORRECT_GAME_ACTION_TYPE = 11;
     public const USER_ALREADY_HAS_GAME_IN_PROGRESS = 12;
+    public const QUIZ_GAME_PHASE_DOES_NOT_EXISTS = 13;
+    public const QUIZ_GAME_HAS_MAX_PHASES = 14;
 
     private const MESSAGES = [
         self::USER_NOT_FOUND_BY_TOKEN => 'User not found by token',
@@ -33,6 +35,8 @@ class ErrorCode
         self::INCORRECT_MESSAGE_TYPE => 'Incorrect message type',
         self::INCORRECT_GAME_ACTION_TYPE => 'Incorrect game action type',
         self::USER_ALREADY_HAS_GAME_IN_PROGRESS => 'User already has game in progress',
+        self::QUIZ_GAME_PHASE_DOES_NOT_EXISTS => 'Quiz game phase does not exists',
+        self::QUIZ_GAME_HAS_MAX_PHASES => 'Quiz game has max count of phases',
     ];
 
     public static function getMessage(int $code): ?string

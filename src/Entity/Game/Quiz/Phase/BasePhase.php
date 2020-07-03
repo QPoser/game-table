@@ -19,18 +19,18 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 abstract class BasePhase
 {
-    public const TYPE_QUESTIONS = 'questions';
-    public const TYPE_PRICES = 'prices';
-    public const TYPE_MUSIC_REVERSE = 'music_reverse';
-    public const TYPE_MOVIES = 'movies';
-    public const TYPE_BRANDS = 'brands';
-    public const TYPE_ASSOCIATIONS = 'associations';
+    public const TYPE_QUESTIONS = 'questions'; // Base questions with 4 answers
+    public const TYPE_PRICES = 'prices'; // Base question with one int answer from user
+    public const TYPE_MUSIC_REVERSE = 'music_reverse'; // Question with music, answer - string from user, we will match song
+    public const TYPE_MOVIES = 'movies'; // Question with picture from film, answer - string from user, we will match name
+    public const TYPE_BRANDS = 'brands'; // Question with picture, we will return letters, answer from user - string constructed from letters.
+    public const TYPE_ASSOCIATIONS = 'associations'; // Question with some icon-pictures, they will show in 5-10sec in queue, answer - string from user, we will match word.
 
     public const AVAILABLE_TYPES = [
         self::TYPE_QUESTIONS => self::TYPE_QUESTIONS,
     ];
 
-    public const STATUS_PREPARED = 'created';
+    public const STATUS_PREPARED = 'prepared';
     public const STATUS_IN_PROGRESS = 'in_progress';
     public const STATUS_FINISHED = 'finished';
 
@@ -102,5 +102,10 @@ abstract class BasePhase
         $this->status = $status;
 
         return $this;
+    }
+
+    public function play(): void
+    {
+        $this->setStatus(self::STATUS_IN_PROGRESS);
     }
 }

@@ -88,9 +88,6 @@ class GameTeam
         return $this;
     }
 
-    /**
-     * @return Collection|GameTeamPlayer[]
-     */
     public function getPlayers(): Collection
     {
         return $this->players;

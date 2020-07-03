@@ -6,6 +6,7 @@ namespace App\Services\Game;
 use App\AmqpMessages\AmqpGameAction;
 use App\Entity\Game\Game;
 use App\Entity\Game\GameAction;
+use App\Entity\Game\Quiz\QuizGame;
 use App\Entity\Game\Team\GameTeam;
 use App\Entity\User;
 use App\Exception\AppException;
@@ -43,6 +44,25 @@ class GameActionService
         $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_YOUR_GAME_STARTED, null);
     }
 
+    public function createQuizGamePhaseChosenActions(QuizGame $game, User $user): void
+    {
+        $gameActionValues = [
+            'team' => $game->getTeamPlayerByUser($user)->getTeam(),
+            'gameId' => $game->getId(),
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_USER_CHOSE_PHASE_IN_QUIZ, $user);
+    }
+
+    public function createQuizGamePlayingActions(QuizGame $game): void
+    {
+        $gameActionValues = [
+            'game' => $game,
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_QUIZ_PLAYING_STARTED);
+    }
+
     public function createUserJoinedToGameAction(Game $game, GameTeam $team, User $user): void
     {
         $gameActionValues = [
@@ -78,7 +98,8 @@ class GameActionService
         array $values,
         string $template,
         ?User $user = null,
-        bool $sentToAll = false
+        bool $sentToAll = false,
+        bool $sentToTeam = false
     ): void
     {
         if (!in_array($template, GameAction::TEMPLATES, true)) {
@@ -101,7 +122,11 @@ class GameActionService
         $emails = [];
 
         if (!$sentToAll) {
-            $emails = $this->em->getRepository(User::class)->findUserEmailsByGame($game);
+            if ($sentToTeam && $user) {
+                $emails = $this->em->getRepository(User::class)->findUserEmailsByTeam($game->getTeamPlayerByUser($user)->getTeam());
+            } else {
+                $emails = $this->em->getRepository(User::class)->findUserEmailsByGame($game);
+            }
         }
 
         $amqpGameAction = new AmqpGameAction($action, $emails, $sentToAll);

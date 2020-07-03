@@ -44,7 +44,7 @@ class QuestionsPhaseQuestion
     /**
      * @ORM\OneToMany(targetEntity=QuestionsPhaseAnswer::class, mappedBy="phaseQuestion", orphanRemoval=true)
      */
-    private $phaseAnswers;
+    private Collection $phaseAnswers;
 
     public function __construct()
     {
@@ -92,9 +92,6 @@ class QuestionsPhaseQuestion
         return $this;
     }
 
-    /**
-     * @return Collection|QuestionsPhaseAnswer[]
-     */
     public function getPhaseAnswers(): Collection
     {
         return $this->phaseAnswers;

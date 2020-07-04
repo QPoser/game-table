@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import classnames from "classnames";
-import { join } from "../actions/gamesActions";
+import { join, leave } from "../actions/gamesActions";
 import Team from "./Team";
 
 class Game extends Component {
@@ -15,6 +15,7 @@ class Game extends Component {
     };
     this.onChange = this.onChange.bind(this);
     this.onJoin = this.onJoin.bind(this);
+    this.onLeave = this.onLeave.bind(this);
   }
   
   componentDidMount() {
@@ -28,6 +29,14 @@ class Game extends Component {
     };
 
     this.props.join(JoinRequest);
+  }
+
+  onLeave() {
+    const LeaveRequest = {
+      id: this.props.game.id
+    };
+
+    this.props.leave(LeaveRequest);
   }
 
   onChange(e) {
@@ -95,7 +104,7 @@ class Game extends Component {
 
 
   {this.props.game.teams.map(team => (
-              <Team  key={team.id} team={team} onJoin={this.onJoin}  />
+              <Team  key={team.id} team={team} onJoin={this.onJoin} onLeave={this.onLeave}  />
             ))}
 
   </div>
@@ -118,5 +127,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { join }
+  { join, leave }
 )(Game);

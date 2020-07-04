@@ -25,6 +25,19 @@ export const getGames = () => async dispatch => {
 
     }
   }; 
+
+  export const leave = LeaveRequest => async dispatch => {
+    try {
+   
+      const res = await axios.post("/api/games/" + LeaveRequest.id + "/leave");
+     
+      debugger
+ 
+ 
+    } catch (err) {
+
+    }
+  }; 
   
 //addNewRoom 
 

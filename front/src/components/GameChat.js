@@ -10,13 +10,29 @@ import ChatCard from "./ChatCard"
 import Axios from 'axios';
 
 export class GameChat extends Component {
-    state = {
-        chatMessage: "",
-    }
+
+
+    constructor() {
+        super();
+        this.state = {
+            messages: [{text:"bla bla bla"}, {text:"bla bla bla"}],
+            chatmessage: ""
+        }
+        this.handleChatMessageChange = this.handleChatMessageChange.bind(this);
+        this.postMessage = this.postMessage.bind(this);
+      }
+
 
     componentDidMount() {
+
+
+        this.props.getMessage();
+
+
+
         //let server = "http://localhost:8888";
 
+        /*
         this.props.getMessage();
 
         let socket = io("http://localhost:8888", {
@@ -25,7 +41,8 @@ export class GameChat extends Component {
 
         socket.on("connect", function () {
             alert("connect");
-        }) 
+        })
+        */ 
 
         //this.socket = io(server);
 
@@ -37,149 +54,38 @@ export class GameChat extends Component {
         */
     }
 
-    componentDidUpdate() {
-        this.messagesEnd.scrollIntoView({ behavior: 'smooth' });
+
+    handleChatMessageChange(e) {
+        this.setState({ [e.target.name]: e.target.value });
     }
 
-    hanleSearchChange = (e) => {
-        this.setState({
-            chatMessage: e.target.value
-        })
-    }
-
-    renderCards = () =>
-        this.props.chats.chats
-        && this.props.chats.chats.map((chat) => (
-            <ChatCard key={chat._id}  {...chat} />
-        ));
-
-        /*
-    onDrop = (files) => {
-        console.log(files)
-
-
-        if (this.props.user.userData && !this.props.user.userData.isAuth) {
-            return alert('Please Log in first');
-        }
-
-
-
-        let formData = new FormData;
-
-        const config = {
-            header: { 'content-type': 'multipart/form-data' }
-        }
-
-        formData.append("file", files[0])
-
-        Axios.post('api/chat/uploadfiles', formData, config)
-            .then(response => {
-                if (response.data.success) {
-                    let chatMessage = response.data.url;
-                    let userId = this.props.user.userData._id
-                    let userName = this.props.user.userData.name;
-                    let userImage = this.props.user.userData.image;
-                    let nowTime = moment();
-                    let type = "VideoOrImage"
-
-                    this.socket.emit("Input Chat Message", {
-                        chatMessage,
-                        userId,
-                        userName,
-                        userImage,
-                        nowTime,
-                        type
-                    });
-                }
-            })
-    }
-*/
-
-    submitChatMessage = (e) => {
-        e.preventDefault();
-
-        if (this.props.user.userData && !this.props.user.userData.isAuth) {
-            return alert('Please Log in first');
-        }
-
-
-
-
-        let chatMessage = this.state.chatMessage
-        let userId = this.props.user.userData._id
-        let userName = this.props.user.userData.name;
-        let userImage = this.props.user.userData.image;
-        //let nowTime = moment();
-        let type = "Text"
-
-        this.socket.emit("Input Chat Message", {
-            chatMessage,
-            userId,
-            userName,
-            userImage,
-            //nowTime,
-            type
-        });
-        this.setState({ chatMessage: "" })
+    postMessage() {
+        this.setState({ messages: [...this.state.messages, {text:this.state.chatmessage}] });
     }
 
     render() {
+
+        const { messages } = this.state;
+
         return (
+            
             <React.Fragment>
-                <div>
-                    <p style={{ fontSize: '2rem', textAlign: 'center' }}> Real Time Chat</p>
+                <div className="container">
+                <div className="scrollbar mb-4" id="style-1">
+                {messages.map(message => (
+                   <div className="card mx-4 my-4">
+                       <div className="card-body p-1">
+                       <h4 className="my-2">Dark thin</h4>
+                       <div className="p-2">
+                           <p className="font-italic">{message.text}</p>
+                       </div>
+                       </div>
+                   </div>
+                ))}
                 </div>
-
-                <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-                    <div className="infinite-container" style={{ height: '500px', overflowY: 'scroll' }}>
-                        {this.props.chats && (
-                            this.renderCards()
-                        )}
-                        <div
-                            ref={el => {
-                                this.messagesEnd = el;
-                            }}
-                            style={{ float: "left", clear: "both" }}
-                        />
-                    </div>
-
-                    <Row >
-                        <Form layout="inline" onSubmit={this.submitChatMessage}>
-                            <Col span={18}>
-                                <Input
-                                    id="message"
-                                    prefix={<Icon type="message" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                                    placeholder="Let's start talking"
-                                    type="text"
-                                    value={this.state.chatMessage}
-                                    onChange={this.hanleSearchChange}
-                                />
-                            </Col>
-                            <Col span={2}>
-                                {/*
-                                <Dropzone onDrop={this.onDrop}>
-                                    {({ getRootProps, getInputProps }) => (
-                                        <section>
-                                            <div {...getRootProps()}>
-                                                <input {...getInputProps()} />
-                                                <Button>
-                                                    <Icon type="upload" />
-                                                </Button>
-                                            </div>
-                                        </section>
-                                    )}
-                                </Dropzone>
-                                    */}
-                            </Col>
-
-                            <Col span={4}>
-                                <Button type="primary" style={{ width: '100%' }} onClick={this.submitChatMessage} htmlType="submit">
-                                    <Icon type="enter" />
-                                </Button>
-                            </Col>
-                        </Form>
-                    </Row>
-                </div>
+                    <textarea value={this.state.chatmessage} name="chatmessage" onChange={this.handleChatMessageChange} className="form-control py-3 px-3" placeholder="Write your message here..." rows="3"></textarea>
+                    <button onClick={this.postMessage} className="btn btn-info btn-block mt-2">send message</button>
+                </div>    
             </React.Fragment>
         )
     }

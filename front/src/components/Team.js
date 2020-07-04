@@ -11,12 +11,13 @@ class Team extends Component {
       errors: {}
     };
     this.onChange = this.onChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
+    //this.onSubmit = this.onSubmit.bind(this);
   }
   
   componentDidMount() {
   }
 
+  /*
   onSubmit(e) {
     e.preventDefault();
     const JoinRequest = {
@@ -26,6 +27,7 @@ class Team extends Component {
 
     this.props.join(JoinRequest);
   }
+  */
 
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
@@ -35,7 +37,7 @@ class Team extends Component {
 
     
 
-    const { id, title, slots, players } = this.props.team;
+    const { id, title, slots, players, userInTeam } = this.props.team;
 
    
 
@@ -56,6 +58,7 @@ class Team extends Component {
       </div>
       <div className="col-md-2">
         <button className="btn btn-primary" onClick={()=>{this.props.onJoin(id)}}>Join</button>
+    { userInTeam && <button className="btn btn-warning ml-2" onClick={()=>{this.props.onLeave()}}>Leave</button> } 
       </div>
   </div>
       

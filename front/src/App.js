@@ -33,6 +33,14 @@ if (jwtToken) {
     store.dispatch(logout());
     window.location.href = "/";
   }
+
+/* start of socket stuff */   
+/* subscribe to channels */ 
+
+
+
+/* end of socket stuff */
+
 }
 
 class App extends Component {

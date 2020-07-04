@@ -2,8 +2,8 @@ import React, { Component } from "react";
 //import ProjectItem from "./Project/ProjectItem";
 //import CreateProjectButton from "./Project/CreateProjectButton";
 import { connect } from "react-redux";
-import { getGames } from "../actions/gamesActions";
-import { getMessage, afterPostMessage } from "../actions/chatActions"
+import { getGames, setCurrentGame } from "../actions/gamesActions";
+import { getMessages, afterPostMessage } from "../actions/chatActions"
 import PropTypes from "prop-types";
 import Spinner from "./Spinner";
 import Game from "./Game";
@@ -62,8 +62,10 @@ class Dashboard extends Component {
         */
        let msgBody = JSON.parse(data);
        if (msgBody.Template === 'your_game_started') {
-        console.log('Game was started ' + msgBody.Game.Id)
-        this.props.getMessage();
+        console.log('Game was started ' + msgBody.Game.Id);
+        this.props.setCurrentGame(msgBody.Game);
+        this.props.getMessages(msgBody.Game.Id);
+        this.props.history.push("/gamechat");
        }
        this.props.getGames();
        debugger
@@ -78,7 +80,10 @@ class Dashboard extends Component {
         }
         */
        debugger
-    });
+       var msgBody = JSON.parse(data);
+       this.props.getMessages(msgBody.Game.Id);
+       debugger
+    }.bind(this));
 
 
     socket.on('connect', (s) => {
@@ -144,5 +149,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getGames, getMessage }
+  { getGames, setCurrentGame, getMessages }
 )(Dashboard);

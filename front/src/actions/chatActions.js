@@ -1,7 +1,8 @@
 import axios from 'axios';
 import {
     GET_CHATS,
-    AFTER_POST_MESSAGE
+    AFTER_POST_MESSAGE,
+    GET_MESSAGES
 } from './types';
 
 
@@ -23,14 +24,23 @@ export function afterPostMessage(data){
     }
 }
 
-export const getMessage = () => async dispatch => {
-    const res = await axios.get("/api/chat/" + "1" + "/messages");
+export const getMessages = (gameId) => async dispatch => {
+    const res = await axios.get("/api/chat/" + gameId + "/messages");
     debugger
-    /*
+    
     dispatch({
-      type: GET_ROOMS,
+      type: GET_MESSAGES,
       payload: res.data
     });
-    */
   };
+
+  export const postMessage = (message) => async dispatch => {
+      const res = await axios.post("/api/chat/" + message.gameId + "/message", {
+          content: message.content,
+          type: "game"
+      });
+
+      dispatch(getMessages(message.gameId));
+
+  }
 

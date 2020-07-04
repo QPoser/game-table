@@ -1,4 +1,4 @@
-import { GET_GAMES } from "../actions/types";
+import { GET_GAMES, SET_CURRENT_GAME } from "../actions/types";
 
 const initialState = {
   games: [],
@@ -11,6 +11,11 @@ export default function(state = initialState, action) {
       return {
         ...state,
         games: action.payload
+      };
+    case SET_CURRENT_GAME:
+      return {
+        ...state,
+        game: action.payload
       };
     default:
       return state;

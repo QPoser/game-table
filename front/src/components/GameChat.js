@@ -4,7 +4,7 @@ import Icon from '@ant-design/icons';
 import io from "socket.io-client";
 import { connect } from "react-redux";
 //import moment from "moment";
-import { getMessage, afterPostMessage } from "../actions/chatActions"
+import { getMessages, afterPostMessage, postMessage } from "../actions/chatActions"
 import ChatCard from "./ChatCard"
 //import Dropzone from 'react-dropzone';
 import Axios from 'axios';
@@ -26,7 +26,7 @@ export class GameChat extends Component {
     componentDidMount() {
 
 
-        this.props.getMessage();
+        this.props.getMessages(1);
 
 
 
@@ -60,24 +60,27 @@ export class GameChat extends Component {
     }
 
     postMessage() {
-        this.setState({ messages: [...this.state.messages, {text:this.state.chatmessage}] });
+       // this.setState({ messages: [...this.state.messages, {text:this.state.chatmessage}] });
+       this.props.postMessage({gameId: this.props.games.game.Id, content: this.state.chatmessage});
+       this.setState({ chatmessage: "" });
     }
 
     render() {
 
-        const { messages } = this.state;
+        const { data=[] } = this.props.messages.messages;
+        const { game } = this.props.games.game;
 
         return (
             
             <React.Fragment>
                 <div className="container">
                 <div className="scrollbar mb-4" id="style-1">
-                {messages.map(message => (
+                {data.map(message => (
                    <div className="card mx-4 my-4">
                        <div className="card-body p-1">
                        <h4 className="my-2">Dark thin</h4>
                        <div className="p-2">
-                           <p className="font-italic">{message.text}</p>
+                           <p className="font-italic">{message.content}</p>
                        </div>
                        </div>
                    </div>
@@ -93,13 +96,13 @@ export class GameChat extends Component {
 
 const mapStateToProps = state => {
     return {
-        user: state.user,
-        chats: state.chat
+        games: state.games,
+        messages: state.messages
     }
 }
 
 
 export default connect(
-    mapStateToProps,
-    { getMessage }
+    mapStateToProps, 
+    {getMessages, postMessage}
     )(GameChat);

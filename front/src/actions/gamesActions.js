@@ -1,11 +1,19 @@
 import axios from "axios";
-import { GET_GAMES, JOIN_GAME, GET_ERRORS } from "./types";
+import { GET_GAMES, JOIN_GAME, SET_CURRENT_GAME, GET_ERRORS } from "./types";
 
 export const getGames = () => async dispatch => {
     const res = await axios.get("/api/games");
     dispatch({
       type: GET_GAMES,
       payload: res.data
+    });
+  };
+
+  export const setCurrentGame = (game) => dispatch => {
+  
+    dispatch({
+      type: SET_CURRENT_GAME,
+      payload: game
     });
   };
 

@@ -77,6 +77,16 @@ services:
             - rabbitmq
         restart: on-failure
 
+    front:
+        container_name: game-table-front
+        build:
+            context: front
+            dockerfile: Dockerfile
+        ports:
+            - 3001:3000
+        environment:
+            - CHOKIDAR_USEPOLLING=true
+
 networks:
     app:
         driver: bridge

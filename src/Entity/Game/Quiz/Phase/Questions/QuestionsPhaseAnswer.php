@@ -38,6 +38,17 @@ class QuestionsPhaseAnswer
      */
     private GameTeam $team;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private string $answer;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=QuestionsAnswer::class)
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private QuestionsAnswer $questionsAnswer;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -75,6 +86,30 @@ class QuestionsPhaseAnswer
     public function setTeam(?GameTeam $team): self
     {
         $this->team = $team;
+
+        return $this;
+    }
+
+    public function getAnswer(): ?string
+    {
+        return $this->answer;
+    }
+
+    public function setAnswer(?string $answer): self
+    {
+        $this->answer = $answer;
+
+        return $this;
+    }
+
+    public function getQuestionsAnswer(): ?QuestionsAnswer
+    {
+        return $this->questionsAnswer;
+    }
+
+    public function setQuestionsAnswer(?QuestionsAnswer $questionsAnswer): self
+    {
+        $this->questionsAnswer = $questionsAnswer;
 
         return $this;
     }

@@ -173,4 +173,28 @@ class GameTeam
 
         return $this;
     }
+
+    public function getPlayerWithTurn(): ?GameTeamPlayer
+    {
+        foreach ($this->players as $player) {
+            /** @var GameTeamPlayer $player */
+            if ($player->isPlayerTurn()) {
+                return $player;
+            }
+        }
+
+        return null;
+    }
+
+    public function getUsersIds(): array
+    {
+        $ids = [];
+
+        foreach ($this->players as $player) {
+            /** @var GameTeamPlayer $player */
+            $ids[] = $player->getUser()->getId();
+        }
+
+        return $ids;
+    }
 }

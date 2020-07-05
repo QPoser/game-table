@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Entity\Game\Quiz\Phase\Questions;
 
 use App\Entity\Game\Quiz\Phase\BasePhase;
+use App\Entity\Game\Quiz\Phase\PhaseQuestionInterface;
+use App\Entity\Game\Quiz\Phase\QuestionInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -65,5 +67,65 @@ class QuestionsPhase extends BasePhase
         $question->setStatus(QuestionsPhaseQuestion::STATUS_CURRENT);
 
         parent::play();
+    }
+
+    public function getCurrentPhaseQuestion(): ?PhaseQuestionInterface
+    {
+        foreach ($this->questions as $question) {
+            /** @var QuestionsPhaseQuestion $question */
+            if ($question->getStatus() === QuestionsPhaseQuestion::STATUS_CURRENT) {
+                return $question;
+            }
+        }
+
+        return null;
+    }
+
+    public function getCurrentQuestion(): ?QuestionInterface
+    {
+        $currentPhaseQuestion = $this->getCurrentPhaseQuestion();
+
+        return $currentPhaseQuestion ? $currentPhaseQuestion->getQuestion() : null;
+    }
+
+    public function isFreeAnswer(): bool
+    {
+        return false;
+    }
+
+    public function isLastQuestion(): bool
+    {
+        /** @var QuestionsPhaseQuestion $lastQuestion */
+        $lastQuestion = $this->questions->last();
+
+        return $lastQuestion->getStatus() === QuestionsPhaseQuestion::STATUS_CURRENT;
+    }
+
+    public function closeQuestion(): void
+    {
+        foreach ($this->questions as $question) {
+            /** @var QuestionsPhaseQuestion $question */
+
+            if ($question->getStatus() === QuestionsPhaseQuestion::STATUS_CURRENT) {
+                $question->setStatus(QuestionsPhaseQuestion::STATUS_ANSWERED);
+            }
+
+            if ($question->getStatus() === QuestionsPhaseQuestion::STATUS_WAIT) {
+                $question->setStatus(QuestionsPhaseQuestion::STATUS_CURRENT);
+            }
+        }
+    }
+
+    public function isAllQuestionsFinished(): bool
+    {
+        foreach ($this->questions as $question) {
+            /** @var QuestionsPhaseQuestion $question */
+
+            if ($question->getStatus() !== QuestionsPhaseQuestion::STATUS_ANSWERED) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Entity\Game\Quiz\Phase\Questions;
 
+use App\Entity\Game\Quiz\Phase\AnswerInterface;
+use App\Entity\Game\Quiz\Phase\QuestionInterface;
 use App\Repository\Game\Quiz\Phase\Questions\QuestionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=QuestionRepository::class)
  */
-class Question
+class QuestionsQuestion implements QuestionInterface
 {
     /**
      * @ORM\Id
@@ -31,7 +33,7 @@ class Question
     private bool $enabled = false;
 
     /**
-     * @ORM\OneToMany(targetEntity=Answer::class, mappedBy="question", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=QuestionsAnswer::class, mappedBy="question", orphanRemoval=true)
      */
     private Collection $answers;
 
@@ -74,7 +76,7 @@ class Question
         return $this->answers;
     }
 
-    public function addAnswer(Answer $answer): self
+    public function addAnswer(QuestionsAnswer $answer): self
     {
         if (!$this->answers->contains($answer)) {
             $this->answers[] = $answer;
@@ -84,7 +86,7 @@ class Question
         return $this;
     }
 
-    public function removeAnswer(Answer $answer): self
+    public function removeAnswer(QuestionsAnswer $answer): self
     {
         if ($this->answers->contains($answer)) {
             $this->answers->removeElement($answer);
@@ -95,5 +97,22 @@ class Question
         }
 
         return $this;
+    }
+
+    public function isCorrectAnswer(AnswerInterface $answer): bool
+    {
+        return $answer->isCorrect();
+    }
+
+    public function getAnswerByString(string $userAnswer): ?AnswerInterface
+    {
+        foreach ($this->answers as $answer) {
+            /** @var QuestionsAnswer $answer */
+            if ($answer->getAnswer() === $userAnswer) {
+                return $answer;
+            }
+        }
+
+        return null;
     }
 }

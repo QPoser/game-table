@@ -448,6 +448,33 @@ abstract class Game
         }
     }
 
+    public function updatePlayersTurnInEveryTeam(): void
+    {
+        foreach ($this->teams as $team) {
+            /** @var GameTeam $team */
+            $players = $team->getPlayers();
+
+            $lastUserWithGameAction = $this->getLastUserWithGameAction($team->getUsersIds());
+
+            if (!$lastUserWithGameAction) {
+                $player = $players->first();
+
+                $player->setPlayerTurn(true);
+            } else {
+                foreach ($players as $key => $player) {
+                    /** @var GameTeamPlayer $player */
+                    if ($player->getUser()->getId() === $lastUserWithGameAction->getId()) {
+                        /** @var GameTeamPlayer $nextPlayer */
+                        $nextPlayer = $players->containsKey($key + 1) ? $players->get($key + 1) : $players->first();
+
+                        $player->setPlayerTurn(false);
+                        $nextPlayer->setPlayerTurn(true);
+                    }
+                }
+            }
+        }
+    }
+
     public function disablePlayerTurnByUser(User $user): void
     {
         $player = $this->getTeamPlayerByUser($user);
@@ -478,5 +505,51 @@ abstract class Game
     public function setSecondTeamPlayerTurn(): void
     {
         $this->setTeamPlayerTurnByIndex(1);
+    }
+
+    public function getTeamPlayersTurnsIds(): array
+    {
+        $playerIds = [];
+
+        foreach ($this->teams as $team) {
+            foreach ($team->getPlayers() as $teamPlayer) {
+                /** @var GameTeamPlayer $teamPlayer */
+                if ($teamPlayer->isPlayerTurn()) {
+                    $playerIds[] = $teamPlayer->getId();
+                }
+            }
+        }
+
+        return $playerIds;
+    }
+
+    public function getLastUserGameAction(array $userIds = []): ?GameAction
+    {
+        return $this->actions->filter(static function ($action) use ($userIds) {
+            /** @var GameAction $action */
+            $user = $action->getUser();
+
+            if (!in_array($action->getTemplate(), GameAction::USER_TURN_TEMPLATES, true)) {
+                return false;
+            }
+
+            if (!$user) {
+                return false;
+            }
+
+            if (!empty($userIds) && !in_array($user->getId(), $userIds, true)) {
+                return false;
+            }
+
+
+            return true;
+        })->last();
+    }
+
+    public function getLastUserWithGameAction(array $userIds = []): ?User
+    {
+        $lastGameAction = $this->getLastUserGameAction($userIds);
+
+        return $lastGameAction ? $lastGameAction->getUser() : null;
     }
 }

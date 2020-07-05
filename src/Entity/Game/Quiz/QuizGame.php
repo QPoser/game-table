@@ -4,7 +4,11 @@ declare(strict_types=1);
 namespace App\Entity\Game\Quiz;
 
 use App\Entity\Game\Game;
+use App\Entity\Game\Quiz\Phase\AnswerInterface;
 use App\Entity\Game\Quiz\Phase\BasePhase;
+use App\Entity\Game\Quiz\Phase\QuestionInterface;
+use App\Entity\Game\Quiz\Phase\Questions\QuestionsAnswer;
+use App\Entity\Game\Quiz\Phase\Questions\QuestionsQuestion;
 use App\Exception\AppException;
 use App\Repository\Game\Quiz\QuizGameRepository;
 use App\Services\Response\ErrorCode;
@@ -89,5 +93,74 @@ class QuizGame extends Game
         $this->gameStatus = $gameStatus;
 
         return $this;
+    }
+
+    public function getCurrentPhase(): ?BasePhase
+    {
+        foreach ($this->phases as $phase) {
+            /** @var BasePhase $phase */
+            if ($phase->getStatus() === BasePhase::STATUS_IN_PROGRESS) {
+                return $phase;
+            }
+        }
+
+        return null;
+    }
+
+    public function getCurrentQuestion(): ?QuestionInterface
+    {
+        $phase = $this->getCurrentPhase();
+
+        if ($phase) {
+            return $phase->getCurrentQuestion();
+        }
+
+        return null;
+    }
+
+    public function isLastPhase(): bool
+    {
+        /** @var BasePhase $lastPhase */
+        $lastPhase = $this->phases->last();
+
+        return $lastPhase->getStatus() === BasePhase::STATUS_IN_PROGRESS;
+    }
+
+    public function finishCurrentPhase(): void
+    {
+        foreach ($this->phases as $phase) {
+            /** @var BasePhase $phase */
+            if ($phase->getStatus() === BasePhase::STATUS_IN_PROGRESS) {
+                $phase->setStatus(BasePhase::STATUS_FINISHED);
+            }
+
+            if ($phase->getStatus() === BasePhase::STATUS_PREPARED) {
+                $phase->setStatus(BasePhase::STATUS_IN_PROGRESS);
+                return;
+            }
+        }
+    }
+
+    public function getPreparedPhase(): ?BasePhase
+    {
+        foreach ($this->phases as $phase) {
+            if ($phase->getStatus() === BasePhase::STATUS_PREPARED) {
+                return $phase;
+            }
+        }
+
+        return null;
+    }
+
+    public function isAllPhasesFinished(): bool
+    {
+        foreach ($this->phases as $phase) {
+            /** @var BasePhase $phase */
+            if ($phase->getStatus() !== BasePhase::STATUS_FINISHED) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Game\Quiz\Phase\Questions;
 
+use App\Entity\Game\Quiz\Phase\PhaseQuestionInterface;
 use App\Repository\Game\Quiz\Phase\Questions\QuestionsPhaseQuestionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=QuestionsPhaseQuestionRepository::class)
  */
-class QuestionsPhaseQuestion
+class QuestionsPhaseQuestion implements PhaseQuestionInterface
 {
     public const STATUS_WAIT = 'wait';
     public const STATUS_CURRENT = 'current';
@@ -28,7 +29,7 @@ class QuestionsPhaseQuestion
      * @ORM\ManyToOne(targetEntity=Question::class)
      * @ORM\JoinColumn(nullable=false)
      */
-    private Question $question;
+    private QuestionsQuestion $question;
 
     /**
      * @ORM\ManyToOne(targetEntity=QuestionsPhase::class, inversedBy="questions")
@@ -56,12 +57,12 @@ class QuestionsPhaseQuestion
         return $this->id;
     }
 
-    public function getQuestion(): ?Question
+    public function getQuestion(): ?QuestionsQuestion
     {
         return $this->question;
     }
 
-    public function setQuestion(?Question $question): self
+    public function setQuestion(?QuestionsQuestion $question): self
     {
         $this->question = $question;
 

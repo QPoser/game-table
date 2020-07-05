@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace App\Entity\Game\Quiz\Phase\Questions;
 
+use App\Entity\Game\Quiz\Phase\AnswerInterface;
 use App\Repository\Game\Quiz\Phase\Questions\AnswerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=AnswerRepository::class)
  */
-class Answer
+class QuestionsAnswer implements AnswerInterface
 {
     /**
      * @ORM\Id
@@ -29,10 +30,10 @@ class Answer
     private bool $correct = false;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Question::class, inversedBy="answers")
+     * @ORM\ManyToOne(targetEntity=QuestionsQuestion::class, inversedBy="answers")
      * @ORM\JoinColumn(nullable=false)
      */
-    private Question $question;
+    private QuestionsQuestion $question;
 
     public function getId(): ?int
     {
@@ -51,11 +52,6 @@ class Answer
         return $this;
     }
 
-    public function getCorrect(): ?bool
-    {
-        return $this->correct;
-    }
-
     public function setCorrect(bool $correct): self
     {
         $this->correct = $correct;
@@ -63,15 +59,20 @@ class Answer
         return $this;
     }
 
-    public function getQuestion(): ?Question
+    public function getQuestion(): ?QuestionsQuestion
     {
         return $this->question;
     }
 
-    public function setQuestion(?Question $question): self
+    public function setQuestion(?QuestionsQuestion $question): self
     {
         $this->question = $question;
 
         return $this;
+    }
+
+    public function isCorrect(): bool
+    {
+        return $this->correct;
     }
 }

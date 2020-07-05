@@ -5,7 +5,7 @@ namespace App\Services\Game\Quiz;
 
 use App\Entity\Game\Game;
 use App\Entity\Game\Quiz\Phase\BasePhase;
-use App\Entity\Game\Quiz\Phase\Questions\Question;
+use App\Entity\Game\Quiz\Phase\Questions\QuestionsQuestion;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsPhase;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsPhaseQuestion;
 use App\Entity\Game\Quiz\QuizGame;
@@ -59,10 +59,10 @@ class QuizPhaseService
     {
         $phase = new QuestionsPhase();
 
-        $questions = $this->em->getRepository(Question::class)->findBy([], [], 3, 0);
+        $questions = $this->em->getRepository(QuestionsQuestion::class)->findBy([], [], 3, 0);
 
         foreach ($questions as $question) {
-            /** @var Question $question */
+            /** @var QuestionsQuestion $question */
             $phaseQuestion = new QuestionsPhaseQuestion();
             $phaseQuestion->setStatus(QuestionsPhaseQuestion::STATUS_WAIT);
             $phaseQuestion->setQuestion($question);

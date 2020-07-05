@@ -6,6 +6,8 @@ namespace App\Services\Game;
 use App\AmqpMessages\AmqpGameAction;
 use App\Entity\Game\Game;
 use App\Entity\Game\GameAction;
+use App\Entity\Game\Quiz\Phase\AnswerInterface;
+use App\Entity\Game\Quiz\Phase\BasePhase;
 use App\Entity\Game\Quiz\QuizGame;
 use App\Entity\Game\Team\GameTeam;
 use App\Entity\User;
@@ -93,6 +95,65 @@ class GameActionService
         );
     }
 
+    public function createUserEnteredAnswerAction(Game $game, GameTeam $team, User $user, string $userAnswer, ?AnswerInterface $answer = null): void
+    {
+        $gameActionValues = [
+            'team' => $team->getId(),
+            'user' => $user->getId(),
+            'answer' => $userAnswer,
+            'answerId' => $answer ? $answer->getId() : null,
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_USER_FROM_YOUR_TEAM_ENTERED_ANSWER, $user, false, true);
+
+        $gameActionValuesMain = [
+            'team' => $team->getId(),
+            'user' => $user->getId(),
+        ];
+
+        $this->createGameAction($game, $gameActionValuesMain, GameAction::TEMPLATE_USER_ENTERED_ANSWER, $user);
+    }
+
+    public function createGameTurnsChangedAction(Game $game): void
+    {
+        $gameActionValues = [
+            'playerTurns' => $game->getTeamPlayersTurnsIds(),
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_GAME_TURNS_CHANGED);
+    }
+
+    public function createNewQuestionInProgressAction(QuizGame $game): void
+    {
+        $gameActionValues = [
+            'gameId' => $game->getId(),
+            'phase' => $game->getCurrentPhase(),
+            'question' => $game->getCurrentQuestion(),
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_QUIZ_NEW_QUESTION_IN_PROGRESS);
+    }
+
+    public function createQuizGamePhaseFinishedAction(QuizGame $game, BasePhase $phase): void
+    {
+        $gameActionValues = [
+            'gameId' => $game->getId(),
+            'phaseId' => $phase->getId(),
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_QUIZ_PHASE_FINISHED);
+    }
+
+    public function createQuizGameFinishedAction(QuizGame $game): void
+    {
+        $gameActionValues = [
+            'gameId' => $game->getId(),
+            'winnerTeam' => $game->getTeams()->first()->getId(),
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_QUIZ_GAME_FINISHED);
+    }
+
     private function createGameAction(
         Game $game,
         array $values,
@@ -110,8 +171,12 @@ class GameActionService
             $values['userId'] = $user->getId();
         }
 
+        if ($game && !isset($values['gameId'])) {
+            $values['gameId'] = $game->getId();
+        }
+
         $action = new GameAction();
-        $action->setGame($game);
+        $game->addAction($action);
         $action->setJsonValues($values);
         $action->setTemplate($template);
         $action->setUser($user);

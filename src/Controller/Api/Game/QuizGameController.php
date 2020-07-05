@@ -42,7 +42,7 @@ class QuizGameController extends AbstractController
      */
     public function getPhases(): array
     {
-        return Responser::wrapSuccess(BasePhase::AVAILABLE_TYPES);
+        return Responser::wrapSuccess(BasePhase::getFormattedTypes());
     }
 
     /**
@@ -66,11 +66,29 @@ class QuizGameController extends AbstractController
 
         $this->quizGameService->addPhase($game, $phaseType, $this->getUser());
 
-        return Responser::wrapSuccess($game);
+        return Responser::wrapSuccess(true);
     }
 
-//    public function sendQuestionAnswer(QuizGame $game): array
-//    {
-//        $this->denyAccessUnlessGranted(QuizGameVoter::ATTRIBUTE_PUT_ANSWER, $game);
-//    }
+    /**
+     * @Route("/{id}/answer", name=".phase.select", methods={"POST"})
+     * @Rest\View(serializerGroups={"Api"})
+     * @Rest\RequestParam(name="answer", requirements="\w+", nullable=false, strict=true, description="Answer")
+     * @SWG\Post(
+     *     tags={"Quiz game"},
+     *     @SWG\Response(
+     *      response="200",
+     *      description="Select phase for quiz",
+     *      @Model(type=QuizGame::class, groups={"Api", "GameMessages"})
+     *     )
+     * )
+     */
+    public function sendQuestionAnswer(QuizGame $game, ParamFetcher $paramFetcher): array
+    {
+        $this->denyAccessUnlessGranted(QuizGameVoter::ATTRIBUTE_PUT_ANSWER, $game);
+        $answer = $paramFetcher->get('answer');
+
+        $this->quizGameService->putAnswer($game, $answer, $this->getUser());
+
+        return Responser::wrapSuccess(true);
+    }
 }

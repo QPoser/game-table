@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Entity\Game\Game;
-use App\Entity\Game\Quiz\Phase\Questions\Answer;
-use App\Entity\Game\Quiz\Phase\Questions\Question;
+use App\Entity\Game\Quiz\Phase\Questions\QuestionsAnswer;
+use App\Entity\Game\Quiz\Phase\Questions\QuestionsQuestion;
 use App\Entity\Game\Quiz\QuizGame;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -17,7 +17,7 @@ class QuizAnswerFixture extends Fixture implements DependentFixtureInterface
     {
         for ($i = 1; $i <= 3; $i++) {
             for ($j = 1; $j <= 4; $j++) {
-                $answer = new Answer();
+                $answer = new QuestionsAnswer();
                 $answer->setQuestion($this->getReference('question_' . $i));
                 $answer->setAnswer('answer 1');
                 $answer->setCorrect($j === 1);

@@ -2,21 +2,21 @@
 
 namespace App\Repository\Game\Quiz\Phase\Questions;
 
-use App\Entity\Game\Quiz\Phase\Questions\Question;
+use App\Entity\Game\Quiz\Phase\Questions\QuestionsQuestion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Question|null find($id, $lockMode = null, $lockVersion = null)
- * @method Question|null findOneBy(array $criteria, array $orderBy = null)
- * @method Question[]    findAll()
- * @method Question[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method QuestionsQuestion|null find($id, $lockMode = null, $lockVersion = null)
+ * @method QuestionsQuestion|null findOneBy(array $criteria, array $orderBy = null)
+ * @method QuestionsQuestion[]    findAll()
+ * @method QuestionsQuestion[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class QuestionRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Question::class);
+        parent::__construct($registry, QuestionsQuestion::class);
     }
 
     // /**

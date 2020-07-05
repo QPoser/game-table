@@ -30,6 +30,14 @@ abstract class BasePhase
         self::TYPE_QUESTIONS => self::TYPE_QUESTIONS,
     ];
 
+    public const FREE_TYPES = [
+        self::TYPE_QUESTIONS => self::TYPE_QUESTIONS,
+    ];
+
+    public const VIP_TYPES = [
+        self::TYPE_PRICES => self::TYPE_PRICES,
+    ];
+
     public const STATUS_PREPARED = 'prepared';
     public const STATUS_IN_PROGRESS = 'in_progress';
     public const STATUS_FINISHED = 'finished';
@@ -62,6 +70,18 @@ abstract class BasePhase
      * @Groups({"Api"})
      */
     abstract public function getType(): string;
+
+    abstract public function getCurrentQuestion(): ?QuestionInterface;
+
+    abstract public function getCurrentPhaseQuestion(): ?PhaseQuestionInterface;
+
+    abstract public function isFreeAnswer(): bool; // Can user answer be unmatched with question answers?
+
+    abstract public function isLastQuestion(): bool;
+
+    abstract public function closeQuestion(): void;
+
+    abstract public function isAllQuestionsFinished(): bool;
 
     public function getId(): ?int
     {
@@ -107,5 +127,18 @@ abstract class BasePhase
     public function play(): void
     {
         $this->setStatus(self::STATUS_IN_PROGRESS);
+    }
+
+    public function isInProgress(): bool
+    {
+        return $this->status === self::STATUS_IN_PROGRESS;
+    }
+
+    public static function getFormattedTypes(): array
+    {
+        return [
+            'free' => self::FREE_TYPES,
+            'vip' => self::VIP_TYPES,
+        ];
     }
 }

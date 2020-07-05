@@ -20,6 +20,9 @@ class ErrorCode
     public const USER_ALREADY_HAS_GAME_IN_PROGRESS = 12;
     public const QUIZ_GAME_PHASE_DOES_NOT_EXISTS = 13;
     public const QUIZ_GAME_HAS_MAX_PHASES = 14;
+    public const QUIZ_GAME_HAS_NO_CURRENT_PHASE = 15;
+    public const QUIZ_GAME_PHASE_HAS_NO_CURRENT_QUESTION = 16;
+    public const QUIZ_GAME_QUESTION_HAS_NO_THIS_VARIANT = 17;
 
     private const MESSAGES = [
         self::USER_NOT_FOUND_BY_TOKEN => 'User not found by token',
@@ -37,6 +40,9 @@ class ErrorCode
         self::USER_ALREADY_HAS_GAME_IN_PROGRESS => 'User already has game in progress',
         self::QUIZ_GAME_PHASE_DOES_NOT_EXISTS => 'Quiz game phase does not exists',
         self::QUIZ_GAME_HAS_MAX_PHASES => 'Quiz game has max count of phases',
+        self::QUIZ_GAME_HAS_NO_CURRENT_PHASE => 'Quiz game has no current phase in progress',
+        self::QUIZ_GAME_PHASE_HAS_NO_CURRENT_QUESTION => 'Quiz game phase has no current question',
+        self::QUIZ_GAME_QUESTION_HAS_NO_THIS_VARIANT => 'Quiz game question has no this variant',
     ];
 
     public static function getMessage(int $code): ?string

@@ -28,7 +28,7 @@ class QuestionsPhaseQuestion implements PhaseQuestionInterface
     private int $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Question::class)
+     * @ORM\ManyToOne(targetEntity=QuestionsQuestion::class)
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"Api", "AMQP"})
      */

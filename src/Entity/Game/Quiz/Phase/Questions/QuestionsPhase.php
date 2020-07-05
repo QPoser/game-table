@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\Game\Quiz\Phase\Questions\QuestionsPhaseRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Table(name="phase_questions")
@@ -19,6 +20,7 @@ class QuestionsPhase extends BasePhase
 {
     /**
      * @ORM\OneToMany(targetEntity=QuestionsPhaseQuestion::class, mappedBy="phase", orphanRemoval=true)
+     * @Groups({"Exclude"})
      */
     private Collection $questions;
 
@@ -127,5 +129,16 @@ class QuestionsPhase extends BasePhase
         }
 
         return true;
+    }
+
+    /**
+     * @Groups({"Api", "AMQP"})
+     */
+    public function getQuestionsInProgress(): Collection
+    {
+        return $this->questions->filter(static function ($question) {
+            /** @var QuestionsPhaseQuestion $question */
+            return $question->getStatus() !== QuestionsPhaseQuestion::STATUS_WAIT;
+        });
     }
 }

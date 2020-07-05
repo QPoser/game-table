@@ -83,6 +83,26 @@ class GameController extends AbstractController
     }
 
     /**
+     * @Route("/current", name=".current", methods={"GET"})
+     * @Rest\View(serializerGroups={"Api"})
+     * @SWG\Get(
+     *     tags={"Games"},
+     *     @SWG\Response(
+     *      response="200",
+     *      description="Get current game",
+     *      @Model(type=Game::class, groups={"Api"})
+     *     )
+     * )
+     */
+    public function currentGame(): array
+    {
+        $user = $this->getUser();
+        $game = $this->getDoctrine()->getRepository(Game::class)->getCurrentUserGame($user);
+
+        return Responser::wrapSuccess($game);
+    }
+
+    /**
      * @Route("/{id}", name=".visit", methods={"GET"})
      * @Rest\View(serializerGroups={"Api"})
      * @SWG\Get(

@@ -8,6 +8,7 @@ use App\Repository\Game\Quiz\Phase\Questions\QuestionsPhaseQuestionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=QuestionsPhaseQuestionRepository::class)
@@ -22,28 +23,33 @@ class QuestionsPhaseQuestion implements PhaseQuestionInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"Exclude"})
      */
     private int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=Question::class)
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"Api", "AMQP"})
      */
     private QuestionsQuestion $question;
 
     /**
      * @ORM\ManyToOne(targetEntity=QuestionsPhase::class, inversedBy="questions")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"Exclude"})
      */
     private QuestionsPhase $phase;
 
     /**
      * @ORM\Column(type="string", length=32)
+     * @Groups({"Api", "AMQP"})
      */
     private string $status = self::STATUS_WAIT;
 
     /**
      * @ORM\OneToMany(targetEntity=QuestionsPhaseAnswer::class, mappedBy="phaseQuestion", orphanRemoval=true)
+     * @Groups({"Exclude"})
      */
     private Collection $phaseAnswers;
 
@@ -119,5 +125,14 @@ class QuestionsPhaseQuestion implements PhaseQuestionInterface
         }
 
         return $this;
+    }
+
+    public function getFormattedPhaseAnswers(): ?Collection
+    {
+        if ($this->status === self::STATUS_ANSWERED) {
+            return $this->phaseAnswers;
+        }
+
+        return null;
     }
 }

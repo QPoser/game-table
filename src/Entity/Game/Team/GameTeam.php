@@ -20,7 +20,7 @@ class GameTeam
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"Api"})
+     * @Groups({"Api", "AMQP"})
      */
     private ?int $id;
 
@@ -33,19 +33,19 @@ class GameTeam
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"Api"})
+     * @Groups({"Api", "AMQP"})
      */
     private ?string $title;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"Api"})
+     * @Groups({"Api", "AMQP"})
      */
     private ?int $slots;
 
     /**
      * @ORM\OneToMany(targetEntity=GameTeamPlayer::class, mappedBy="team", orphanRemoval=true)
-     * @Groups({"Api"})
+     * @Groups({"Api", "AMQP"})
      */
     private Collection $players;
 

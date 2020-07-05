@@ -126,6 +126,7 @@ abstract class Game
 
     /**
      * @ORM\OneToMany(targetEntity=GameAction::class, mappedBy="game", orphanRemoval=true)
+     * @Groups({"Exclude"})
      */
     private Collection $actions;
 

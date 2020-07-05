@@ -7,6 +7,7 @@ use App\Entity\Game\Team\GameTeam;
 use App\Entity\User;
 use App\Repository\Game\Quiz\Phase\Questions\QuestionsPhaseAnswerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=QuestionsPhaseAnswerRepository::class)
@@ -17,35 +18,41 @@ class QuestionsPhaseAnswer
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"Exclude"})
      */
     private int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=QuestionsPhaseQuestion::class, inversedBy="phaseAnswers")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"Exclude"})
      */
     private QuestionsPhaseQuestion $phaseQuestion;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class)
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"Api", "AMQP"})
      */
     private User $user;
 
     /**
      * @ORM\ManyToOne(targetEntity=GameTeam::class)
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"Api", "AMQP"})
      */
     private GameTeam $team;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"Exclude"})
      */
     private string $answer;
 
     /**
      * @ORM\ManyToOne(targetEntity=QuestionsAnswer::class)
      * @ORM\JoinColumn(nullable=true)
+     * @Groups({"Exclude"})
      */
     private QuestionsAnswer $questionsAnswer;
 
@@ -112,5 +119,45 @@ class QuestionsPhaseAnswer
         $this->questionsAnswer = $questionsAnswer;
 
         return $this;
+    }
+
+    /**
+     * @Groups({"Api", "AMQP"})
+     */
+    public function getFormattedAnswer(): ?string
+    {
+        if ($this->phaseQuestion->getStatus() === QuestionsPhaseQuestion::STATUS_ANSWERED) {
+            return $this->answer;
+        }
+
+        return null;
+    }
+
+    /**
+     * @Groups({"Api", "AMQP"})
+     */
+    public function getFormattedQuestionsAnswer(): ?QuestionsAnswer
+    {
+        if ($this->phaseQuestion->getStatus() === QuestionsPhaseQuestion::STATUS_ANSWERED) {
+            return $this->questionsAnswer;
+        }
+
+        return null;
+    }
+
+    /**
+     * @Groups({"Api", "AMQP"})
+     */
+    public function isCorrect(): ?bool
+    {
+        if (!$this->questionsAnswer) {
+            return null;
+        }
+
+        if ($this->phaseQuestion->getStatus() === QuestionsPhaseQuestion::STATUS_ANSWERED) {
+            return $this->phaseQuestion->getQuestion()->isCorrectAnswer($this->questionsAnswer);
+        }
+
+        return null;
     }
 }

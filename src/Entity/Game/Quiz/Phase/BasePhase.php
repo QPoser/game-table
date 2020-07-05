@@ -74,9 +74,6 @@ abstract class BasePhase
      */
     abstract public function getType(): string;
 
-    /**
-     * @Groups({"Api", "AMQP"})
-     */
     abstract public function getCurrentQuestion(): ?QuestionInterface;
 
     /**

@@ -6,8 +6,6 @@ namespace App\EventListener;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsPhaseQuestion;
 use App\Entity\Game\Quiz\QuizGame;
 use App\Events\GameFinishedEvent;
-use App\Events\GameUserJoinedEvent;
-use App\Events\GameUserLeavedEvent;
 use App\Events\QuizGamePhaseFinishedEvent;
 use App\Events\QuizGameUserEnteredAnswerEvent;
 use App\Services\Game\GameActionService;
@@ -59,6 +57,8 @@ class QuizGameListener
 
         if ($game->isAllPhasesFinished()) {
             $this->gameService->finishGame($game);
+        } else {
+            $this->quizGameService->startNextQuestion($game->getCurrentPhase());
         }
     }
 

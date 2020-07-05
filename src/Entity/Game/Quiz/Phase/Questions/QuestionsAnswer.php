@@ -6,6 +6,7 @@ namespace App\Entity\Game\Quiz\Phase\Questions;
 use App\Entity\Game\Quiz\Phase\AnswerInterface;
 use App\Repository\Game\Quiz\Phase\Questions\AnswerRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=AnswerRepository::class)
@@ -16,22 +17,26 @@ class QuestionsAnswer implements AnswerInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"Api", "AMQP"})
      */
     private int $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"Api", "AMQP"})
      */
     private string $answer;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"Exclude"})
      */
     private bool $correct = false;
 
     /**
      * @ORM\ManyToOne(targetEntity=QuestionsQuestion::class, inversedBy="answers")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"Exclude"})
      */
     private QuestionsQuestion $question;
 

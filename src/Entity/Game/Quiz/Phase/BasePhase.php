@@ -46,17 +46,20 @@ abstract class BasePhase
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"Api", "AMQP"})
      */
     private int $id;
 
     /**
      * @ORM\Column(type="boolean", nullable=true)
+     * @Groups({"Api", "AMQP"})
      */
     private bool $vip;
 
     /**
      * @ORM\ManyToOne(targetEntity=QuizGame::class, inversedBy="phases")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"Exclude"})
      */
     private QuizGame $game;
 
@@ -67,21 +70,32 @@ abstract class BasePhase
     private string $status = self::STATUS_PREPARED;
 
     /**
-     * @Groups({"Api"})
+     * @Groups({"Api", "AMQP"})
      */
     abstract public function getType(): string;
 
+    /**
+     * @Groups({"Api", "AMQP"})
+     */
     abstract public function getCurrentQuestion(): ?QuestionInterface;
 
-    abstract public function getCurrentPhaseQuestion(): ?PhaseQuestionInterface;
-
+    /**
+     * @Groups({"Api", "AMQP"})
+     */
     abstract public function isFreeAnswer(): bool; // Can user answer be unmatched with question answers?
+
+    /**
+     * @Groups({"Api", "AMQP"})
+     */
+    abstract public function isAllQuestionsFinished(): bool;
+
+    abstract public function getCurrentPhaseQuestion(): ?PhaseQuestionInterface;
 
     abstract public function isLastQuestion(): bool;
 
     abstract public function closeQuestion(): void;
 
-    abstract public function isAllQuestionsFinished(): bool;
+
 
     public function getId(): ?int
     {

@@ -36,7 +36,14 @@ class QuizGameController extends AbstractController
      *     tags={"Quiz game"},
      *     @SWG\Response(
      *      response="200",
-     *      description="Get available quiz phases"
+     *      description="Get available quiz phases",
+     *      @SWG\Schema(
+     *           type="array",
+     *           @SWG\Items(
+     *              type="string",
+     *
+     *           )
+     *      )
      *     )
      * )
      */
@@ -70,9 +77,9 @@ class QuizGameController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/answer", name=".phase.select", methods={"POST"})
+     * @Route("/{id}/answer", name=".phase.answer", methods={"POST"})
      * @Rest\View(serializerGroups={"Api"})
-     * @Rest\RequestParam(name="answer", requirements="\w+", nullable=false, strict=true, description="Answer")
+     * @Rest\RequestParam(name="answer", requirements="\w+", nullable=false, strict=true, description="Answer (any string)")
      * @SWG\Post(
      *     tags={"Quiz game"},
      *     @SWG\Response(

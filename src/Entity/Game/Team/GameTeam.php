@@ -88,9 +88,6 @@ class GameTeam
         return $this;
     }
 
-    /**
-     * @return Collection|GameTeamPlayer[]
-     */
     public function getPlayers(): Collection
     {
         return $this->players;
@@ -175,5 +172,29 @@ class GameTeam
         $this->userInTeam = $userInTeam;
 
         return $this;
+    }
+
+    public function getPlayerWithTurn(): ?GameTeamPlayer
+    {
+        foreach ($this->players as $player) {
+            /** @var GameTeamPlayer $player */
+            if ($player->isPlayerTurn()) {
+                return $player;
+            }
+        }
+
+        return null;
+    }
+
+    public function getUsersIds(): array
+    {
+        $ids = [];
+
+        foreach ($this->players as $player) {
+            /** @var GameTeamPlayer $player */
+            $ids[] = $player->getUser()->getId();
+        }
+
+        return $ids;
     }
 }

@@ -35,7 +35,7 @@ class ChatController extends AbstractController
      * @Route("/{game}/message", name=".message", methods={"POST"})
      * @Rest\View(serializerGroups={"Chat", "Api"})
      * @RequestParam(name="content", requirements="\w+", nullable=false, strict=true, description="Message content")
-     * @RequestParam(name="type", requirements="team|game", nullable=true, default="public", strict=true, description="Message type")
+     * @RequestParam(name="type", requirements="team|game", nullable=true, default="game", strict=true, description="Message type")
      * @SWG\Post(
      *     tags={"Chat"},
      *     @SWG\Response(

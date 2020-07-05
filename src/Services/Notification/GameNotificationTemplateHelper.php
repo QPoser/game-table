@@ -31,7 +31,7 @@ class GameNotificationTemplateHelper
 
         $notification->setType(Notification::TYPE_PUSH);
         $notification->setTemplate(Notification::TEMPLATE_GAME_CREATED);
-        $notification->setJsonValues(['game' => $game->getTitle(), 'type' => $game->getType()]);
+        $notification->setJsonValues(['game' => $game, 'type' => $game->getType()]);
         $notification->setUser($creator);
 
         $this->em->persist($notification);

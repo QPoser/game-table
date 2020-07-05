@@ -6,6 +6,9 @@ namespace App\Services\Game;
 use App\AmqpMessages\AmqpGameAction;
 use App\Entity\Game\Game;
 use App\Entity\Game\GameAction;
+use App\Entity\Game\Quiz\Phase\AnswerInterface;
+use App\Entity\Game\Quiz\Phase\BasePhase;
+use App\Entity\Game\Quiz\QuizGame;
 use App\Entity\Game\Team\GameTeam;
 use App\Entity\User;
 use App\Exception\AppException;
@@ -43,6 +46,25 @@ class GameActionService
         $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_YOUR_GAME_STARTED, null);
     }
 
+    public function createQuizGamePhaseChosenActions(QuizGame $game, User $user): void
+    {
+        $gameActionValues = [
+            'team' => $game->getTeamPlayerByUser($user)->getTeam(),
+            'gameId' => $game->getId(),
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_USER_CHOSE_PHASE_IN_QUIZ, $user);
+    }
+
+    public function createQuizGamePlayingActions(QuizGame $game): void
+    {
+        $gameActionValues = [
+            'game' => $game,
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_QUIZ_PLAYING_STARTED);
+    }
+
     public function createUserJoinedToGameAction(Game $game, GameTeam $team, User $user): void
     {
         $gameActionValues = [
@@ -73,12 +95,72 @@ class GameActionService
         );
     }
 
+    public function createUserEnteredAnswerAction(Game $game, GameTeam $team, User $user, string $userAnswer, ?AnswerInterface $answer = null): void
+    {
+        $gameActionValues = [
+            'team' => $team->getId(),
+            'user' => $user->getId(),
+            'answer' => $userAnswer,
+            'answerId' => $answer ? $answer->getId() : null,
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_USER_FROM_YOUR_TEAM_ENTERED_ANSWER, $user, false, true);
+
+        $gameActionValuesMain = [
+            'team' => $team->getId(),
+            'user' => $user->getId(),
+        ];
+
+        $this->createGameAction($game, $gameActionValuesMain, GameAction::TEMPLATE_USER_ENTERED_ANSWER, $user);
+    }
+
+    public function createGameTurnsChangedAction(Game $game): void
+    {
+        $gameActionValues = [
+            'playerTurns' => $game->getTeamPlayersTurnsIds(),
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_GAME_TURNS_CHANGED);
+    }
+
+    public function createNewQuestionInProgressAction(QuizGame $game): void
+    {
+        $gameActionValues = [
+            'gameId' => $game->getId(),
+            'phase' => $game->getCurrentPhase(),
+            'question' => $game->getCurrentQuestion(),
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_QUIZ_NEW_QUESTION_IN_PROGRESS);
+    }
+
+    public function createQuizGamePhaseFinishedAction(QuizGame $game, BasePhase $phase): void
+    {
+        $gameActionValues = [
+            'gameId' => $game->getId(),
+            'phaseId' => $phase->getId(),
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_QUIZ_PHASE_FINISHED);
+    }
+
+    public function createQuizGameFinishedAction(QuizGame $game): void
+    {
+        $gameActionValues = [
+            'gameId' => $game->getId(),
+            'winnerTeam' => $game->getTeams()->first()->getId(),
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_QUIZ_GAME_FINISHED);
+    }
+
     private function createGameAction(
         Game $game,
         array $values,
         string $template,
         ?User $user = null,
-        bool $sentToAll = false
+        bool $sentToAll = false,
+        bool $sentToTeam = false
     ): void
     {
         if (!in_array($template, GameAction::TEMPLATES, true)) {
@@ -89,8 +171,12 @@ class GameActionService
             $values['userId'] = $user->getId();
         }
 
+        if ($game && !isset($values['gameId'])) {
+            $values['gameId'] = $game->getId();
+        }
+
         $action = new GameAction();
-        $action->setGame($game);
+        $game->addAction($action);
         $action->setJsonValues($values);
         $action->setTemplate($template);
         $action->setUser($user);
@@ -101,7 +187,11 @@ class GameActionService
         $emails = [];
 
         if (!$sentToAll) {
-            $emails = $this->em->getRepository(User::class)->findUserEmailsByGame($game);
+            if ($sentToTeam && $user) {
+                $emails = $this->em->getRepository(User::class)->findUserEmailsByTeam($game->getTeamPlayerByUser($user)->getTeam());
+            } else {
+                $emails = $this->em->getRepository(User::class)->findUserEmailsByGame($game);
+            }
         }
 
         $amqpGameAction = new AmqpGameAction($action, $emails, $sentToAll);

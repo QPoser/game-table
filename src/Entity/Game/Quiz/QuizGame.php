@@ -4,11 +4,8 @@ declare(strict_types=1);
 namespace App\Entity\Game\Quiz;
 
 use App\Entity\Game\Game;
-use App\Entity\Game\Quiz\Phase\AnswerInterface;
 use App\Entity\Game\Quiz\Phase\BasePhase;
 use App\Entity\Game\Quiz\Phase\QuestionInterface;
-use App\Entity\Game\Quiz\Phase\Questions\QuestionsAnswer;
-use App\Entity\Game\Quiz\Phase\Questions\QuestionsQuestion;
 use App\Exception\AppException;
 use App\Repository\Game\Quiz\QuizGameRepository;
 use App\Services\Response\ErrorCode;

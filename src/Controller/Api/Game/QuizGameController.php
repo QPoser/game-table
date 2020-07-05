@@ -60,8 +60,7 @@ class QuizGameController extends AbstractController
      *     tags={"Quiz game"},
      *     @SWG\Response(
      *      response="200",
-     *      description="Select phase for quiz",
-     *      @Model(type=QuizGame::class, groups={"Api", "GameMessages"})
+     *      description="Select phase for quiz"
      *     )
      * )
      */
@@ -84,8 +83,7 @@ class QuizGameController extends AbstractController
      *     tags={"Quiz game"},
      *     @SWG\Response(
      *      response="200",
-     *      description="Select phase for quiz",
-     *      @Model(type=QuizGame::class, groups={"Api", "GameMessages"})
+     *      description="Select phase for quiz"
      *     )
      * )
      */

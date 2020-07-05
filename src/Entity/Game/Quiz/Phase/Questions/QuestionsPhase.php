@@ -83,6 +83,9 @@ class QuestionsPhase extends BasePhase
         return null;
     }
 
+    /**
+     * @Groups({"Api", "AMQP"})
+     */
     public function getCurrentQuestion(): ?QuestionInterface
     {
         $currentPhaseQuestion = $this->getCurrentPhaseQuestion();

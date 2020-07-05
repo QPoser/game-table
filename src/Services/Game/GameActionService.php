@@ -111,7 +111,7 @@ class GameActionService
             'user' => $user->getId(),
         ];
 
-        $this->createGameAction($game, $gameActionValuesMain, GameAction::TEMPLATE_USER_ENTERED_ANSWER, $user);
+        $this->createGameAction($game, $gameActionValuesMain, GameAction::TEMPLATE_QUIZ_GAME_USER_ENTERED_ANSWER, $user);
     }
 
     public function createGameTurnsChangedAction(Game $game): void

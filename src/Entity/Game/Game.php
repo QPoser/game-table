@@ -84,7 +84,7 @@ abstract class Game
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Game\Chat\Message", mappedBy="game", orphanRemoval=true)
      * @ORM\OrderBy({"id" = "DESC"})
-     * @Groups({"GameMessages"})
+     * @Groups({"Exclude"})
      */
     private Collection $messages;
 

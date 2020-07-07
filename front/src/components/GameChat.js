@@ -16,10 +16,12 @@ export class GameChat extends Component {
         super();
         this.state = {
             messages: [{text:"bla bla bla"}, {text:"bla bla bla"}],
-            chatmessage: ""
+            chatmessage: "",
+            recipient: "game"
         }
         this.handleChatMessageChange = this.handleChatMessageChange.bind(this);
         this.postMessage = this.postMessage.bind(this);
+        this.changeMessageRecipient = this.changeMessageRecipient.bind(this);
       }
 
 
@@ -61,14 +63,22 @@ export class GameChat extends Component {
 
     postMessage() {
        // this.setState({ messages: [...this.state.messages, {text:this.state.chatmessage}] });
-       this.props.postMessage({gameId: this.props.games.game.Id, content: this.state.chatmessage});
+       this.props.postMessage({gameId: this.props.games.game.Id, content: this.state.chatmessage, recipient: this.state.recipient });
        this.setState({ chatmessage: "" });
+    }
+
+    changeMessageRecipient() {
+        this.setState((state) => {
+            const recipient = state.recipient === "game" ? "team" : "game";
+            return { recipient };
+          });
     }
 
     render() {
 
         const { data=[] } = this.props.messages.messages;
         const { game } = this.props.games.game;
+        const { recipient } = this.state;
 
         return (
             
@@ -86,8 +96,16 @@ export class GameChat extends Component {
                    </div>
                 ))}
                 </div>
+                <h4>Message will be sent to {recipient}</h4>
                     <textarea value={this.state.chatmessage} name="chatmessage" onChange={this.handleChatMessageChange} className="form-control py-3 px-3" placeholder="Write your message here..." rows="3"></textarea>
-                    <button onClick={this.postMessage} className="btn btn-info btn-block mt-2">send message</button>
+                    <div className="row">
+                        <div className="col-md-8">
+                            <button onClick={this.postMessage} className="btn btn-info btn-block mt-2">send message</button>
+                        </div>    
+                        <div className="col-md-4">
+                            <div className="btn btn-primary btn-block mt-2" onClick={this.changeMessageRecipient} >Send message to {recipient === "game" ? "team" : "game"}</div>
+                        </div>
+                    </div>
                 </div>    
             </React.Fragment>
         )

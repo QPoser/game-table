@@ -37,7 +37,7 @@ export const getMessages = (gameId) => async dispatch => {
   export const postMessage = (message) => async dispatch => {
       const res = await axios.post("/api/chat/" + message.gameId + "/message", {
           content: message.content,
-          type: "game"
+          type: message.recipient
       });
 
       dispatch(getMessages(message.gameId));

@@ -17,12 +17,32 @@ class GameAction
     public const TEMPLATE_YOUR_GAME_STARTED = 'your_game_started';
     public const TEMPLATE_USER_JOINED_TO_GAME = 'user_joined_to_game';
     public const TEMPLATE_USER_LEAVED_FROM_GAME = 'user_leaved_from_game';
+    public const TEMPLATE_USER_CHOSE_PHASE_IN_QUIZ = 'user_chose_phase_in_quiz';
+    public const TEMPLATE_QUIZ_PLAYING_STARTED = 'quiz_playing_started';
+    public const TEMPLATE_QUIZ_GAME_USER_ENTERED_ANSWER = 'quiz_game_user_entered_answer';
+    public const TEMPLATE_USER_FROM_YOUR_TEAM_ENTERED_ANSWER = 'user_from_your_team_entered_answer';
+    public const TEMPLATE_GAME_TURNS_CHANGED = 'game_turns_changed';
+    public const TEMPLATE_QUIZ_NEW_QUESTION_IN_PROGRESS = 'quiz_new_question_in_progress';
+    public const TEMPLATE_QUIZ_PHASE_FINISHED = 'quiz_phase_finished';
+    public const TEMPLATE_QUIZ_GAME_FINISHED = 'quiz_game_finished';
 
     public const TEMPLATES = [
           self::TEMPLATE_GAME_STARTED => self::TEMPLATE_GAME_STARTED,
           self::TEMPLATE_YOUR_GAME_STARTED => self::TEMPLATE_YOUR_GAME_STARTED,
           self::TEMPLATE_USER_JOINED_TO_GAME => self::TEMPLATE_USER_JOINED_TO_GAME,
           self::TEMPLATE_USER_LEAVED_FROM_GAME => self::TEMPLATE_USER_LEAVED_FROM_GAME,
+          self::TEMPLATE_USER_CHOSE_PHASE_IN_QUIZ => self::TEMPLATE_USER_CHOSE_PHASE_IN_QUIZ,
+          self::TEMPLATE_QUIZ_PLAYING_STARTED => self::TEMPLATE_QUIZ_PLAYING_STARTED,
+          self::TEMPLATE_QUIZ_GAME_USER_ENTERED_ANSWER => self::TEMPLATE_QUIZ_GAME_USER_ENTERED_ANSWER,
+          self::TEMPLATE_USER_FROM_YOUR_TEAM_ENTERED_ANSWER => self::TEMPLATE_USER_FROM_YOUR_TEAM_ENTERED_ANSWER,
+          self::TEMPLATE_GAME_TURNS_CHANGED => self::TEMPLATE_GAME_TURNS_CHANGED,
+          self::TEMPLATE_QUIZ_NEW_QUESTION_IN_PROGRESS => self::TEMPLATE_QUIZ_NEW_QUESTION_IN_PROGRESS,
+          self::TEMPLATE_QUIZ_PHASE_FINISHED => self::TEMPLATE_QUIZ_PHASE_FINISHED,
+          self::TEMPLATE_QUIZ_GAME_FINISHED => self::TEMPLATE_QUIZ_GAME_FINISHED,
+    ];
+
+    public const USER_TURN_TEMPLATES = [
+        self::TEMPLATE_QUIZ_GAME_USER_ENTERED_ANSWER => self::TEMPLATE_QUIZ_GAME_USER_ENTERED_ANSWER,
     ];
 
     /**

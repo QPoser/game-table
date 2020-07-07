@@ -7,6 +7,7 @@ use App\Entity\Game\Game;
 use App\Entity\Game\Team\GameTeamPlayer;
 use App\Entity\Game\Team\GameTeam;
 use App\Entity\User;
+use App\Events\GameFinishedEvent;
 use App\Events\GameUserJoinedEvent;
 use App\Events\GameUserLeavedEvent;
 use App\Exception\AppException;
@@ -162,5 +163,14 @@ class GameService
                 throw new AppException(ErrorCode::GAME_TYPE_NOT_FOUND);
                 break;
         }
+    }
+
+    public function finishGame(Game $game): void
+    {
+        $game->setStatus(Game::STATUS_FINISHED);
+        $this->em->flush();
+
+        $event = new GameFinishedEvent($game);
+        $this->dispatcher->dispatch($event, GameFinishedEvent::NAME);
     }
 }

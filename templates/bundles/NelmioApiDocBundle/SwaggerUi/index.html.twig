@@ -6,25 +6,115 @@
     {% include 'partials/nav.html.twig' %}
 {% endblock %}
 
+{% block swagger_ui %}
+    <div id="accordion">
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Game action events
+                    </button>
+                </h5>
+            </div>
+
+            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                <div class="card-body">
+                    {% for template in constant('App\\Entity\\Game\\GameAction::TEMPLATES') %}
+                        <p>{{ template }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                        Quiz game description
+                    </button>
+                </h5>
+            </div>
+
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                <div class="card-body">
+                    <b>НАЧАЛО ИГРЫ:</b>
+                    <p>
+                        В момент когда в канал game_action приходит экшн <b>your_game_started</b>
+                        мы начинаем игру (берем данные по игре из <b>/api/games/current</b> и сообщения из <b>/api/chat/{game}/messages</b>).
+                        Игра в Quiz делится на два этапа: выбор фаз и сама игра.
+                        Юзеры в квизе ходят всегда по очереди. Например при выборе фазы сначала выбирает фазу один игрок из первой команды, затем выбирает фазу один игрок из второй команды.
+                        Остальным юзерам в это время действия будут недоступны. Узнать каким юзерам доступно действие помогает поле <b>playerTurn</b> в запросе игры,
+                        и событие в канале game_action <b>game_turns_changed</b>, в нём возвращается список айдишников юзеров, которым в данный момент доступно действие.
+                    </p>
+
+                    <b>ВЫБОР ФАЗ:</b>
+                    <p>
+                        Первая фаза выбирается автоматически игрой, потом игрок первой команды должен выбрать фазу в которую он хочет играть.
+                        Затем игрок второй команды выбирает фазу в которой он хочет играть.
+                        Список фаз можно получить в запросе <b>/api/game/quiz/phases</b> а выбрать фазу запросом <b>/api/game/quiz/{id}/phase</b>.
+                        После того, как юзер выбирает фазу, в канал game_action придёт событие <b>user_chose_phase_in_quiz</b> и <b>game_turns_changed</b>.
+                        Событие <b>user_chose_phase_in_quiz</b> позволяет узнать какую фазу выбрал юзер, и уведомить об этом остальных игроков.
+                    </p>
+
+                    <b>ИГРА:</b>
+                    <p>
+                        После того, как второй игрок выберет фазу, в канал game_action придёт событие quiz_playing_started. В котором придёт игра, и из игры мы получим фазу и первый вопрос.
+                        Для выбора ответа мы используем метод <b>/api/game/quiz/{id}/answer</b>, в котором строкой отправляем ответ (он сам заматчится с вариантом ответа).
+                        После выбора ответа юзером мы получим два события в канале game_action: <b>quiz_game_user_entered_answer</b> и <b>user_from_your_team_entered_answer</b>.
+                        Событие <b>quiz_game_user_entered_answer</b> менее информативное, и отправляется всем игрокам. Событие <b>user_from_your_team_entered_answer</b> более информативное, и отправляется только команде юзера.
+                        Это нужно для того, чтобы соперники не видели ответа юзера, но знали что он ответил.
+
+                        После того, как оба юзера ответят, мы получим следующие евенты в game_action канал: <b>game_turns_changed</b>, <b>quiz_new_question_in_progress</b>.
+                        Используя событие <b>quiz_new_question_in_progress</b> мы можем вывести следующий вопрос для игроков.
+
+                        После того, как фаза будет пройдена (ответы на 3 вопроса дадут обе команды), в канал game_action придет событие <b>quiz_phase_finished</b>.
+
+                        Если завершенная фаза была последней, то мы сразу получим в канал game_action событие <b>quiz_game_finished</b>. И игра на этом завершится.
+                        Иначе мы получим событие <b>quiz_new_question_in_progress</b>. И игра продолжится в следующей фазе.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                        Quiz game phases
+                    </button>
+                </h5>
+            </div>
+
+            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                <div class="card-body">
+                    <p>'questions' // Базовые вопросы с 4 вариантами ответа</p>
+                    <p>'prices' // Вопрос с ценой предмента, от юзера принимаем int</p>
+                    <p>'music_reverse' // Вопрос с музыкой в обратном порядке, от юзера принимаем ответ группу/название и матчим с ответом</p>
+                    <p>'movies' // Кадр из фильма, ответ от юзера - строкой название</p>
+                    <p>'brands' // Закрашенные бренды, ответ от юзера - строкой название</p>
+                    <p>'associations' // Вопросы с иконками-ассоциациями для слова, каждая иконка появляется через 3-5 секунд. Команда которая первая ответит - получает балл.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ parent() }}
+{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
     <style>
         header:before {
             display: none;
         }
     </style>
-
-    <script
-            src="https://code.jquery.com/jquery-3.5.0.min.js"
-            integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
-            crossorigin="anonymous"></script>
 {% endblock stylesheets %}
 
 {% block javascripts %}
     {{ parent() }}
     <script src="https://kit.fontawesome.com/a26d4c14b9.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 {% endblock javascripts %}

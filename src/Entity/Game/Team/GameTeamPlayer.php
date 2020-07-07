@@ -17,31 +17,20 @@ class GameTeamPlayer
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"Api", "AMQP"})
      */
     private ?int $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class)
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"Api"})
+     * @Groups({"Api", "AMQP"})
      */
     private ?User $user;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"Excluded"})
-     */
-    private ?string $role = null;
-
-    /**
      * @ORM\Column(type="boolean")
-     * @Groups({"Api"})
-     */
-    private bool $hiddenRole = true;
-
-    /**
-     * @ORM\Column(type="boolean")
-     * @Groups({"Api"})
+     * @Groups({"Api", "AMQP"})
      */
     private bool $playerTurn = true;
 
@@ -69,18 +58,6 @@ class GameTeamPlayer
         return $this;
     }
 
-    public function getRole(): ?string
-    {
-        return $this->role;
-    }
-
-    public function setRole(?string $role): self
-    {
-        $this->role = $role;
-
-        return $this;
-    }
-
     public function isPlayerTurn(): ?bool
     {
         return $this->playerTurn;
@@ -89,18 +66,6 @@ class GameTeamPlayer
     public function setPlayerTurn(bool $playerTurn): self
     {
         $this->playerTurn = $playerTurn;
-
-        return $this;
-    }
-
-    public function isHiddenRole(): ?bool
-    {
-        return $this->hiddenRole;
-    }
-
-    public function setHiddenRole(bool $hiddenRole): self
-    {
-        $this->hiddenRole = $hiddenRole;
 
         return $this;
     }

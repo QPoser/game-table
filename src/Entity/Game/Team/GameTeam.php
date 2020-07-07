@@ -20,7 +20,7 @@ class GameTeam
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"Api"})
+     * @Groups({"Api", "AMQP"})
      */
     private ?int $id;
 
@@ -33,19 +33,19 @@ class GameTeam
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"Api"})
+     * @Groups({"Api", "AMQP"})
      */
     private ?string $title;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"Api"})
+     * @Groups({"Api", "AMQP"})
      */
     private ?int $slots;
 
     /**
      * @ORM\OneToMany(targetEntity=GameTeamPlayer::class, mappedBy="team", orphanRemoval=true)
-     * @Groups({"Api"})
+     * @Groups({"Api", "AMQP"})
      */
     private Collection $players;
 
@@ -88,9 +88,6 @@ class GameTeam
         return $this;
     }
 
-    /**
-     * @return Collection|GameTeamPlayer[]
-     */
     public function getPlayers(): Collection
     {
         return $this->players;
@@ -175,5 +172,29 @@ class GameTeam
         $this->userInTeam = $userInTeam;
 
         return $this;
+    }
+
+    public function getPlayerWithTurn(): ?GameTeamPlayer
+    {
+        foreach ($this->players as $player) {
+            /** @var GameTeamPlayer $player */
+            if ($player->isPlayerTurn()) {
+                return $player;
+            }
+        }
+
+        return null;
+    }
+
+    public function getUsersIds(): array
+    {
+        $ids = [];
+
+        foreach ($this->players as $player) {
+            /** @var GameTeamPlayer $player */
+            $ids[] = $player->getUser()->getId();
+        }
+
+        return $ids;
     }
 }

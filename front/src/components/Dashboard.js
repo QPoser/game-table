@@ -63,7 +63,7 @@ class Dashboard extends Component {
        let msgBody = JSON.parse(data);
        if (msgBody.Template === 'your_game_started') {
         console.log('Game was started ' + msgBody.Game.Id);
-        this.props.setCurrentGame(msgBody.Game);
+        //this.props.setCurrentGame(msgBody.Game);
         this.props.getMessages(msgBody.Game.Id);
         this.props.history.push("/gamechat");
        }

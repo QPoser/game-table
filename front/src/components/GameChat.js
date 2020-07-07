@@ -5,6 +5,8 @@ import io from "socket.io-client";
 import { connect } from "react-redux";
 //import moment from "moment";
 import { getMessages, afterPostMessage, postMessage } from "../actions/chatActions"
+import { getCurrentGame } from "../actions/gamesActions"
+//getCurrentGame
 import ChatCard from "./ChatCard"
 //import Dropzone from 'react-dropzone';
 import Axios from 'axios';
@@ -28,8 +30,9 @@ export class GameChat extends Component {
     componentDidMount() {
 
 
-        this.props.getMessages(1);
+        //this.props.getMessages(1);
 
+        this.props.getCurrentGame();
 
 
         //let server = "http://localhost:8888";
@@ -54,6 +57,11 @@ export class GameChat extends Component {
             this.props.dispatch(afterPostMessage(messageFromBackEnd));
         })
         */
+    }
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        debugger
+        return prevState;    
     }
 
 

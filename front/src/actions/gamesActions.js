@@ -9,6 +9,17 @@ export const getGames = () => async dispatch => {
     });
   };
 
+  export const getCurrentGame = () => async dispatch => {
+    const res = await axios.get("/api/games/current");
+    /*
+    dispatch({
+      type: GET_GAMES,
+      payload: res.data
+    });
+    */
+    dispatch(setCurrentGame(res.data));
+  };
+
   export const setCurrentGame = (game) => dispatch => {
   
     dispatch({
@@ -64,3 +75,5 @@ export const createNewGame = (newUser, history) => async dispatch => {
     });
   }
 };
+
+

@@ -81,12 +81,4 @@ class GameTeamPlayer
 
         return $this;
     }
-
-    /**
-     * @Groups({"Api"})
-     */
-    public function getApiRole(): ?string
-    {
-        return $this->hiddenRole ? $this->role : null;
-    }
 }

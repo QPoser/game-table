@@ -60,7 +60,7 @@ export class GameChat extends Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        debugger
+        //debugger
         return prevState;    
     }
 
@@ -130,5 +130,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps, 
-    {getMessages, postMessage}
+    {getMessages, postMessage, getCurrentGame}
     )(GameChat);

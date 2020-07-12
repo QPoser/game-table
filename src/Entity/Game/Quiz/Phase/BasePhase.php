@@ -51,17 +51,11 @@ abstract class BasePhase
     private int $id;
 
     /**
-     * @ORM\Column(type="boolean", nullable=true)
-     * @Groups({"Api", "AMQP"})
-     */
-    private bool $vip;
-
-    /**
      * @ORM\ManyToOne(targetEntity=QuizGame::class, inversedBy="phases")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"Exclude"})
      */
-    private QuizGame $game;
+    private ?QuizGame $game;
 
     /**
      * @ORM\Column(type="string", length=32, nullable=true)
@@ -92,23 +86,9 @@ abstract class BasePhase
 
     abstract public function closeQuestion(): void;
 
-
-
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getVip(): ?bool
-    {
-        return $this->vip;
-    }
-
-    public function setVip(?bool $vip): self
-    {
-        $this->vip = $vip;
-
-        return $this;
     }
 
     public function getGame(): ?QuizGame

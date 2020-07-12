@@ -32,7 +32,7 @@ class QuizGameController extends AbstractController
     /**
      * @Route("/phases", name=".phases", methods={"GET"})
      * @Rest\View(serializerGroups={"Api"})
-     * @SWG\Post(
+     * @SWG\Get(
      *     tags={"Quiz game"},
      *     @SWG\Response(
      *      response="200",

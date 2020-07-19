@@ -7,6 +7,7 @@ use App\Entity\Game\Quiz\QuizGame;
 use App\Repository\Game\Quiz\Phase\BasePhaseRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Entity\User;
 
 /**
  * @ORM\Table
@@ -62,6 +63,13 @@ abstract class BasePhase
      * @Groups({"Api", "AMQP"})
      */
     private string $status = self::STATUS_PREPARED;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class)
+     * @ORM\JoinColumn(nullable=true)
+     * @Groups({"Api", "AMQP"})
+     */
+    private ?User $user = null;
 
     /**
      * @Groups({"Api", "AMQP"})
@@ -131,5 +139,17 @@ abstract class BasePhase
             'free' => self::FREE_TYPES,
             'vip' => self::VIP_TYPES,
         ];
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
     }
 }

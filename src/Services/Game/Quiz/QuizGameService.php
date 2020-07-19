@@ -54,7 +54,7 @@ class QuizGameService
         $this->dispatcher = $dispatcher;
     }
 
-    public function createGame(string $title, ?User $creator = null,?string $password = null): QuizGame
+    public function createGame(string $title, ?User $creator = null, ?string $password = null): QuizGame
     {
         $this->em->beginTransaction();
         $game = new QuizGame();
@@ -112,9 +112,9 @@ class QuizGameService
 
     public function addPhase(QuizGame $game, string $phaseType, User $user): void
     {
-        $this->quizPhaseService->createPhase($phaseType, $game);
+        $this->quizPhaseService->createPhase($phaseType, $game, $user);
 
-        $this->gameActionService->createQuizGamePhaseChosenActions($game, $user);
+        $this->gameActionService->createQuizGamePhaseChosenActions($game, $user, $phaseType);
 
         if ($game->getPhases()->count() === QuizGame::PHASES_COUNT) {
             $this->startGamePlaying($game);

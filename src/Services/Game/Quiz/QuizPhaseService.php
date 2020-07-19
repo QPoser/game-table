@@ -29,10 +29,10 @@ class QuizPhaseService
         $this->em = $em;
     }
 
-    public function createPhase(string $type, QuizGame $game): BasePhase
+    public function createPhase(string $type, QuizGame $game, ?User $user = null): BasePhase
     {
         if (!in_array($type, BasePhase::AVAILABLE_TYPES, true)) {
-            throw new AppException(ErrorCode::USER_ALREADY_HAS_GAME_IN_PROGRESS);
+            throw new AppException(ErrorCode::QUIZ_GAME_PHASE_DOES_NOT_EXISTS);
         }
 
         $phase = null;
@@ -44,8 +44,7 @@ class QuizPhaseService
         }
 
         /** @var BasePhase $phase */
-
-        $phase->setGame($game);
+        $phase->setUser($user);
         $game->addPhase($phase);
         $phase->setStatus(BasePhase::STATUS_PREPARED);
 

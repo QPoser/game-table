@@ -22,13 +22,12 @@ class QuestionsQuestion implements QuestionInterface
      * @ORM\Column(type="integer")
      * @Groups({"Exclude"})
      */
-    private int $id;
-
+    private ?int $id = null;
     /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @Groups({"Api", "AMQP"})
      */
-    private string $question;
+    private ?string $question = null;
 
     /**
      * @ORM\Column(type="boolean")
@@ -37,7 +36,7 @@ class QuestionsQuestion implements QuestionInterface
     private bool $enabled = false;
 
     /**
-     * @ORM\OneToMany(targetEntity=QuestionsAnswer::class, mappedBy="question", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=QuestionsAnswer::class, mappedBy="question", orphanRemoval=true, cascade={"persist"})
      * @Groups({"Api", "AMQP"})
      */
     private Collection $answers;
@@ -72,6 +71,19 @@ class QuestionsQuestion implements QuestionInterface
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function setAnswers(array $answers): self
+    {
+        $answers = new ArrayCollection($answers);
+
+        foreach ($answers as $answer) {
+            $answer->setQuestion($this);
+        }
+
+        $this->answers = $answers;
 
         return $this;
     }

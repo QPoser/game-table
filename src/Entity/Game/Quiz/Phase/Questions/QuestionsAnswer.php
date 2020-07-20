@@ -25,7 +25,7 @@ class QuestionsAnswer implements AnswerInterface
      * @ORM\Column(type="string", length=255)
      * @Groups({"Api", "AMQP"})
      */
-    private string $answer;
+    private ?string $answer = null;
 
     /**
      * @ORM\Column(type="boolean")
@@ -34,11 +34,16 @@ class QuestionsAnswer implements AnswerInterface
     private bool $correct = false;
 
     /**
-     * @ORM\ManyToOne(targetEntity=QuestionsQuestion::class, inversedBy="answers")
+     * @ORM\ManyToOne(targetEntity=QuestionsQuestion::class, inversedBy="answers", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"Exclude"})
      */
-    private QuestionsQuestion $question;
+    private ?QuestionsQuestion $question = null;
+
+    public function __toString()
+    {
+        return $this->answer;
+    }
 
     public function getId(): ?int
     {

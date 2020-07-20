@@ -46,11 +46,12 @@ class GameActionService
         $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_YOUR_GAME_STARTED, null);
     }
 
-    public function createQuizGamePhaseChosenActions(QuizGame $game, User $user): void
+    public function createQuizGamePhaseChosenActions(QuizGame $game, User $user, string $phaseType): void
     {
         $gameActionValues = [
             'team' => $game->getTeamPlayerByUser($user)->getTeam(),
             'gameId' => $game->getId(),
+            'phase' => $phaseType,
         ];
 
         $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_USER_CHOSE_PHASE_IN_QUIZ, $user);

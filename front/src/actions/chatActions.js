@@ -26,7 +26,7 @@ export function afterPostMessage(data){
 
 export const getMessages = (gameId) => async dispatch => {
     const res = await axios.get("/api/chat/" + gameId + "/messages");
-    debugger
+    
     
     dispatch({
       type: GET_MESSAGES,

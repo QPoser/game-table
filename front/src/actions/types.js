@@ -9,4 +9,5 @@ export const SET_CURRENT_GAME = "SET_CURRENT_GAME";
 export const GET_CHATS = 'get_chat';
 export const AFTER_POST_MESSAGE = 'after_post_message';
 export const GET_MESSAGES = 'get_messages';
+export const GET_PHASES = 'get_phases';
 

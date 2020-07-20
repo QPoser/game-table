@@ -1,4 +1,6 @@
 import axios from "axios";
+import { getMessages } from "./chatActions";
+import { getPhases } from "./phasesActions";
 import { GET_GAMES, JOIN_GAME, SET_CURRENT_GAME, GET_ERRORS } from "./types";
 
 export const getGames = () => async dispatch => {
@@ -17,7 +19,13 @@ export const getGames = () => async dispatch => {
       payload: res.data
     });
     */
+    debugger
     dispatch(setCurrentGame(res.data));
+
+    dispatch(getMessages(res.data.data.id));
+
+    dispatch(getPhases());
+
   };
 
   export const setCurrentGame = (game) => dispatch => {
@@ -75,5 +83,12 @@ export const createNewGame = (newUser, history) => async dispatch => {
     });
   }
 };
+
+
+
+
+
+
+///
 
 

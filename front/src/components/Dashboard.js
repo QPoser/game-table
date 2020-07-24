@@ -2,7 +2,7 @@ import React, { Component } from "react";
 //import ProjectItem from "./Project/ProjectItem";
 //import CreateProjectButton from "./Project/CreateProjectButton";
 import { connect } from "react-redux";
-import { getGames, setCurrentGame } from "../actions/gamesActions";
+import { getGames, setCurrentGame, getCurrentGame } from "../actions/gamesActions";
 import { getMessages, afterPostMessage } from "../actions/chatActions"
 import PropTypes from "prop-types";
 import Spinner from "./Spinner";
@@ -68,7 +68,13 @@ class Dashboard extends Component {
         this.props.history.push("/gamechat");
        }
        this.props.getGames();
+       //this.props.getCurrentGame();
        debugger
+
+       if (msgBody.Template === 'user_chose_phase_in_quiz'){
+        this.props.getCurrentGame();
+       }
+
     }.bind(this));
     socket.on('chat', function (data) {
       /*
@@ -149,5 +155,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getGames, setCurrentGame, getMessages }
+  { getGames, setCurrentGame, getMessages, getCurrentGame }
 )(Dashboard);

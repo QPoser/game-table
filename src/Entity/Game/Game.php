@@ -440,11 +440,10 @@ abstract class Game
 
         foreach ($this->teams as $team) {
             /** @var GameTeam $team */
-
             $player = $team->getPlayers()->get($playerIndex);
 
             if ($player) {
-                $player->setPlayerTurn(false);
+                $player->setPlayerTurn(true);
             }
         }
     }

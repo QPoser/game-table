@@ -22,7 +22,7 @@ class Header extends Component {
           </li>
           <li className="nav-item">
             <Link className="nav-link" to="/profile">
-              Profile
+              Profile ({user.email})
             </Link>
           </li>
           <li className="nav-item">

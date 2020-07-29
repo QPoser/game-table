@@ -7,11 +7,13 @@ import { connect } from "react-redux";
 import { getMessages, afterPostMessage, postMessage } from "../actions/chatActions"
 import { getCurrentGame } from "../actions/gamesActions"
 import { setCurrentPhase } from "../actions/phasesActions"
+import { QUIZ_PLAYING_STARTED } from "../actions/types"
 //
 //getCurrentGame
 import ChatCard from "./ChatCard"
 //import Dropzone from 'react-dropzone';
 import Axios from 'axios';
+
 
 export class GameChat extends Component {
 
@@ -96,8 +98,9 @@ export class GameChat extends Component {
 
         
         const { data:messages=[] } = this.props.messages.messages;
-        const { phases=[] } = this.props.phases;
+        const { phases=[], selectedPhases=[] } = this.props.phases;
         const { data:currentGame={teams:[]} } = this.props.games.game;
+        const { gameState="" } = this.props.games;
         const { recipient } = this.state;
         const [leftTeam={title:"", players:[]}, rightTeam={title:"", players:[]}] = currentGame.teams
 
@@ -110,6 +113,53 @@ export class GameChat extends Component {
             }
                return map; 
         }, {})
+
+
+
+        const panelForChoosingPhases = (
+
+            <React.Fragment>
+
+            <h4 className="text-center">Phases to choose</h4>
+            <div className="d-flex justify-content-around">
+            {phases.map(phase => (
+            <h4>
+                {phase.type}
+            </h4>                           
+            ))}
+            </div>
+
+
+            <div className="d-flex justify-content-around mb-2 phases-container border border-info rounded">
+            { Object.keys(phasesMap).map(key => (
+                <div>
+                    <ul className="list-group">
+                        {phasesMap[key].map(phase => (
+                            <li onClick={() => {
+                                
+                                this.setCurrentPhaseHandle(phase.name)
+                            }
+                                } className="list-group-item active">
+                                {phase.name}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            ))
+            }
+            </div>
+            </React.Fragment>
+        )
+
+
+        let mainPanel; 
+         
+        if (gameState != QUIZ_PLAYING_STARTED) {
+            mainPanel = panelForChoosingPhases;
+        } else {
+            mainPanel = <div>quiz started</div>
+        }
+
 
         return (
             
@@ -127,37 +177,16 @@ export class GameChat extends Component {
                 </div>
                 <div className="col-md-6">  
 
-                
-                    <h3 className="text-center">Phases</h3>
-                    <div className="d-flex justify-content-around">
-                    {phases.map(phase => (
-                    <h4>
-                        {phase.type}
-                    </h4>                           
-                    ))}
+                    <h4 className="text-center">Selected phases</h4>
+                    <div className="d-flex justify-content-around mb-2 px-2 py-2 border border-info rounded">
+                        {selectedPhases.map(phase => (
+                            <div className="btn btn-success">{phase.type}</div> 
+                        ))}
                     </div>
- 
-                    <div className="d-flex justify-content-around mb-2">
-                    { Object.keys(phasesMap).map(key => (
-                        <div>
-                            <ul className="list-group">
-                                {phasesMap[key].map(phase => (
-                                    <li onClick={() => {
-                                        
-                                        this.setCurrentPhaseHandle(phase.name)
-                                    }
-                                        } className="list-group-item active">
-                                        {phase.name}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))
-                    }
-                    </div>   
-                    
-                     
                 
+                
+                    {mainPanel}
+                      
               
                 <div className="scrollbar mb-4" id="style-1">
                 {messages.map(message => (

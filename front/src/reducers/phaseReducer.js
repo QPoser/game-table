@@ -1,7 +1,8 @@
-import { GET_PHASES } from "../actions/types";
+import { GET_PHASES, SET_SELECTED_PHASES } from "../actions/types";
 
 const initialState = {
   phases: [],
+  selectedPhases: [],
   phase: {}
 };
 
@@ -12,6 +13,11 @@ export default function(state = initialState, action) {
         ...state,
         phases: action.payload
       };
+    case SET_SELECTED_PHASES:
+      return {
+        ...state,
+        selectedPhases: action.payload
+      }  
     default:
       return state;
   }

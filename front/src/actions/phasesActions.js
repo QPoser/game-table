@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GET_PHASES } from "./types";
+import { GET_PHASES, SET_SELECTED_PHASES } from "./types";
 import { getCurrentGame } from "./gamesActions";
 
 export const getPhases = () => async dispatch => {
@@ -54,5 +54,15 @@ export const getPhases = () => async dispatch => {
       payload: res.data
     });
     */
+  
+  };
+
+
+  export const setSelectedPhases = (selectedPhases) => async dispatch => {
+
+    dispatch({
+        type: SET_SELECTED_PHASES,
+        payload: selectedPhases
+      });
   
   };

@@ -2,13 +2,14 @@ import React, { Component } from "react";
 //import ProjectItem from "./Project/ProjectItem";
 //import CreateProjectButton from "./Project/CreateProjectButton";
 import { connect } from "react-redux";
-import { getGames, setCurrentGame, getCurrentGame } from "../actions/gamesActions";
-import { getMessages, afterPostMessage } from "../actions/chatActions"
+import { getGames, setCurrentGame, getCurrentGame, setGameState } from "../actions/gamesActions";
+import { getMessages, afterPostMessage } from "../actions/chatActions";
 import PropTypes from "prop-types";
 import Spinner from "./Spinner";
 import Game from "./Game";
 import { Link } from 'react-router-dom';
 import io from "socket.io-client";
+import { QUIZ_PLAYING_STARTED } from "../actions/types";
 
 class Dashboard extends Component {
   
@@ -73,6 +74,10 @@ class Dashboard extends Component {
 
        if (msgBody.Template === 'user_chose_phase_in_quiz'){
         this.props.getCurrentGame();
+       }
+
+       if (msgBody.Template === 'quiz_playing_started') {
+         this.props.setGameState(QUIZ_PLAYING_STARTED)
        }
 
     }.bind(this));
@@ -155,5 +160,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getGames, setCurrentGame, getMessages, getCurrentGame }
+  { getGames, setCurrentGame, getMessages, getCurrentGame, setGameState }
 )(Dashboard);

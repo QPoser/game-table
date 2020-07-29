@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getMessages } from "./chatActions";
-import { getPhases } from "./phasesActions";
-import { GET_GAMES, JOIN_GAME, SET_CURRENT_GAME, GET_ERRORS } from "./types";
+import { getPhases, setSelectedPhases } from "./phasesActions";
+import { GET_GAMES, JOIN_GAME, SET_CURRENT_GAME, GET_ERRORS, SET_GAME_STATE } from "./types";
 
 export const getGames = () => async dispatch => {
     const res = await axios.get("/api/games");
@@ -26,6 +26,10 @@ export const getGames = () => async dispatch => {
 
     dispatch(getPhases());
 
+    dispatch(setSelectedPhases(res.data.data.phases));
+
+    dispatch(setGameState(res.data.data.gameStatus));
+
   };
 
   export const setCurrentGame = (game) => dispatch => {
@@ -34,6 +38,7 @@ export const getGames = () => async dispatch => {
       type: SET_CURRENT_GAME,
       payload: game
     });
+
   };
 
   export const join = JoinRequest => async dispatch => {
@@ -82,6 +87,16 @@ export const createNewGame = (newUser, history) => async dispatch => {
       payload: err.response.data
     });
   }
+};
+
+
+export const setGameState = (gameState) => async dispatch => {
+
+    dispatch({
+      type: SET_GAME_STATE,
+      payload: gameState
+    });
+
 };
 
 

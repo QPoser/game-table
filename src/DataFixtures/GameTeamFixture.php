@@ -17,7 +17,7 @@ class GameTeamFixture extends Fixture implements DependentFixtureInterface
             for ($j = 1; $j <= 5; $j++) {
                 $team = new GameTeam();
                 $team->setTitle('Birds');
-                $team->setSlots(1);
+                $team->setSlots($j);
                 $team->setGame($this->getReference('game_' . $j));
 
                 $manager->persist($team);

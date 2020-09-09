@@ -67,7 +67,7 @@ img {
 .scrollbar
 {
 	
-	height: 600px;
+	height: 200px;
 	border-radius: 30px;
   overflow-y: scroll;
 	background-color: #17A2B8;  
@@ -92,4 +92,11 @@ img {
 	border-radius: 10px;
 	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
 	background-color: #555;
+}
+
+.phases-container {
+  height: 200px;
+	border-radius: 30px;
+  overflow-y: auto;
+  padding: 20px 20px 20px 20px;
 }

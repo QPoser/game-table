@@ -2,13 +2,14 @@ import React, { Component } from "react";
 //import ProjectItem from "./Project/ProjectItem";
 //import CreateProjectButton from "./Project/CreateProjectButton";
 import { connect } from "react-redux";
-import { getGames, setCurrentGame } from "../actions/gamesActions";
-import { getMessages, afterPostMessage } from "../actions/chatActions"
+import { getGames, setCurrentGame, getCurrentGame, setGameState } from "../actions/gamesActions";
+import { getMessages, afterPostMessage } from "../actions/chatActions";
 import PropTypes from "prop-types";
 import Spinner from "./Spinner";
 import Game from "./Game";
 import { Link } from 'react-router-dom';
 import io from "socket.io-client";
+import { QUIZ_PLAYING_STARTED } from "../actions/types";
 
 class Dashboard extends Component {
   
@@ -16,8 +17,6 @@ class Dashboard extends Component {
     super();
   }
 
-  
-  
   componentDidMount() {
     this.props.getGames();
     this.socketInitialization();
@@ -31,60 +30,41 @@ class Dashboard extends Component {
         transports: ['websocket']
     });
 
-    
     socket.emit('private', { // subscribe to private channel
         'token': jwtToken
     });
     
-    
     socket.on('notifications', function (data) {
-      /*
-        var msgBody = JSON.parse(data);
-        console.log('notification');
-        console.log(msgBody);
-        if (msgBody.Template === 'game_created') {
-            alert('Game was created ' + msgBody.JsonValues.game)
-        }
-        if (msgBody.Template === 'game_started') {
-            alert('Game was started ' + msgBody.JsonValues.game)
-        }
-        */
        debugger
     });
+
     socket.on('game_action', function (data) {
-        /*
-        var msgBody = JSON.parse(data);
-        console.log('game_action');
-        console.log(msgBody);
-        if (msgBody.Template === 'game_started') {
-            console.log('Game was started ' + msgBody.Game.Id)
-        }
-        */
+
        let msgBody = JSON.parse(data);
        if (msgBody.Template === 'your_game_started') {
         console.log('Game was started ' + msgBody.Game.Id);
-        this.props.setCurrentGame(msgBody.Game);
         this.props.getMessages(msgBody.Game.Id);
         this.props.history.push("/gamechat");
        }
        this.props.getGames();
        debugger
+
+       if (msgBody.Template === 'user_chose_phase_in_quiz'){
+        this.props.getCurrentGame();
+       }
+
+       if (msgBody.Template === 'quiz_playing_started') {
+         this.props.setGameState(QUIZ_PLAYING_STARTED)
+       }
+
     }.bind(this));
+
     socket.on('chat', function (data) {
-      /*
-        var msgBody = JSON.parse(data);
-        console.log('game_action');
-        console.log(msgBody);
-        if (msgBody.Template === 'game_started') {
-            console.log('Game was started ' + msgBody.Game.Id)
-        }
-        */
        debugger
        var msgBody = JSON.parse(data);
        this.props.getMessages(msgBody.Game.Id);
        debugger
     }.bind(this));
-
 
     socket.on('connect', (s) => {
       debugger
@@ -149,5 +129,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getGames, setCurrentGame, getMessages }
+  { getGames, setCurrentGame, getMessages, getCurrentGame, setGameState }
 )(Dashboard);

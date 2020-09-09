@@ -13,4 +13,6 @@ export const GET_PHASES = 'get_phases';
 export const SET_SELECTED_PHASES = 'set_selected_phases';
 export const SET_GAME_STATE = 'set_game_state';
 export const QUIZ_PLAYING_STARTED = 'playing';
+export const SET_PHASE_IN_PROGRESS = 'SET_PHASE_IN_PROGRESS';
 
+export const POST_ANSWER = "POST_ANSWER";

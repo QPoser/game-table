@@ -1,16 +1,11 @@
 import axios from "axios";
-import { GET_PHASES, SET_SELECTED_PHASES } from "./types";
+import { GET_PHASES, SET_SELECTED_PHASES,SET_PHASE_IN_PROGRESS } from "./types";
 import { getCurrentGame } from "./gamesActions";
 
 export const getPhases = () => async dispatch => {
     const res = await axios.get("/api/game/quiz/phases");
   
-  
-    
-  
-  
     var keys = Object.keys(res.data.data);
-  
   
     var phases = [];
     keys.forEach(function (key) {
@@ -21,20 +16,10 @@ export const getPhases = () => async dispatch => {
     }
     });
   
-    
-
     dispatch({
         type: GET_PHASES,
         payload: phases
       });
-
-
-    /*
-    dispatch({
-      type: GET_GAMES,
-      payload: res.data
-    });
-    */
   
   };
 
@@ -43,26 +28,29 @@ export const getPhases = () => async dispatch => {
       "phase_type": phaseName
     });
   
-  
     debugger
 
     dispatch(getCurrentGame());
-
-    /*
-    dispatch({
-      type: GET_GAMES,
-      payload: res.data
-    });
-    */
   
   };
 
 
   export const setSelectedPhases = (selectedPhases) => async dispatch => {
-
     dispatch({
         type: SET_SELECTED_PHASES,
         payload: selectedPhases
       });
   
+    dispatch(setPhaseInProgress(selectedPhases));
   };
+
+  export const setPhaseInProgress = (selectedPhases) => async dispatch => {
+
+    let phaseInProgress = selectedPhases.filter(phase => phase.status == "in_progress")[0];
+
+
+    dispatch({
+      type: SET_PHASE_IN_PROGRESS,
+      payload: phaseInProgress
+    });
+  }

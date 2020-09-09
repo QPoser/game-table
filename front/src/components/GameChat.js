@@ -1,18 +1,10 @@
 import React, { Component } from 'react'
-import { Form, Input, Button, Row, Col, } from 'antd';
-import Icon from '@ant-design/icons';
-import io from "socket.io-client";
 import { connect } from "react-redux";
-//import moment from "moment";
 import { getMessages, afterPostMessage, postMessage } from "../actions/chatActions"
 import { getCurrentGame } from "../actions/gamesActions"
 import { setCurrentPhase } from "../actions/phasesActions"
 import { QUIZ_PLAYING_STARTED } from "../actions/types"
-//
-//getCurrentGame
-import ChatCard from "./ChatCard"
-//import Dropzone from 'react-dropzone';
-import Axios from 'axios';
+import Answers from "./Answers";
 
 
 export class GameChat extends Component {
@@ -33,51 +25,14 @@ export class GameChat extends Component {
 
 
     componentDidMount() {
-
-
-        //this.props.getMessages(1);
-
         this.props.getCurrentGame();
-
-
-        //let server = "http://localhost:8888";
-
-        /*
-        this.props.getMessage();
-
-        let socket = io("http://localhost:8888", {
-            transports: ["websocket"]
-        });
-
-        socket.on("connect", function () {
-            alert("connect");
-        })
-        */ 
-
-        //this.socket = io(server);
-
-        /*
-        this.socket.on("Output Chat Message", messageFromBackEnd => {
-            console.log(messageFromBackEnd)
-            this.props.dispatch(afterPostMessage(messageFromBackEnd));
-        })
-        */
     }
-
-    /*
-    static getDerivedStateFromProps(nextProps, prevState) {
-        //debugger
-        return prevState;    
-    }
-    */
-
 
     handleChatMessageChange(e) {
         this.setState({ [e.target.name]: e.target.value });
     }
 
     postMessage() {
-       // this.setState({ messages: [...this.state.messages, {text:this.state.chatmessage}] });
        this.props.postMessage({gameId: this.props.games.game.data.id, content: this.state.chatmessage, recipient: this.state.recipient });
        this.setState({ chatmessage: "" });
     }
@@ -98,7 +53,7 @@ export class GameChat extends Component {
 
         
         const { data:messages=[] } = this.props.messages.messages;
-        const { phases=[], selectedPhases=[] } = this.props.phases;
+        const { phases=[], selectedPhases=[], phaseInProgress={currentQuestion:{question:""}} } = this.props.phases;
         const { data:currentGame={teams:[]} } = this.props.games.game;
         const { gameState="" } = this.props.games;
         const { recipient } = this.state;
@@ -157,7 +112,20 @@ export class GameChat extends Component {
         if (gameState != QUIZ_PLAYING_STARTED) {
             mainPanel = panelForChoosingPhases;
         } else {
-            mainPanel = <div>quiz started</div>
+
+           // selectedPhases
+
+
+           try {
+            mainPanel = <div className="mx-2 my-2 px-2 py-2 border border-info rounded">
+            <div className="lead">{phaseInProgress.currentQuestion.question}</div>
+
+            <Answers answers={phaseInProgress.currentQuestion.answers} />
+
+            </div>
+           } catch (e) {
+               debugger
+           }
         }
 
 

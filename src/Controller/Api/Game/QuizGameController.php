@@ -78,7 +78,7 @@ class QuizGameController extends AbstractController
     /**
      * @Route("/{id}/answer", name=".phase.answer", methods={"POST"})
      * @Rest\View(serializerGroups={"Api"})
-     * @Rest\RequestParam(name="answer", requirements="\w+", nullable=false, strict=true, description="Answer (any string)")
+     * @Rest\RequestParam(name="answer", nullable=false, strict=true, description="Answer (any string)")
      * @SWG\Post(
      *     tags={"Quiz game"},
      *     @SWG\Response(

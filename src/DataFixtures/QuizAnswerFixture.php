@@ -19,7 +19,7 @@ class QuizAnswerFixture extends Fixture implements DependentFixtureInterface
             for ($j = 1; $j <= 4; $j++) {
                 $answer = new QuestionsAnswer();
                 $answer->setQuestion($this->getReference('question_' . $i));
-                $answer->setAnswer('answer 1');
+                $answer->setAnswer('answer ' . $j);
                 $answer->setCorrect($j === 1);
 
                 $manager->persist($answer);

@@ -17,6 +17,7 @@ use App\Events\QuizGamePhaseFinishedEvent;
 use App\Events\QuizGameUserEnteredAnswerEvent;
 use App\Exception\AppException;
 use App\Services\Game\GameActionService;
+use App\Services\Game\GamePlayerTurnService;
 use App\Services\Notification\GameNotificationTemplateHelper;
 use App\Services\Response\ErrorCode;
 use App\Services\Validation\ValidationService;
@@ -37,13 +38,16 @@ class QuizGameService
 
     private EventDispatcherInterface $dispatcher;
 
+    private GamePlayerTurnService $gamePlayerTurnService;
+
     public function __construct(
         EntityManagerInterface $em,
         ValidationService $validator,
         GameNotificationTemplateHelper $gameNTH,
         GameActionService $gameActionService,
         QuizPhaseService $quizPhaseService,
-        EventDispatcherInterface $dispatcher
+        EventDispatcherInterface $dispatcher,
+        GamePlayerTurnService $gamePlayerTurnService
     )
     {
         $this->em = $em;
@@ -52,6 +56,7 @@ class QuizGameService
         $this->gameActionService = $gameActionService;
         $this->quizPhaseService = $quizPhaseService;
         $this->dispatcher = $dispatcher;
+        $this->gamePlayerTurnService = $gamePlayerTurnService;
     }
 
     public function createGame(string $title, ?User $creator = null, ?string $password = null): QuizGame
@@ -99,12 +104,12 @@ class QuizGameService
     public function startGame(QuizGame $game, ?User $user = null): void
     {
         $game->setStatus(Game::STATUS_STARTED);
-        $game->setFirstTeamPlayerTurn();
 
         $this->em->persist($game);
         $this->em->flush($game);
 
         $this->quizPhaseService->createPhase(BasePhase::TYPE_QUESTIONS, $game);
+        $this->gamePlayerTurnService->setFirstTeamPlayerTurn($game);
 
         $this->gameActionService->createGameStartedActions($game);
         $this->gameNTH->createGameStartedNotifications($game);
@@ -113,22 +118,18 @@ class QuizGameService
     public function addPhase(QuizGame $game, string $phaseType, User $user): void
     {
         $this->quizPhaseService->createPhase($phaseType, $game, $user);
-
         $this->gameActionService->createQuizGamePhaseChosenActions($game, $user, $phaseType);
 
         if ($game->getPhases()->count() === QuizGame::PHASES_COUNT) {
             $this->startGamePlaying($game);
         } else {
-            $game->setSecondTeamPlayerTurn();
-            $this->em->flush();
-            $this->gameActionService->createGameTurnsChangedAction($game);
+            $this->gamePlayerTurnService->setSecondTeamPlayerTurn($game);
         }
     }
 
     public function startGamePlaying(QuizGame $game): void
     {
         $game->setGameStatus(QuizGame::GAME_STATUS_PLAYING);
-        $game->setPlayersTurnInEveryTeam(0);
 
         /** @var BasePhase $phase */
         $phase = $game->getPreparedPhase();
@@ -136,8 +137,8 @@ class QuizGameService
 
         $this->em->flush();
 
+        $this->gamePlayerTurnService->setPlayersTurnInEveryTeam($game, 0);
         $this->gameActionService->createQuizGamePlayingActions($game);
-        $this->gameActionService->createGameTurnsChangedAction($game);
     }
 
     public function putAnswer(QuizGame $game, string $userAnswer, User $user): void
@@ -186,13 +187,11 @@ class QuizGameService
             $answer->setPhaseQuestion($phaseQuestion);
         }
 
-        $game->disablePlayerTurnByUser($user);
-
         $this->em->persist($answer);
         $this->em->flush();
 
+        $this->gamePlayerTurnService->disablePlayerTurnByUser($game, $user);
         $this->gameActionService->createUserEnteredAnswerAction($game, $team, $user, $userAnswer, $questionAnswer);
-        $this->gameActionService->createGameTurnsChangedAction($game);
 
         $event = new QuizGameUserEnteredAnswerEvent($game);
         $this->dispatcher->dispatch($event, QuizGameUserEnteredAnswerEvent::NAME);
@@ -201,11 +200,12 @@ class QuizGameService
     public function startNextQuestion(BasePhase $phase): void
     {
         $phase->closeQuestion();
+        $game = $phase->getGame();
 
         $this->em->flush();
 
-        $phase->getGame()->updatePlayersTurnInEveryTeam();
-        $this->gameActionService->createNewQuestionInProgressAction($phase->getGame());
+        $this->gamePlayerTurnService->updatePlayersTurnInEveryTeam($game);
+        $this->gameActionService->createNewQuestionInProgressAction($game);
     }
 
     public function finishPhase(QuizGame $game): void
@@ -223,8 +223,9 @@ class QuizGameService
         }
 
         $game->finishCurrentPhase();
-
         $this->em->flush();
+
+        $this->gamePlayerTurnService->updatePlayersTurnInEveryTeam($game);
 
         $event = new QuizGamePhaseFinishedEvent($game, $phase);
         $this->dispatcher->dispatch($event, QuizGamePhaseFinishedEvent::NAME);

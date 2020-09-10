@@ -136,7 +136,6 @@ class QuizGame extends Game
 
             if ($phase->getStatus() === BasePhase::STATUS_PREPARED) {
                 $phase->setStatus(BasePhase::STATUS_IN_PROGRESS);
-                $this->setPlayersTurnInEveryTeam(0);
                 return;
             }
         }

@@ -31,42 +31,42 @@ class GamePlayerTurnService
     public function setFirstTeamPlayerTurn(Game $game): void
     {
         $game->setFirstTeamPlayerTurn();
-        $this->em->flush($game);
+        $this->em->flush();
         $this->gameActionService->createGameTurnsChangedAction($game);
     }
 
     public function setSecondTeamPlayerTurn(Game $game): void
     {
         $game->setSecondTeamPlayerTurn();
-        $this->em->flush($game);
+        $this->em->flush();
         $this->gameActionService->createGameTurnsChangedAction($game);
     }
 
     public function setPlayersTurnInEveryTeam(Game $game, int $playerIndex): void
     {
         $game->setPlayersTurnInEveryTeam($playerIndex);
-        $this->em->flush($game);
+        $this->em->flush();
         $this->gameActionService->createGameTurnsChangedAction($game);
     }
 
     public function disablePlayerTurnByUser(Game $game, User $user): void
     {
         $game->disablePlayerTurnByUser($user);
-        $this->em->flush($game);
+        $this->em->flush();
         $this->gameActionService->createGameTurnsChangedAction($game);
     }
 
     public function disablePlayersTurns(Game $game): void
     {
         $game->disablePlayersTurns();
-        $this->em->flush($game);
+        $this->em->flush();
         $this->gameActionService->createGameTurnsChangedAction($game);
     }
 
     public function updatePlayersTurnInEveryTeam(Game $game): void
     {
         $game->updatePlayersTurnInEveryTeam();
-        $this->em->flush($game);
+        $this->em->flush();
         $this->gameActionService->createGameTurnsChangedAction($game);
     }
 }

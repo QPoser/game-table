@@ -69,7 +69,6 @@ class QuizGameController extends AbstractController
         $this->denyAccessUnlessGranted(QuizGameVoter::ATTRIBUTE_SELECT_PHASE, $game);
 
         $phaseType = $paramFetcher->get('phase_type');
-
         $this->quizGameService->addPhase($game, $phaseType, $this->getUser());
 
         return Responser::wrapSuccess(true);

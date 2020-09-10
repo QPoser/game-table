@@ -117,6 +117,7 @@ class QuestionsPhase extends BasePhase
 
             if ($question->getStatus() === QuestionsPhaseQuestion::STATUS_WAIT) {
                 $question->setStatus(QuestionsPhaseQuestion::STATUS_CURRENT);
+                return;
             }
         }
     }

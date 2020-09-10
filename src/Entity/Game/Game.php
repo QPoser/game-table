@@ -543,7 +543,7 @@ abstract class Game
 
 
             return true;
-        })->last();
+        })->last() ?? null;
     }
 
     public function getLastUserWithGameAction(array $userIds = []): ?User

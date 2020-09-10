@@ -204,6 +204,7 @@ class QuizGameService
 
         $this->em->flush();
 
+        $phase->getGame()->updatePlayersTurnInEveryTeam();
         $this->gameActionService->createNewQuestionInProgressAction($phase->getGame());
     }
 

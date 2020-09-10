@@ -39,3 +39,9 @@ services:
         tags:
             - { name: kernel.event_listener, event: game.user.joined, method: onUserJoined }
             - { name: kernel.event_listener, event: game.user.leaved, method: onUserLeaved }
+
+    App\EventListener\QuizGameListener:
+        tags:
+            - { name: kernel.event_listener, event: game.quiz.user_entered_answer, method: onUserEnteredAnswer }
+            - { name: kernel.event_listener, event: game.quiz.phase_finished, method: onPhaseFinished }
+            - { name: kernel.event_listener, event: game.finished, method: onGameFinished }

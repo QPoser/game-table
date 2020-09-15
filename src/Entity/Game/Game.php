@@ -7,6 +7,7 @@ use App\Entity\Game\Chat\Message;
 use App\Entity\Game\Team\GameTeam;
 use App\Entity\Game\Team\GameTeamPlayer;
 use App\Entity\User;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -27,6 +28,7 @@ abstract class Game
     public const DEFAULT_SLOTS_IN_TEAM = 1;
     public const MAX_TEAMS = 2;
     public const STRICT_TEAMS = false;
+    public const STEP_TIME_SECONDS = 20;
 
     public const TYPE_QUIZ = 'quiz';
 
@@ -131,6 +133,12 @@ abstract class Game
     private Collection $actions;
 
     /**
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"Exclude"})
+     */
+    private ?DateTime $lastAction;
+
+    /**
      * @Groups({"Api"})
      */
     abstract public function getType(): string;
@@ -144,6 +152,7 @@ abstract class Game
         $this->teams = new ArrayCollection();
         $this->autoCreated = true;
         $this->actions = new ArrayCollection();
+        $this->lastAction = new DateTime('now');
     }
 
     public function getId(): ?int
@@ -551,5 +560,39 @@ abstract class Game
         $lastGameAction = $this->getLastUserGameAction($userIds);
 
         return $lastGameAction ? $lastGameAction->getUser() : null;
+    }
+
+    public function getLastAction(): ?DateTime
+    {
+        return $this->lastAction;
+    }
+
+    public function refreshLastAction(): self
+    {
+        $this->lastAction = new DateTime('now');
+
+        return $this;
+    }
+
+    /**
+     * @Groups({"Api"})
+     */
+    public function getCurrentStepSeconds(): ?int
+    {
+        if (!$this->lastAction) {
+            return null;
+        }
+
+        $seconds = $this->getGameStepTime() - (time() - $this->lastAction->getTimestamp());
+
+        return $seconds > 0 ? $seconds : null;
+    }
+
+    /**
+     * @Groups({"Api"})
+     */
+    public function getGameStepTime(): int
+    {
+        return static::STEP_TIME_SECONDS;
     }
 }

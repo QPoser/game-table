@@ -104,6 +104,7 @@ class QuizGameService
     public function startGame(QuizGame $game, ?User $user = null): void
     {
         $game->setStatus(Game::STATUS_STARTED);
+        $game->refreshLastAction();
 
         $this->em->persist($game);
         $this->em->flush($game);
@@ -115,9 +116,13 @@ class QuizGameService
         $this->gameNTH->createGameStartedNotifications($game);
     }
 
-    public function addPhase(QuizGame $game, string $phaseType, User $user): void
+    public function addPhase(QuizGame $game, string $phaseType, ?User $user): void
     {
         $this->quizPhaseService->createPhase($phaseType, $game, $user);
+
+        $game->refreshLastAction();
+        $this->em->flush($game);
+
         $this->gameActionService->createQuizGamePhaseChosenActions($game, $user, $phaseType);
 
         if ($game->getPhases()->count() === QuizGame::PHASES_COUNT) {
@@ -130,6 +135,7 @@ class QuizGameService
     public function startGamePlaying(QuizGame $game): void
     {
         $game->setGameStatus(QuizGame::GAME_STATUS_PLAYING);
+        $game->refreshLastAction();
 
         /** @var BasePhase $phase */
         $phase = $game->getPreparedPhase();
@@ -197,10 +203,32 @@ class QuizGameService
         $this->dispatcher->dispatch($event, QuizGameUserEnteredAnswerEvent::NAME);
     }
 
-    public function startNextQuestion(BasePhase $phase): void
+    public function nextStep(QuizGame $game): void
+    {
+        if ($game->getGameStatus() === QuizGame::GAME_STATUS_CHOOSE_PHASES) {
+            $this->addPhase($game, BasePhase::TYPE_QUESTIONS, null);
+            return;
+        }
+
+        $phase = $game->getCurrentPhase();
+
+        if (!$phase) {
+            return;
+        }
+
+        if (!$phase->isLastQuestion()) {
+            $this->startNextQuestion($phase);
+            return;
+        }
+
+        $this->finishPhase($game);
+    }
+
+    private function startNextQuestion(BasePhase $phase): void
     {
         $phase->closeQuestion();
         $game = $phase->getGame();
+        $game->refreshLastAction();
 
         $this->em->flush();
 
@@ -208,7 +236,7 @@ class QuizGameService
         $this->gameActionService->createNewQuestionInProgressAction($game);
     }
 
-    public function finishPhase(QuizGame $game): void
+    private function finishPhase(QuizGame $game): void
     {
         $phase = $game->getCurrentPhase();
 
@@ -223,6 +251,7 @@ class QuizGameService
         }
 
         $game->finishCurrentPhase();
+        $game->refreshLastAction();
         $this->em->flush();
 
         $this->gamePlayerTurnService->updatePlayersTurnInEveryTeam($game);

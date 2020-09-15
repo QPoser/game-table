@@ -12,6 +12,7 @@ use App\Entity\Game\Quiz\Phase\Questions\QuestionsPhaseAnswer;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsPhaseQuestion;
 use App\Entity\Game\Quiz\QuizGame;
 use App\Entity\Game\Team\GameTeam;
+use App\Entity\Game\Team\GameTeamPlayer;
 use App\Entity\User;
 use App\Events\QuizGamePhaseFinishedEvent;
 use App\Events\QuizGameUserEnteredAnswerEvent;
@@ -116,7 +117,7 @@ class QuizGameService
         $this->gameNTH->createGameStartedNotifications($game);
     }
 
-    public function addPhase(QuizGame $game, string $phaseType, ?User $user): void
+    public function addPhase(QuizGame $game, string $phaseType, User $user): void
     {
         $this->quizPhaseService->createPhase($phaseType, $game, $user);
 
@@ -206,7 +207,12 @@ class QuizGameService
     public function nextStep(QuizGame $game): void
     {
         if ($game->getGameStatus() === QuizGame::GAME_STATUS_CHOOSE_PHASES) {
-            $this->addPhase($game, BasePhase::TYPE_QUESTIONS, null);
+            $user = $game->getUserWithTurn();
+
+            if ($user) {
+                $this->addPhase($game, BasePhase::TYPE_QUESTIONS, $user);
+            }
+
             return;
         }
 

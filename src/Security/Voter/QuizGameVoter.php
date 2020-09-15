@@ -49,7 +49,7 @@ class QuizGameVoter extends Voter
             return false;
         }
 
-        if ($subject->getGameStatus() === QuizGame::GAME_STATUS_PLAYING) {
+        if ($subject->getGameStatus() !== QuizGame::GAME_STATUS_PLAYING) {
             return false;
         }
 
@@ -74,7 +74,7 @@ class QuizGameVoter extends Voter
             return false;
         }
 
-        if ($subject->getGameStatus() === QuizGame::GAME_STATUS_CHOOSE_PHASES) {
+        if ($subject->getGameStatus() !== QuizGame::GAME_STATUS_CHOOSE_PHASES) {
             return false;
         }
 

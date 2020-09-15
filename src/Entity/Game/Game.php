@@ -516,6 +516,20 @@ abstract class Game
         $this->setTeamPlayerTurnByIndex(1);
     }
 
+    public function getUserWithTurn(): ?User
+    {
+        foreach ($this->teams as $team) {
+            foreach ($team->getPlayers() as $teamPlayer) {
+                /** @var GameTeamPlayer $teamPlayer */
+                if ($teamPlayer->isPlayerTurn()) {
+                    return $teamPlayer->getUser();
+                }
+            }
+        }
+
+        return null;
+    }
+
     public function getTeamPlayersTurnsIds(): array
     {
         $playerIds = [];
@@ -534,7 +548,7 @@ abstract class Game
 
     public function getLastUserGameAction(array $userIds = []): ?GameAction
     {
-        return $this->actions->filter(static function ($action) use ($userIds) {
+        $result = $this->actions->filter(static function ($action) use ($userIds) {
             /** @var GameAction $action */
             $user = $action->getUser();
 
@@ -552,7 +566,13 @@ abstract class Game
 
 
             return true;
-        })->last() ?? null;
+        })->last();
+
+        if (!($result instanceof GameAction)) {
+            return null;
+        }
+
+        return $result;
     }
 
     public function getLastUserWithGameAction(array $userIds = []): ?User

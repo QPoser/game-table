@@ -89,6 +89,22 @@ services:
         networks:
             - app
 
+    supervisord:
+        container_name: supervisord
+        build: docker/supervisord/
+        restart: always
+        privileged: true
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./var/logs/supervisord:/var/log/supervisor
+        networks:
+            - app
+        depends_on:
+            - php
+            - nginx
+            - db
+            - rabbitmq
+
 networks:
     app:
         driver: bridge

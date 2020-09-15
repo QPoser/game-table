@@ -7,7 +7,12 @@ use App\Command\QuizNextStepCommand;
 use App\Entity\Game\Game;
 use App\Entity\Game\Quiz\Phase\BasePhase;
 use App\Entity\Game\Quiz\Phase\PhaseQuestionInterface;
+use App\Entity\Game\Quiz\Phase\Prices\PricesAnswer;
+use App\Entity\Game\Quiz\Phase\Prices\PricesPhase;
+use App\Entity\Game\Quiz\Phase\Prices\PricesPhaseAnswer;
+use App\Entity\Game\Quiz\Phase\Prices\PricesPhaseQuestion;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsAnswer;
+use App\Entity\Game\Quiz\Phase\Questions\QuestionsPhase;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsPhaseAnswer;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsPhaseQuestion;
 use App\Entity\Game\Quiz\QuizGame;
@@ -178,6 +183,13 @@ class QuizGameService
 
                     $this->createQuestionsAnswer($game, $userAnswer, $user, $currentPhase->getCurrentPhaseQuestion(), $answer);
                 break;
+            case BasePhase::TYPE_PRICES:
+                if (!is_int(strval($userAnswer))) {
+                    throw new AppException(ErrorCode::QUIZ_GAME_QUESTION_HAS_NO_THIS_VARIANT);
+                }
+
+                $this->createPricesAnswer($game, $userAnswer, $user, $currentPhase->getCurrentPhaseQuestion());
+                break;
         }
     }
 
@@ -206,6 +218,30 @@ class QuizGameService
         $this->dispatcher->dispatch($event, QuizGameUserEnteredAnswerEvent::NAME);
     }
 
+    private function createPricesAnswer(QuizGame $game, string $userAnswer, User $user, PhaseQuestionInterface $phaseQuestion): void
+    {
+        $team = $game->getTeamPlayerByUser($user)->getTeam();
+
+        $answer = new PricesPhaseAnswer();
+
+        $answer->setUser($user);
+        $answer->setTeam($team);
+        $answer->setAnswer($userAnswer);
+
+        if ($phaseQuestion instanceof PricesPhaseQuestion) {
+            $answer->setPhaseQuestion($phaseQuestion);
+        }
+
+        $this->em->persist($answer);
+        $this->em->flush();
+
+        $this->gamePlayerTurnService->disablePlayerTurnByUser($game, $user);
+        $this->gameActionService->createUserEnteredAnswerAction($game, $team, $user, $userAnswer);
+
+        $event = new QuizGameUserEnteredAnswerEvent($game);
+        $this->dispatcher->dispatch($event, QuizGameUserEnteredAnswerEvent::NAME);
+    }
+
     public function nextStep(QuizGame $game): void
     {
         if ($game->getGameStatus() === QuizGame::GAME_STATUS_CHOOSE_PHASES) {
@@ -223,6 +259,8 @@ class QuizGameService
         if (!$phase) {
             return;
         }
+
+        $this->calculatePoints($phase);
 
         if (!$phase->isLastQuestion()) {
             $this->startNextQuestion($phase);
@@ -277,5 +315,60 @@ class QuizGameService
 
         $command = QuizNextStepCommand::getDefaultName() . ' --game_id=' . $game->getId() . ' --timestamp=' . (time() + 1);
         $this->consoleCommandService->addCommandToQueueWithDelay20S($command);
+    }
+
+    private function calculatePoints(BasePhase $phase): void
+    {
+        if ($phase instanceof QuestionsPhase) {
+            $phaseAnswers = $phase->getCurrentPhaseQuestion()->getPhaseAnswers();
+
+            foreach ($phaseAnswers as $phaseAnswer) {
+                /** @var QuestionsPhaseAnswer $phaseAnswer */
+                if ($phaseAnswer->isCorrect()) {
+                    $team = $phaseAnswer->getTeam();
+                    $team->setPoints($team->getPoints() + 1);
+                }
+            }
+        }
+
+        if ($phase instanceof PricesPhase) {
+            $question = $phase->getCurrentPhaseQuestion();
+            $phaseAnswers = $question->getPhaseAnswers();
+
+            /** @var PricesAnswer $answer */
+            $answer = $question->getQuestion()->getAnswers()->first();
+            $teams = [];
+
+            foreach ($phaseAnswers as $key => $phaseAnswer) {
+                /** @var PricesPhaseAnswer $phaseAnswer */
+
+                $teams[$key] = [
+                    'team' => $phaseAnswer->getTeam(),
+                    'value' => abs(intval($phaseAnswer->getAnswer()) - $answer->getIntAnswer())
+                ];
+            }
+
+            if (empty($teams)) {
+                return;
+            }
+
+            if (count($teams) === 1) {
+                $team = $teams[0]['team'];
+                $team->setPoints($team->getPoints() + 1);
+            } elseif ($teams[0]['value'] < $teams[1]['value']) {
+                $team = $teams[0]['team'];
+                $team->setPoints($team->getPoints() + 1);
+            } elseif ($teams[0]['value'] > $teams[1]['value']) {
+                $team = $teams[1]['team'];
+                $team->setPoints($team->getPoints() + 1);
+            } else {
+                foreach ($teams as $team) {
+                    $team = $team['team'];
+                    $team->setPoints($team->getPoints() + 1);
+                }
+            }
+
+            $this->em->flush();
+        }
     }
 }

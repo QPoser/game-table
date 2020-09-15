@@ -4,13 +4,13 @@ declare(strict_types=1);
 namespace App\Entity\Game\Quiz\Phase\Questions;
 
 use App\Entity\Game\Quiz\Phase\AnswerInterface;
-use App\Repository\Game\Quiz\Phase\Questions\AnswerRepository;
+use App\Repository\Game\Quiz\Phase\Questions\QuestionsAnswerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Entity(repositoryClass=AnswerRepository::class)
+ * @ORM\Entity(repositoryClass=QuestionsAnswerRepository::class)
  * @UniqueEntity(fields={"answer", "question"}, message="Answer is unique for one question")
  */
 class QuestionsAnswer implements AnswerInterface

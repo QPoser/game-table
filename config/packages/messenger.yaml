@@ -22,8 +22,14 @@ framework:
                 serializer: messenger.transport.symfony_serializer
                 options:
                     queue_name: game_action
+            command_queue:
+                dsn: '%env(MESSENGER_COMMAND_TRANSPORT_DSN)%'
+                serializer: messenger.transport.symfony_serializer
+                options:
+                    queue_name: commands
 
         routing:
             'App\AmqpMessages\AmqpChatMessage': chat_queue
             'App\AmqpMessages\AmqpNotification': notification_queue
             'App\AmqpMessages\AmqpGameAction': game_action_queue
+            'App\Message\ConsoleCommand': command_queue

@@ -43,12 +43,7 @@ class QuizGameListener
             return;
         }
 
-        if (!$phase->isLastQuestion()) {
-            $this->quizGameService->startNextQuestion($phase);
-            return;
-        }
-
-        $this->quizGameService->finishPhase($game);
+        $this->quizGameService->nextStep($game);
     }
 
     public function onPhaseFinished(QuizGamePhaseFinishedEvent $event): void
@@ -58,7 +53,7 @@ class QuizGameListener
         if ($game->isAllPhasesFinished()) {
             $this->gameService->finishGame($game);
         } else {
-            $this->quizGameService->startNextQuestion($game->getCurrentPhase());
+            $this->quizGameService->nextStep($game);
         }
     }
 
@@ -66,10 +61,8 @@ class QuizGameListener
     {
         $game = $event->getGame();
 
-        if (!($game instanceof QuizGame)) {
-            return;
+        if ($game instanceof QuizGame) {
+            $this->gameActionService->createQuizGameFinishedAction($game);
         }
-
-        $this->gameActionService->createQuizGameFinishedAction($game);
     }
 }

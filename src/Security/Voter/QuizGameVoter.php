@@ -29,13 +29,63 @@ class QuizGameVoter extends Voter
 
         switch ($attribute) {
             case self::ATTRIBUTE_SELECT_PHASE:
-                return $subject->hasUser($user) && $subject->getStatus() === Game::STATUS_STARTED && $subject->getGameStatus() === QuizGame::GAME_STATUS_CHOOSE_PHASES && $subject->isUserTurn($user);
+                return $this->canUserSelectPhase($user, $subject);
                 break;
             case self::ATTRIBUTE_PUT_ANSWER:
-                return $subject->hasUser($user) && $subject->getStatus() === Game::STATUS_STARTED && $subject->getGameStatus() === QuizGame::GAME_STATUS_PLAYING && $subject->isUserTurn($user);
+                return $this->canUserPutAnswer($user, $subject);
                 break;
         }
 
         return false;
+    }
+
+    private function canUserPutAnswer(User $user, QuizGame $subject): bool
+    {
+        if (!$subject->hasUser($user)) {
+            return false;
+        }
+
+        if ($subject->getStatus() !== Game::STATUS_STARTED) {
+            return false;
+        }
+
+        if ($subject->getGameStatus() !== QuizGame::GAME_STATUS_PLAYING) {
+            return false;
+        }
+
+        if (!$subject->isUserTurn($user)) {
+            return false;
+        }
+
+        if ($subject->getCurrentStepSeconds() === null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function canUserSelectPhase(User $user, QuizGame $subject): bool
+    {
+        if (!$subject->hasUser($user)) {
+            return false;
+        }
+
+        if ($subject->getStatus() !== Game::STATUS_STARTED) {
+            return false;
+        }
+
+        if ($subject->getGameStatus() !== QuizGame::GAME_STATUS_CHOOSE_PHASES) {
+            return false;
+        }
+
+        if (!$subject->isUserTurn($user)) {
+            return false;
+        }
+
+        if ($subject->getCurrentStepSeconds() === null) {
+            return false;
+        }
+
+        return true;
     }
 }

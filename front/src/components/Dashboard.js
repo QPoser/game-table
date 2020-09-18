@@ -4,12 +4,14 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { getGames, setCurrentGame, getCurrentGame, setGameState } from "../actions/gamesActions";
 import { getMessages, afterPostMessage } from "../actions/chatActions";
+import { setStateOfCurrentPhase, 
+  setAnswerSelectedByUserFromYourTeam } from "../actions/phasesActions";
 import PropTypes from "prop-types";
 import Spinner from "./Spinner";
 import Game from "./Game";
 import { Link } from 'react-router-dom';
 import io from "socket.io-client";
-import { QUIZ_PLAYING_STARTED } from "../actions/types";
+import { QUIZ_PLAYING_STARTED, QUIZ_NEW_QUESTION_IN_PROGRESS, USER_FROM_YOUR_TEAM_ENTERED_ANSWER } from "../actions/types";
 
 class Dashboard extends Component {
   
@@ -41,6 +43,7 @@ class Dashboard extends Component {
     socket.on('game_action', function (data) {
 
        let msgBody = JSON.parse(data);
+       console.log(msgBody.Template);
        if (msgBody.Template === 'your_game_started') {
         console.log('Game was started ' + msgBody.Game.Id);
         this.props.getMessages(msgBody.Game.Id);
@@ -49,13 +52,42 @@ class Dashboard extends Component {
        this.props.getGames();
        debugger
 
-       if (msgBody.Template === 'user_chose_phase_in_quiz'){
-        this.props.getCurrentGame();
+       
+       debugger
+
+
+       
+
+       if (msgBody.Template === 'quiz_game_finished'){
+        this.props.history.push("/dashboard");
        }
+
+
+       if (msgBody.Template === 'user_chose_phase_in_quiz'){
+        this.props.getCurrentGame(this.props.history);
+       }
+
+       if (msgBody.Template === 'game_turns_changed'){
+        this.props.getCurrentGame(this.props.history);
+       }
+       
 
        if (msgBody.Template === 'quiz_playing_started') {
          this.props.setGameState(QUIZ_PLAYING_STARTED)
        }
+
+       if (msgBody.Template === USER_FROM_YOUR_TEAM_ENTERED_ANSWER) {
+
+        this.props.setAnswerSelectedByUserFromYourTeam(msgBody.JsonValues.answer);
+
+        this.props.setStateOfCurrentPhase(USER_FROM_YOUR_TEAM_ENTERED_ANSWER);
+        
+       }
+
+       if (msgBody.Template === QUIZ_NEW_QUESTION_IN_PROGRESS) {
+         this.props.setStateOfCurrentPhase(QUIZ_NEW_QUESTION_IN_PROGRESS);
+       }
+
 
     }.bind(this));
 
@@ -129,5 +161,12 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { getGames, setCurrentGame, getMessages, getCurrentGame, setGameState }
+  { getGames, 
+    setCurrentGame, 
+    getMessages,
+    getCurrentGame, 
+    setGameState, 
+    setStateOfCurrentPhase,
+    setAnswerSelectedByUserFromYourTeam
+   }
 )(Dashboard);

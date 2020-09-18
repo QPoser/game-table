@@ -11,7 +11,7 @@ export const getGames = () => async dispatch => {
     });
   };
 
-  export const getCurrentGame = () => async dispatch => {
+  export const getCurrentGame = (history) => async (dispatch, history)  => {
     const res = await axios.get("/api/games/current");
     /*
     dispatch({
@@ -20,15 +20,19 @@ export const getGames = () => async dispatch => {
     });
     */
     debugger
-    dispatch(setCurrentGame(res.data));
+    if (res.data.data) {
+      dispatch(setCurrentGame(res.data));
 
-    dispatch(getMessages(res.data.data.id));
-
-    dispatch(getPhases());
-
-    dispatch(setSelectedPhases(res.data.data.phases));
-
-    dispatch(setGameState(res.data.data.gameStatus));
+      dispatch(getMessages(res.data.data.id));
+  
+      dispatch(getPhases());
+  
+      dispatch(setSelectedPhases(res.data.data.phases));
+  
+      dispatch(setGameState(res.data.data.gameStatus));
+    } else {
+     // history.push("/dashboard");
+    } 
 
   };
 

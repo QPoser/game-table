@@ -120,7 +120,7 @@ export class GameChat extends Component {
             mainPanel = <div className="mx-2 my-2 px-2 py-2 border border-info rounded">
             <div className="lead">{phaseInProgress.currentQuestion.question}</div>
 
-            <Answers answers={phaseInProgress.currentQuestion.answers} />
+            <Answers answers={phaseInProgress.currentQuestion.answers}  question={phaseInProgress.currentQuestion.question}/>
 
             </div>
            } catch (e) {
@@ -148,7 +148,7 @@ export class GameChat extends Component {
                     <h4 className="text-center">Selected phases</h4>
                     <div className="d-flex justify-content-around mb-2 px-2 py-2 border border-info rounded">
                         {selectedPhases.map(phase => (
-                            <div className="btn btn-success">{phase.type}</div> 
+                            <div className={`btn ${phase.id == phaseInProgress.id ? "btn-primary" : "btn-success"}`}>{phase.type}</div> 
                         ))}
                     </div>
                 

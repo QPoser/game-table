@@ -1,10 +1,14 @@
-import { GET_PHASES, SET_SELECTED_PHASES, SET_PHASE_IN_PROGRESS } from "../actions/types";
+import { GET_PHASES, SET_SELECTED_PHASES, 
+  SET_PHASE_IN_PROGRESS, 
+  SET_STATE_OF_CURRENT_PHASE, SET_ANSWER_SELECTED_BY_USER_FROM_YOUR_TEAM } from "../actions/types";
 
 const initialState = {
   phases: [],
   selectedPhases: [],
   phase: {},
-  phaseInProgress: {}
+  phaseInProgress: {},
+  stateOfCurrentPhase: "",
+  answerSelectedByUserFromYourTeam: ""
 };
 
 export default function(state = initialState, action) {
@@ -23,7 +27,17 @@ export default function(state = initialState, action) {
       return {
         ...state,
         phaseInProgress: action.payload
+      } 
+    case SET_STATE_OF_CURRENT_PHASE:
+      return {
+        ...state,
+        stateOfCurrentPhase: action.payload
       }  
+      case SET_ANSWER_SELECTED_BY_USER_FROM_YOUR_TEAM:
+        return {
+          ...state,
+          answerSelectedByUserFromYourTeam: action.payload
+        }   
     default:
       return state;
   }

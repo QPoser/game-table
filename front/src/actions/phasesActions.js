@@ -1,5 +1,7 @@
 import axios from "axios";
-import { GET_PHASES, SET_SELECTED_PHASES,SET_PHASE_IN_PROGRESS } from "./types";
+import { GET_PHASES, 
+  SET_SELECTED_PHASES,SET_PHASE_IN_PROGRESS, 
+  SET_STATE_OF_CURRENT_PHASE, SET_ANSWER_SELECTED_BY_USER_FROM_YOUR_TEAM } from "./types";
 import { getCurrentGame } from "./gamesActions";
 
 export const getPhases = () => async dispatch => {
@@ -52,5 +54,20 @@ export const getPhases = () => async dispatch => {
     dispatch({
       type: SET_PHASE_IN_PROGRESS,
       payload: phaseInProgress
+    });
+  }
+
+
+  export const setStateOfCurrentPhase = (stateOfCurrentPhase) => async dispatch => {
+    dispatch({
+      type: SET_STATE_OF_CURRENT_PHASE,
+      payload: stateOfCurrentPhase
+    });
+  }
+
+  export const setAnswerSelectedByUserFromYourTeam = (selectedAnswer) => async dispatch => {
+    dispatch({
+      type: SET_ANSWER_SELECTED_BY_USER_FROM_YOUR_TEAM,
+      payload: selectedAnswer 
     });
   }

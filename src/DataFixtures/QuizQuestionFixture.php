@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Entity\Game\Game;
+use App\Entity\Game\Quiz\Phase\Prices\PricesQuestion;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsQuestion;
 use App\Entity\Game\Quiz\QuizGame;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -25,7 +26,7 @@ class QuizQuestionFixture extends Fixture
         }
 
         for ($i = 1; $i <= 3; $i++) {
-            $question = new QuestionsQuestion();
+            $question = new PricesQuestion();
             $question->setQuestion('How much cost Xiaomi mi band ' . $i . ' ?');
             $question->setEnabled(true);
 

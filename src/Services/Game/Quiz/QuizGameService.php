@@ -260,8 +260,6 @@ class QuizGameService
             return;
         }
 
-        $this->calculatePoints($phase);
-
         if (!$phase->isLastQuestion()) {
             $this->startNextQuestion($phase);
             return;
@@ -272,6 +270,7 @@ class QuizGameService
 
     private function startNextQuestion(BasePhase $phase): void
     {
+        $this->calculatePoints($phase);
         $phase->closeQuestion();
         $game = $phase->getGame();
         $this->refreshGameLastAction($game);
@@ -290,12 +289,8 @@ class QuizGameService
             return;
         }
 
+        $this->calculatePoints($phase);
         $phase->closeQuestion();
-
-        if ($phase->isAllQuestionsFinished()) {
-            $phase->setStatus(BasePhase::STATUS_FINISHED);
-        }
-
         $game->finishCurrentPhase();
         $this->refreshGameLastAction($game);
         $this->em->flush();
@@ -319,9 +314,15 @@ class QuizGameService
 
     private function calculatePoints(BasePhase $phase): void
     {
-        if ($phase instanceof QuestionsPhase) {
-            $phaseAnswers = $phase->getCurrentPhaseQuestion()->getPhaseAnswers();
+        $phaseQuestion = $phase->getCurrentPhaseQuestion();
 
+        if (!$phaseQuestion) {
+            return;
+        }
+
+        $phaseAnswers = $phaseQuestion->getPhaseAnswers();
+
+        if ($phase instanceof QuestionsPhase) {
             foreach ($phaseAnswers as $phaseAnswer) {
                 /** @var QuestionsPhaseAnswer $phaseAnswer */
                 if ($phaseAnswer->isCorrect()) {
@@ -332,11 +333,8 @@ class QuizGameService
         }
 
         if ($phase instanceof PricesPhase) {
-            $question = $phase->getCurrentPhaseQuestion();
-            $phaseAnswers = $question->getPhaseAnswers();
-
             /** @var PricesAnswer $answer */
-            $answer = $question->getQuestion()->getAnswers()->first();
+            $answer = $phaseQuestion->getQuestion()->getAnswers()->first();
             $teams = [];
 
             foreach ($phaseAnswers as $key => $phaseAnswer) {
@@ -367,8 +365,8 @@ class QuizGameService
                     $team->setPoints($team->getPoints() + 1);
                 }
             }
-
-            $this->em->flush();
         }
+
+        $this->em->flush();
     }
 }

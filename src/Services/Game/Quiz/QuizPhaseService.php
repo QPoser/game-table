@@ -5,6 +5,9 @@ namespace App\Services\Game\Quiz;
 
 use App\Entity\Game\Game;
 use App\Entity\Game\Quiz\Phase\BasePhase;
+use App\Entity\Game\Quiz\Phase\Prices\PricesPhase;
+use App\Entity\Game\Quiz\Phase\Prices\PricesPhaseQuestion;
+use App\Entity\Game\Quiz\Phase\Prices\PricesQuestion;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsQuestion;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsPhase;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsPhaseQuestion;
@@ -35,11 +38,18 @@ class QuizPhaseService
             throw new AppException(ErrorCode::QUIZ_GAME_PHASE_DOES_NOT_EXISTS);
         }
 
+        if ($user && in_array($type, BasePhase::VIP_TYPES, true) && !$user->isVip()) {
+            throw new AppException(ErrorCode::QUIZ_GAME_PHASE_ONLY_FOR_VIP_USERS);
+        }
+
         $phase = null;
 
         switch ($type) {
             case BasePhase::TYPE_QUESTIONS:
                     $phase = $this->createQuestionsPhase();
+                break;
+            case BasePhase::TYPE_PRICES:
+                $phase = $this->createPricesPhase();
                 break;
         }
 
@@ -64,6 +74,26 @@ class QuizPhaseService
             /** @var QuestionsQuestion $question */
             $phaseQuestion = new QuestionsPhaseQuestion();
             $phaseQuestion->setStatus(QuestionsPhaseQuestion::STATUS_WAIT);
+            $phaseQuestion->setQuestion($question);
+
+            $phase->addQuestion($phaseQuestion);
+
+            $this->em->persist($phaseQuestion);
+        }
+
+        return $phase;
+    }
+
+    private function createPricesPhase(): PricesPhase
+    {
+        $phase = new PricesPhase();
+
+        $questions = $this->em->getRepository(PricesQuestion::class)->findBy([], [], 3, 0);
+
+        foreach ($questions as $question) {
+            /** @var PricesQuestion $question */
+            $phaseQuestion = new PricesPhaseQuestion();
+            $phaseQuestion->setStatus(PricesPhaseQuestion::STATUS_WAIT);
             $phaseQuestion->setQuestion($question);
 
             $phase->addQuestion($phaseQuestion);

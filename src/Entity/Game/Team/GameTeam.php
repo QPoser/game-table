@@ -50,6 +50,12 @@ class GameTeam
     private Collection $players;
 
     /**
+     * @ORM\Column(type="integer")
+     * @Groups({"Api", "AMQP"})
+     */
+    private int $points = 0;
+
+    /**
      * @Groups({"Api"})
      */
     private bool $userInTeam = false;
@@ -196,5 +202,17 @@ class GameTeam
         }
 
         return $ids;
+    }
+
+    public function getPoints(): int
+    {
+        return $this->points;
+    }
+
+    public function setPoints(int $points): self
+    {
+        $this->points = $points;
+
+        return $this;
     }
 }

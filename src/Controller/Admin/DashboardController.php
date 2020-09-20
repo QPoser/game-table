@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Entity\Game\Quiz\Phase\Prices\PricesQuestion;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsQuestion;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -38,7 +39,8 @@ class DashboardController extends AbstractDashboardController
 
             MenuItem::section('Games'),
             MenuItem::subMenu('Questions', 'fa fa-question')->setSubItems([
-                MenuItem::linkToCrud('Quiz questions', 'fa fa-question', QuestionsQuestion::class),
+                MenuItem::linkToCrud('(Questions) questions', 'fa fa-question', QuestionsQuestion::class),
+                MenuItem::linkToCrud('(Prices) questions', 'fa fa-question', PricesQuestion::class),
             ]),
 
         ];

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Entity\Game\Quiz\Phase\Questions;
+namespace App\Entity\Game\Quiz\Phase\Prices;
 
 use App\Entity\Game\Quiz\Phase\BasePhase;
 use App\Entity\Game\Quiz\Phase\PhaseQuestionInterface;
@@ -9,17 +9,17 @@ use App\Entity\Game\Quiz\Phase\QuestionInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\Game\Quiz\Phase\Questions\QuestionsPhaseRepository;
+use App\Repository\Game\Quiz\Phase\Prices\PricesPhaseRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Table(name="phase_questions")
- * @ORM\Entity(repositoryClass=QuestionsPhaseRepository::class)
+ * @ORM\Table(name="phase_prices")
+ * @ORM\Entity(repositoryClass=PricesPhaseRepository::class)
  */
-class QuestionsPhase extends BasePhase
+class PricesPhase extends BasePhase
 {
     /**
-     * @ORM\OneToMany(targetEntity=QuestionsPhaseQuestion::class, mappedBy="phase", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=PricesPhaseQuestion::class, mappedBy="phase", orphanRemoval=true)
      * @Groups({"Exclude"})
      */
     private Collection $questions;
@@ -31,7 +31,7 @@ class QuestionsPhase extends BasePhase
 
     public function getType(): string
     {
-        return self::TYPE_QUESTIONS;
+        return self::TYPE_PRICES;
     }
 
     public function getQuestions(): Collection
@@ -39,7 +39,7 @@ class QuestionsPhase extends BasePhase
         return $this->questions;
     }
 
-    public function addQuestion(QuestionsPhaseQuestion $question): self
+    public function addQuestion(PricesPhaseQuestion $question): self
     {
         if (!$this->questions->contains($question)) {
             $this->questions[] = $question;
@@ -49,7 +49,7 @@ class QuestionsPhase extends BasePhase
         return $this;
     }
 
-    public function removeQuestion(QuestionsPhaseQuestion $question): self
+    public function removeQuestion(PricesPhaseQuestion $question): self
     {
         if ($this->questions->contains($question)) {
             $this->questions->removeElement($question);
@@ -64,18 +64,18 @@ class QuestionsPhase extends BasePhase
 
     public function play(): void
     {
-        /** @var QuestionsPhaseQuestion $question */
+        /** @var PricesPhaseQuestion $question */
         $question = $this->questions->first();
-        $question->setStatus(QuestionsPhaseQuestion::STATUS_CURRENT);
+        $question->setStatus(PricesPhaseQuestion::STATUS_CURRENT);
 
         parent::play();
     }
 
-    public function getCurrentPhaseQuestion(): ?QuestionsPhaseQuestion
+    public function getCurrentPhaseQuestion(): ?PricesPhaseQuestion
     {
         foreach ($this->questions as $question) {
-            /** @var QuestionsPhaseQuestion $question */
-            if ($question->getStatus() === QuestionsPhaseQuestion::STATUS_CURRENT) {
+            /** @var PricesPhaseQuestion $question */
+            if ($question->getStatus() === PricesPhaseQuestion::STATUS_CURRENT) {
                 return $question;
             }
         }
@@ -95,28 +95,28 @@ class QuestionsPhase extends BasePhase
 
     public function isFreeAnswer(): bool
     {
-        return false;
+        return true;
     }
 
     public function isLastQuestion(): bool
     {
-        /** @var QuestionsPhaseQuestion $lastQuestion */
+        /** @var PricesPhaseQuestion $lastQuestion */
         $lastQuestion = $this->questions->last();
 
-        return $lastQuestion->getStatus() === QuestionsPhaseQuestion::STATUS_CURRENT;
+        return $lastQuestion->getStatus() === PricesPhaseQuestion::STATUS_CURRENT;
     }
 
     public function closeQuestion(): void
     {
         foreach ($this->questions as $question) {
-            /** @var QuestionsPhaseQuestion $question */
+            /** @var PricesPhaseQuestion $question */
 
-            if ($question->getStatus() === QuestionsPhaseQuestion::STATUS_CURRENT) {
-                $question->setStatus(QuestionsPhaseQuestion::STATUS_ANSWERED);
+            if ($question->getStatus() === PricesPhaseQuestion::STATUS_CURRENT) {
+                $question->setStatus(PricesPhaseQuestion::STATUS_ANSWERED);
             }
 
-            if ($question->getStatus() === QuestionsPhaseQuestion::STATUS_WAIT) {
-                $question->setStatus(QuestionsPhaseQuestion::STATUS_CURRENT);
+            if ($question->getStatus() === PricesPhaseQuestion::STATUS_WAIT) {
+                $question->setStatus(PricesPhaseQuestion::STATUS_CURRENT);
                 return;
             }
         }
@@ -125,9 +125,9 @@ class QuestionsPhase extends BasePhase
     public function isAllQuestionsFinished(): bool
     {
         foreach ($this->questions as $question) {
-            /** @var QuestionsPhaseQuestion $question */
+            /** @var PricesPhaseQuestion $question */
 
-            if ($question->getStatus() !== QuestionsPhaseQuestion::STATUS_ANSWERED) {
+            if ($question->getStatus() !== PricesPhaseQuestion::STATUS_ANSWERED) {
                 return false;
             }
         }
@@ -141,8 +141,8 @@ class QuestionsPhase extends BasePhase
     public function getQuestionsInProgress(): Collection
     {
         return $this->questions->filter(static function ($question) {
-            /** @var QuestionsPhaseQuestion $question */
-            return $question->getStatus() !== QuestionsPhaseQuestion::STATUS_WAIT;
+            /** @var PricesPhaseQuestion $question */
+            return $question->getStatus() !== PricesPhaseQuestion::STATUS_WAIT;
         });
     }
 }

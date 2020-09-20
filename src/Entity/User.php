@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -60,6 +61,12 @@ class User implements UserInterface
      * @Groups({"Exclude"})
      */
     private ?string $verifyToken = null;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"Exclude"})
+     */
+    private ?DateTime $vipUntilDate;
 
     public function getId(): ?int
     {
@@ -161,5 +168,25 @@ class User implements UserInterface
         $callback = (fn($role) => mb_strtolower(str_replace('ROLE_', '', $role)));
 
         return implode(', ', array_map($callback, $this->roles));
+    }
+
+    public function getVipUntilDate(): ?DateTime
+    {
+        return $this->vipUntilDate;
+    }
+
+    public function setVipUntilDate(?DateTime $vipUntilDate): self
+    {
+        $this->vipUntilDate = $vipUntilDate;
+
+        return $this;
+    }
+
+    /**
+     * @Groups({"Api", "AMQP"})
+     */
+    public function isVip(): bool
+    {
+        return $this->vipUntilDate && $this->vipUntilDate > new DateTime('now');
     }
 }

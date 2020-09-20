@@ -35,6 +35,10 @@ class UserFixture extends Fixture
                 $password
             ));
 
+            if ($i === 1) {
+                $user->setVipUntilDate(new \DateTime('+1 year'));
+            }
+
             $manager->persist($user);
             $manager->flush();
         }

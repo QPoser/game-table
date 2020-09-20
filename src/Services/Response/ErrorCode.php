@@ -23,6 +23,7 @@ class ErrorCode
     public const QUIZ_GAME_HAS_NO_CURRENT_PHASE = 15;
     public const QUIZ_GAME_PHASE_HAS_NO_CURRENT_QUESTION = 16;
     public const QUIZ_GAME_QUESTION_HAS_NO_THIS_VARIANT = 17;
+    public const QUIZ_GAME_PHASE_ONLY_FOR_VIP_USERS = 18;
 
     private const MESSAGES = [
         self::USER_NOT_FOUND_BY_TOKEN => 'User not found by token',
@@ -43,6 +44,7 @@ class ErrorCode
         self::QUIZ_GAME_HAS_NO_CURRENT_PHASE => 'Quiz game has no current phase in progress',
         self::QUIZ_GAME_PHASE_HAS_NO_CURRENT_QUESTION => 'Quiz game phase has no current question',
         self::QUIZ_GAME_QUESTION_HAS_NO_THIS_VARIANT => 'Quiz game question has no this variant',
+        self::QUIZ_GAME_PHASE_ONLY_FOR_VIP_USERS => 'Quiz game phase only for vip users',
     ];
 
     public static function getMessage(int $code): ?string

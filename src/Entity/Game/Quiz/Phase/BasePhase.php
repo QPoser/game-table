@@ -15,7 +15,8 @@ use App\Entity\User;
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({
- *      BasePhase::TYPE_QUESTIONS = "App\Entity\Game\Quiz\Phase\Questions\QuestionsPhase"
+ *      BasePhase::TYPE_QUESTIONS = "App\Entity\Game\Quiz\Phase\Questions\QuestionsPhase",
+ *      BasePhase::TYPE_PRICES = "App\Entity\Game\Quiz\Phase\Prices\PricesPhase",
  * })
  */
 abstract class BasePhase
@@ -29,14 +30,17 @@ abstract class BasePhase
 
     public const AVAILABLE_TYPES = [
         self::TYPE_QUESTIONS => self::TYPE_QUESTIONS,
+        self::TYPE_PRICES => self::TYPE_PRICES,
     ];
 
     public const FREE_TYPES = [
         self::TYPE_QUESTIONS => self::TYPE_QUESTIONS,
+        self::TYPE_BRANDS => self::TYPE_BRANDS,
     ];
 
     public const VIP_TYPES = [
         self::TYPE_PRICES => self::TYPE_PRICES,
+        self::TYPE_MOVIES => self::TYPE_MOVIES,
     ];
 
     public const STATUS_PREPARED = 'prepared';

@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Entity\Game\Quiz\Phase\Questions;
+namespace App\Entity\Game\Quiz\Phase\Prices;
 
 use App\Entity\Game\Team\GameTeam;
 use App\Entity\User;
-use App\Repository\Game\Quiz\Phase\Questions\QuestionsPhaseAnswerRepository;
+use App\Repository\Game\Quiz\Phase\Prices\PricesPhaseAnswerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Entity(repositoryClass=QuestionsPhaseAnswerRepository::class)
+ * @ORM\Entity(repositoryClass=PricesPhaseAnswerRepository::class)
  */
-class QuestionsPhaseAnswer
+class PricesPhaseAnswer
 {
     /**
      * @ORM\Id
@@ -23,11 +23,11 @@ class QuestionsPhaseAnswer
     private int $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=QuestionsPhaseQuestion::class, inversedBy="phaseAnswers")
+     * @ORM\ManyToOne(targetEntity=PricesPhaseQuestion::class, inversedBy="phaseAnswers")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"Exclude"})
      */
-    private ?QuestionsPhaseQuestion $phaseQuestion;
+    private ?PricesPhaseQuestion $phaseQuestion;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class)
@@ -50,23 +50,23 @@ class QuestionsPhaseAnswer
     private ?string $answer;
 
     /**
-     * @ORM\ManyToOne(targetEntity=QuestionsAnswer::class)
+     * @ORM\ManyToOne(targetEntity=PricesAnswer::class)
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"Exclude"})
      */
-    private ?QuestionsAnswer $questionsAnswer;
+    private ?PricesAnswer $pricesAnswer;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getPhaseQuestion(): ?QuestionsPhaseQuestion
+    public function getPhaseQuestion(): ?PricesPhaseQuestion
     {
         return $this->phaseQuestion;
     }
 
-    public function setPhaseQuestion(?QuestionsPhaseQuestion $phaseQuestion): self
+    public function setPhaseQuestion(?PricesPhaseQuestion $phaseQuestion): self
     {
         $this->phaseQuestion = $phaseQuestion;
 
@@ -109,14 +109,14 @@ class QuestionsPhaseAnswer
         return $this;
     }
 
-    public function getQuestionsAnswer(): ?QuestionsAnswer
+    public function getPricesAnswer(): ?PricesAnswer
     {
-        return $this->questionsAnswer;
+        return $this->pricesAnswer;
     }
 
-    public function setQuestionsAnswer(QuestionsAnswer $questionsAnswer): self
+    public function setPricesAnswer(?PricesAnswer $pricesAnswer): self
     {
-        $this->questionsAnswer = $questionsAnswer;
+        $this->pricesAnswer = $pricesAnswer;
 
         return $this;
     }
@@ -126,7 +126,7 @@ class QuestionsPhaseAnswer
      */
     public function getFormattedAnswer(): ?string
     {
-        if ($this->phaseQuestion->getStatus() === QuestionsPhaseQuestion::STATUS_ANSWERED) {
+        if ($this->phaseQuestion->getStatus() === PricesPhaseQuestion::STATUS_ANSWERED) {
             return $this->answer;
         }
 
@@ -136,10 +136,10 @@ class QuestionsPhaseAnswer
     /**
      * @Groups({"Api", "AMQP"})
      */
-    public function getFormattedQuestionsAnswer(): ?QuestionsAnswer
+    public function getFormattedPricesAnswer(): ?PricesAnswer
     {
-        if ($this->phaseQuestion->getStatus() === QuestionsPhaseQuestion::STATUS_ANSWERED) {
-            return $this->questionsAnswer;
+        if ($this->phaseQuestion->getStatus() === PricesPhaseQuestion::STATUS_ANSWERED) {
+            return $this->pricesAnswer;
         }
 
         return null;
@@ -150,12 +150,12 @@ class QuestionsPhaseAnswer
      */
     public function isCorrect(): ?bool
     {
-        if (!$this->questionsAnswer) {
+        if (!$this->pricesAnswer) {
             return null;
         }
 
-        if ($this->phaseQuestion->getStatus() === QuestionsPhaseQuestion::STATUS_ANSWERED) {
-            return $this->phaseQuestion->getQuestion()->isCorrectAnswer($this->questionsAnswer);
+        if ($this->phaseQuestion->getStatus() === PricesPhaseQuestion::STATUS_ANSWERED) {
+            return $this->phaseQuestion->getQuestion()->isCorrectAnswer($this->pricesAnswer);
         }
 
         return null;

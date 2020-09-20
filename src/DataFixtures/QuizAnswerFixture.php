@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Entity\Game\Game;
+use App\Entity\Game\Quiz\Phase\Prices\PricesAnswer;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsAnswer;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsQuestion;
 use App\Entity\Game\Quiz\QuizGame;
@@ -27,6 +28,17 @@ class QuizAnswerFixture extends Fixture implements DependentFixtureInterface
 
                 $this->addReference('answer' . $i . '_' . $j, $answer);
             }
+        }
+
+        for ($i = 1; $i <= 3; $i++) {
+                $answer = new PricesAnswer();
+                $answer->setQuestion($this->getReference('question_price_' . $i));
+                $answer->setAnswer(10 * $i);
+
+                $manager->persist($answer);
+                $manager->flush();
+
+                $this->addReference('answer_price_' . $i . '_', $answer);
         }
     }
 

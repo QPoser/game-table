@@ -30,7 +30,7 @@ export const getPhases = () => async dispatch => {
       "phase_type": phaseName
     });
   
-    debugger
+    
 
     dispatch(getCurrentGame());
   

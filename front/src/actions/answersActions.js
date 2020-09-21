@@ -10,7 +10,7 @@ import { getCurrentGame } from "./gamesActions";
       "answer": answerName
     });
   
-    debugger
+    
 
     dispatch(getCurrentGame());
   

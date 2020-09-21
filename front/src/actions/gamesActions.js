@@ -19,7 +19,9 @@ export const getGames = () => async dispatch => {
       payload: res.data
     });
     */
-    debugger
+    
+   
+
     if (res.data.data) {
       dispatch(setCurrentGame(res.data));
 
@@ -54,7 +56,7 @@ export const getGames = () => async dispatch => {
         team: JoinRequest.team  
       });
      
-      debugger
+      
  
  
     } catch (err) {
@@ -67,7 +69,7 @@ export const getGames = () => async dispatch => {
    
       const res = await axios.post("/api/games/" + LeaveRequest.id + "/leave");
      
-      debugger
+      
  
  
     } catch (err) {

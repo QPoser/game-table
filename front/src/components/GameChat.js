@@ -5,7 +5,9 @@ import { getCurrentGame } from "../actions/gamesActions"
 import { setCurrentPhase } from "../actions/phasesActions"
 import { QUIZ_PLAYING_STARTED } from "../actions/types"
 import Answers from "./Answers";
-
+import { CountdownCircleTimer } from 'react-countdown-circle-timer'
+import ReactDOM from 'react-dom';
+import Countdown from 'react-countdown';
 
 export class GameChat extends Component {
 
@@ -15,7 +17,8 @@ export class GameChat extends Component {
         this.state = {
             messages: [{text:"bla bla bla"}, {text:"bla bla bla"}],
             chatmessage: "",
-            recipient: "game"
+            recipient: "game",
+            renderCountDown: false
         }
         this.handleChatMessageChange = this.handleChatMessageChange.bind(this);
         this.postMessage = this.postMessage.bind(this);
@@ -27,6 +30,25 @@ export class GameChat extends Component {
     componentDidMount() {
         this.props.getCurrentGame();
     }
+
+    componentWillReceiveProps(nextProps){
+        /*
+        if(this.props.question !== nextProps.question){
+           this.setState({
+            selectedOption: ""
+           })
+        }
+        */
+       
+       /*
+       this.setState({
+        renderCountDown: false 
+       })
+       */ 
+       this.setState({
+        renderCountDown: true 
+       })  
+     }
 
     handleChatMessageChange(e) {
         this.setState({ [e.target.name]: e.target.value });
@@ -57,7 +79,9 @@ export class GameChat extends Component {
         const { data:currentGame={teams:[]} } = this.props.games.game;
         const { gameState="" } = this.props.games;
         const { recipient } = this.state;
-        const [leftTeam={title:"", players:[]}, rightTeam={title:"", players:[]}] = currentGame.teams
+        const [leftTeam={title:"", players:[]}, rightTeam={title:"", players:[]}] = currentGame.teams;
+        const { currentStepSeconds } = currentGame;
+        
 
         const phasesMap =  phases.reduce(function(map, phase){
             if (!map[phase.type]) {
@@ -124,9 +148,72 @@ export class GameChat extends Component {
 
             </div>
            } catch (e) {
-               debugger
+               
            }
         }
+
+        const renderTime = ({ remainingTime }) => {
+            if (remainingTime === 0) {
+              return <div className="timer">Too lale...</div>;
+            }
+          
+            return (
+              <div className="timer">
+                <div className="text">Remaining</div>
+                <div className="value">{remainingTime}</div>
+                <div className="text">seconds</div>
+              </div>
+            );
+          };
+
+
+          
+
+
+          let countdownCircleTimer;
+          
+          //let renderCountDown = false;
+      
+
+          if (currentStepSeconds) {
+           
+           
+           /* 
+           let el = document.getElementById('timerwrapper');
+
+           try {
+           while (el && el.firstChild) {
+               el.removeChild(el.firstChild);
+           }
+           } catch(e) {
+               debugger
+           }
+           */
+
+           /*
+            countdownCircleTimer =  <CountdownCircleTimer
+              isPlaying
+              duration={currentStepSeconds}
+              colors={[["#17A2B", 0.33], ["#17a2b8", 0.33], ["#28a745"]]}
+              onComplete={() => {
+                  
+                this.setState({
+                    renderCountDown: false 
+                })  
+                
+                return [false, 100]}}
+              size={180}
+              >
+              {renderTime}
+              </CountdownCircleTimer>
+            */
+           
+           countdownCircleTimer = <Countdown key={Date.now()} date={Date.now() + currentStepSeconds * 1000} />
+
+          } else {
+            countdownCircleTimer = <Countdown  date={Date.now()} />
+          }
+
 
 
         return (
@@ -144,6 +231,11 @@ export class GameChat extends Component {
                 ))}
                 </div>
                 <div className="col-md-6">  
+
+                    <div className="timer-wrapper" id="timerwrapper">
+                        {/*this.state.renderCountDown && countdownCircleTimer*/ countdownCircleTimer}
+                    </div>
+
 
                     <h4 className="text-center">Selected phases</h4>
                     <div className="d-flex justify-content-around mb-2 px-2 py-2 border border-info rounded">

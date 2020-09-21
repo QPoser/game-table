@@ -115,7 +115,7 @@ class Answers extends Component {
         if (player.user.email == user.email) {
           doesCurrentUserHaveRightToSelectPhase = player.playerTurn;
         }
-        console.log(player.user.email);
+        //console.log(player.user.email);
       })
     });
 
@@ -131,7 +131,7 @@ class Answers extends Component {
 
     }
 
-    debugger
+    
     if (stateOfCurrentPhase == USER_FROM_YOUR_TEAM_ENTERED_ANSWER && !doesCurrentUserHaveRightToSelectPhase) {
 
       this.setState({

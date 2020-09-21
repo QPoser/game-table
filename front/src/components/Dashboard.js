@@ -21,9 +21,10 @@ class Dashboard extends Component {
 
   componentDidMount() {
     this.props.getGames();
-    this.socketInitialization();
+    //this.socketInitialization();
   }
 
+  /*
   socketInitialization() {
     
     const jwtToken = localStorage.jwtToken;
@@ -37,7 +38,7 @@ class Dashboard extends Component {
     });
     
     socket.on('notifications', function (data) {
-       debugger
+       
     });
 
     socket.on('game_action', function (data) {
@@ -50,10 +51,10 @@ class Dashboard extends Component {
         this.props.history.push("/gamechat");
        }
        this.props.getGames();
-       debugger
+       
 
        
-       debugger
+       
 
 
        
@@ -92,16 +93,17 @@ class Dashboard extends Component {
     }.bind(this));
 
     socket.on('chat', function (data) {
-       debugger
+       
        var msgBody = JSON.parse(data);
        this.props.getMessages(msgBody.Game.Id);
-       debugger
+       
     }.bind(this));
 
     socket.on('connect', (s) => {
-      debugger
+      
     });
   }
+  */
 
 
   render() {

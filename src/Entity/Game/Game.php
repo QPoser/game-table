@@ -28,7 +28,7 @@ abstract class Game
     public const DEFAULT_SLOTS_IN_TEAM = 1;
     public const MAX_TEAMS = 2;
     public const STRICT_TEAMS = false;
-    public const STEP_TIME_SECONDS = 20;
+    public const STEP_TIME_SECONDS = 30;
 
     public const TYPE_QUIZ = 'quiz';
 

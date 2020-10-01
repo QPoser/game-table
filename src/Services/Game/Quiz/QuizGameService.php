@@ -184,10 +184,6 @@ class QuizGameService
                     $this->createQuestionsAnswer($game, $userAnswer, $user, $currentPhase->getCurrentPhaseQuestion(), $answer);
                 break;
             case BasePhase::TYPE_PRICES:
-                if (!is_int(strval($userAnswer))) {
-                    throw new AppException(ErrorCode::QUIZ_GAME_QUESTION_HAS_NO_THIS_VARIANT);
-                }
-
                 $this->createPricesAnswer($game, $userAnswer, $user, $currentPhase->getCurrentPhaseQuestion());
                 break;
         }

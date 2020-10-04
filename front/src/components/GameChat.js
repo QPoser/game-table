@@ -5,6 +5,7 @@ import { getCurrentGame } from "../actions/gamesActions"
 import { setCurrentPhase } from "../actions/phasesActions"
 import { QUIZ_PLAYING_STARTED } from "../actions/types"
 import Answers from "./Answers";
+import AnswersPrice from "./AnswersPrice";
 import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 import ReactDOM from 'react-dom';
 import Countdown from 'react-countdown';
@@ -144,7 +145,12 @@ export class GameChat extends Component {
             mainPanel = <div className="mx-2 my-2 px-2 py-2 border border-info rounded">
             <div className="lead">{phaseInProgress.currentQuestion.question}</div>
 
+
+            {phaseInProgress.type=="prices" ?
+            <AnswersPrice question={phaseInProgress.currentQuestion.question}/>
+            :
             <Answers answers={phaseInProgress.currentQuestion.answers}  question={phaseInProgress.currentQuestion.question}/>
+            }
 
             </div>
            } catch (e) {
@@ -223,12 +229,15 @@ export class GameChat extends Component {
                 <div className="row">    
                 <div className="col-md-3">
                 <h2 className="text-center">{leftTeam.title}</h2>
+                <h2 className="text-center">points:{leftTeam.points}</h2>
                 {leftTeam.players.map(player => (
-                    <div className="mx-4 px-2 py-2 border border-info rounded d-flex justify-content-between">
+                    <div className="ml-1 px-2 py-2 border border-info rounded d-flex justify-content-between">
                         {player.user.username}
-                        {player.playerTurn && <span  className="badge badge-primary mr-2 d-flex align-items-center"> {"player turn".toUpperCase()}</span>} 
+                        {player.playerTurn && <span  className="badge badge-primary mx-2 d-flex align-items-center"> {"player turn".toUpperCase()}</span>} 
+                        {player.user.vip && <span  className="badge badge-danger mr-2 d-flex align-items-center"> {"VIP".toUpperCase()}</span>} 
                     </div>
                 ))}
+                
                 </div>
                 <div className="col-md-6">  
 
@@ -274,9 +283,10 @@ export class GameChat extends Component {
                 <div className="col-md-3">
                 <h2 className="text-center">{rightTeam.title}</h2>
                 {rightTeam.players.map(player => (
-                    <div className="mx-4 px-2 py-2 border border-info rounded d-flex justify-content-between">
+                    <div className="mr-1 px-2 py-2 border border-info rounded d-flex justify-content-between">
                           {player.user.username}
-                          {player.playerTurn && <span  className="badge badge-primary mr-2 d-flex align-items-center"> {"player turn".toUpperCase()}</span>} 
+                          {player.playerTurn && <span  className="badge badge-primary mx-2 d-flex align-items-center"> {"player turn".toUpperCase()}</span>} 
+                          {player.user.vip && <span  className="badge badge-danger mr-2 d-flex align-items-center"> {"VIP".toUpperCase()}</span>} 
                       </div>
                 ))}
                 </div>

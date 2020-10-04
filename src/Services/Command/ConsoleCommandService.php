@@ -29,13 +29,13 @@ class ConsoleCommandService
     {
         $consoleCommand = new Command();
         $consoleCommand->setCommand($command);
-        $consoleCommand->setUid(uniqid());
+        $consoleCommand->setUid(uniqid('', true));
 
         $this->em->persist($consoleCommand);
         $this->em->flush($consoleCommand);
 
         $this->bus->dispatch(new Envelope(new ConsoleCommand($command, $consoleCommand->getUid()), [
-            new DelayStamp(20500),
+            new DelayStamp(30500),
         ]));
     }
 

@@ -154,7 +154,7 @@ class QuestionsPhaseAnswer
             return null;
         }
 
-        if ($this->phaseQuestion->getStatus() === QuestionsPhaseQuestion::STATUS_ANSWERED) {
+        if (in_array($this->phaseQuestion->getStatus(), [QuestionsPhaseQuestion::STATUS_ANSWERED, QuestionsPhaseQuestion::STATUS_COUNTED], true)) {
             return $this->phaseQuestion->getQuestion()->isCorrectAnswer($this->questionsAnswer);
         }
 

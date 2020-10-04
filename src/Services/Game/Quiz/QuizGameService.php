@@ -266,8 +266,8 @@ class QuizGameService
 
     private function startNextQuestion(BasePhase $phase): void
     {
-        $this->calculatePoints($phase);
         $phase->closeQuestion();
+        $this->calculatePoints($phase);
         $game = $phase->getGame();
         $this->refreshGameLastAction($game);
 
@@ -285,8 +285,8 @@ class QuizGameService
             return;
         }
 
-        $this->calculatePoints($phase);
         $phase->closeQuestion();
+        $this->calculatePoints($phase);
         $game->finishCurrentPhase();
         $this->refreshGameLastAction($game);
         $this->em->flush();
@@ -310,12 +310,15 @@ class QuizGameService
 
     private function calculatePoints(BasePhase $phase): void
     {
-        $phaseQuestion = $phase->getCurrentPhaseQuestion();
+        $phaseQuestions = $phase->getAnsweredPhaseQuestions();
 
-        if (!$phaseQuestion) {
-            return;
+        foreach ($phaseQuestions as $phaseQuestion) {
+            $this->calculatePointsForQuestion($phase, $phaseQuestion);
         }
+    }
 
+    private function calculatePointsForQuestion(BasePhase $phase, PhaseQuestionInterface $phaseQuestion): void
+    {
         $phaseAnswers = $phaseQuestion->getPhaseAnswers();
 
         if ($phase instanceof QuestionsPhase) {
@@ -363,6 +366,9 @@ class QuizGameService
             }
         }
 
+        $phaseQuestion->setStatus(PhaseQuestionInterface::STATUS_COUNTED);
+
         $this->em->flush();
+        $this->gameActionService->createGamePointsChangedAction($phase->getGame());
     }
 }

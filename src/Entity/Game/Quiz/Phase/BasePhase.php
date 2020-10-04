@@ -5,6 +5,7 @@ namespace App\Entity\Game\Quiz\Phase;
 
 use App\Entity\Game\Quiz\QuizGame;
 use App\Repository\Game\Quiz\Phase\BasePhaseRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Entity\User;
@@ -97,6 +98,8 @@ abstract class BasePhase
     abstract public function isLastQuestion(): bool;
 
     abstract public function closeQuestion(): void;
+
+    abstract public function getAnsweredPhaseQuestions(): ArrayCollection;
 
     public function getId(): ?int
     {

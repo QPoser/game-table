@@ -206,4 +206,13 @@ class GameActionService
             )
         );
     }
+
+    public function createGamePointsChangedAction(Game $game): void
+    {
+        $gameActionValues = [
+            'teams' => $game->getTeams(),
+        ];
+
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_GAME_POINTS_CHANGED);
+    }
 }

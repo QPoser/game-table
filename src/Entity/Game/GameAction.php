@@ -25,6 +25,7 @@ class GameAction
     public const TEMPLATE_QUIZ_NEW_QUESTION_IN_PROGRESS = 'quiz_new_question_in_progress';
     public const TEMPLATE_QUIZ_PHASE_FINISHED = 'quiz_phase_finished';
     public const TEMPLATE_QUIZ_GAME_FINISHED = 'quiz_game_finished';
+    public const TEMPLATE_GAME_POINTS_CHANGED = 'game_points_changed';
 
     public const TEMPLATES = [
           self::TEMPLATE_GAME_STARTED => self::TEMPLATE_GAME_STARTED,
@@ -39,6 +40,7 @@ class GameAction
           self::TEMPLATE_QUIZ_NEW_QUESTION_IN_PROGRESS => self::TEMPLATE_QUIZ_NEW_QUESTION_IN_PROGRESS,
           self::TEMPLATE_QUIZ_PHASE_FINISHED => self::TEMPLATE_QUIZ_PHASE_FINISHED,
           self::TEMPLATE_QUIZ_GAME_FINISHED => self::TEMPLATE_QUIZ_GAME_FINISHED,
+          self::TEMPLATE_GAME_POINTS_CHANGED => self::TEMPLATE_GAME_POINTS_CHANGED,
     ];
 
     public const USER_TURN_TEMPLATES = [

@@ -15,10 +15,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
  */
 class PricesPhaseQuestion implements PhaseQuestionInterface
 {
-    public const STATUS_WAIT = 'wait';
-    public const STATUS_CURRENT = 'current';
-    public const STATUS_ANSWERED = 'answered';
-
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

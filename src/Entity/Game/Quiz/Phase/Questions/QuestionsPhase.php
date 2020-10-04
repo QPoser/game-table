@@ -83,6 +83,13 @@ class QuestionsPhase extends BasePhase
         return null;
     }
 
+    public function getAnsweredPhaseQuestions(): ArrayCollection
+    {
+        return $this->questions->filter(static function ($question) {
+            return $question->getStatus() === QuestionsPhaseQuestion::STATUS_ANSWERED;
+        });
+    }
+
     /**
      * @Groups({"Api", "AMQP"})
      */

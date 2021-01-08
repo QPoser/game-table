@@ -4,7 +4,7 @@ namespace App\Repository\Game;
 
 use App\Entity\Game\GamePlayer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method GamePlayer|null find($id, $lockMode = null, $lockVersion = null)

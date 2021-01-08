@@ -9,7 +9,7 @@ use App\Entity\Game\Team\GameTeamPlayer;
 use App\Entity\User;
 use App\Helper\PaginationHelper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use function Doctrine\ORM\QueryBuilder;

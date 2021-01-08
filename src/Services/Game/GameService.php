@@ -19,7 +19,7 @@ use App\Services\Validation\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class GameService
+final class GameService
 {
     private EntityManagerInterface $em;
 

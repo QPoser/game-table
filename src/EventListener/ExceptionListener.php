@@ -1,19 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\EventListener;
 
-use App\Exception\AppException;
 use App\Exception\CustomResponseException;
 use App\Services\Response\Responser;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
-class ExceptionListener
+final class ExceptionListener
 {
     private const JSON_CONTENT_TYPE = 'application/json';
 

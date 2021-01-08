@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Events;
@@ -6,7 +7,7 @@ namespace App\Events;
 use App\Entity\Game\Game;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class GameFinishedEvent extends Event
+final class GameFinishedEvent extends Event
 {
     public const NAME = 'game.finished';
 

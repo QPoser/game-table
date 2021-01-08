@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Command;
 
 use App\Entity\User;
@@ -11,7 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class RolesApplyAdminCommand extends Command
+final class RolesApplyAdminCommand extends Command
 {
     protected static $defaultName = 'app:roles:apply-admin';
 
@@ -42,6 +44,7 @@ class RolesApplyAdminCommand extends Command
 
         if (!$user) {
             $io->error('User ' . $email . ' not found!');
+
             return 0;
         }
 

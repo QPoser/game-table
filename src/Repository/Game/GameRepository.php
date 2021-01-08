@@ -1,20 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repository\Game;
 
 use App\Entity\Game\Game;
 use App\Entity\Game\Team\GameTeam;
-use App\Entity\Game\Team\GameTeamPlayer;
 use App\Entity\User;
 use App\Helper\PaginationHelper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use function Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
-class GameRepository extends ServiceEntityRepository
+final class GameRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

@@ -1,9 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Response;
 
-class Responser
+final class Responser
 {
     const STATUS_SUCCESS = 'success';
     const STATUS_ERROR = 'error';

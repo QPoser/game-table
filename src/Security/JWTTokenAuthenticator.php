@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Security;
@@ -8,7 +9,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Security\Guard\JWTTokenAuthenticator as
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class JWTTokenAuthenticator extends BaseAuthenticator
+final class JWTTokenAuthenticator extends BaseAuthenticator
 {
     public function checkCredentials($credentials, UserInterface $user)
     {

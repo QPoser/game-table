@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Command;
@@ -11,7 +12,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Process\Process;
 
-class ConsoleCommandService
+final class ConsoleCommandService
 {
     private const COMMAND_PREFIX = 'php bin/console ';
 

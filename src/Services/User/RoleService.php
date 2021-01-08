@@ -1,14 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\User;
 
 use App\Entity\User;
-use App\Services\Mailer\UserRegisterMailer;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class RoleService
+final class RoleService
 {
     private EntityManagerInterface $em;
 

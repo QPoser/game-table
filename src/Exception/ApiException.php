@@ -1,8 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Exception;
 
-class ApiException extends CustomResponseException
+final class ApiException extends CustomResponseException
 {
 }

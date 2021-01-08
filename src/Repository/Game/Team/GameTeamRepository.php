@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository\Game\Team;
 
 use App\Entity\Game\Team\GameTeam;
@@ -12,7 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method GameTeam[]    findAll()
  * @method GameTeam[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class GameTeamRepository extends ServiceEntityRepository
+final class GameTeamRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

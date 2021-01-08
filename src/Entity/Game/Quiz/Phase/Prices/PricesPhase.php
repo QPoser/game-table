@@ -1,15 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity\Game\Quiz\Phase\Prices;
 
 use App\Entity\Game\Quiz\Phase\BasePhase;
-use App\Entity\Game\Quiz\Phase\PhaseQuestionInterface;
 use App\Entity\Game\Quiz\Phase\QuestionInterface;
+use App\Repository\Game\Quiz\Phase\Prices\PricesPhaseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\Game\Quiz\Phase\Prices\PricesPhaseRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -85,9 +85,7 @@ class PricesPhase extends BasePhase
 
     public function getAnsweredPhaseQuestions(): ArrayCollection
     {
-        return $this->questions->filter(static function ($question) {
-             return $question->getStatus() === PricesPhaseQuestion::STATUS_ANSWERED;
-        });
+        return $this->questions->filter(static fn ($question) => $question->getStatus() === PricesPhaseQuestion::STATUS_ANSWERED);
     }
 
     /**
@@ -117,13 +115,13 @@ class PricesPhase extends BasePhase
     {
         foreach ($this->questions as $question) {
             /** @var PricesPhaseQuestion $question */
-
             if ($question->getStatus() === PricesPhaseQuestion::STATUS_CURRENT) {
                 $question->setStatus(PricesPhaseQuestion::STATUS_ANSWERED);
             }
 
             if ($question->getStatus() === PricesPhaseQuestion::STATUS_WAIT) {
                 $question->setStatus(PricesPhaseQuestion::STATUS_CURRENT);
+
                 return;
             }
         }
@@ -133,7 +131,6 @@ class PricesPhase extends BasePhase
     {
         foreach ($this->questions as $question) {
             /** @var PricesPhaseQuestion $question */
-
             if ($question->getStatus() !== PricesPhaseQuestion::STATUS_ANSWERED) {
                 return false;
             }
@@ -148,7 +145,7 @@ class PricesPhase extends BasePhase
     public function getQuestionsInProgress(): Collection
     {
         return $this->questions->filter(static function ($question) {
-            /** @var PricesPhaseQuestion $question */
+            /* @var PricesPhaseQuestion $question */
             return $question->getStatus() !== PricesPhaseQuestion::STATUS_WAIT;
         });
     }

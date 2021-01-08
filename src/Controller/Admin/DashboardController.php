@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller\Admin;
@@ -15,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @IsGranted("ROLE_ADMIN")
  */
-class DashboardController extends AbstractDashboardController
+final class DashboardController extends AbstractDashboardController
 {
     /**
      * @Route("/admin", name="admin")
@@ -42,7 +43,6 @@ class DashboardController extends AbstractDashboardController
                 MenuItem::linkToCrud('(Questions) questions', 'fa fa-question', QuestionsQuestion::class),
                 MenuItem::linkToCrud('(Prices) questions', 'fa fa-question', PricesQuestion::class),
             ]),
-
         ];
     }
 }

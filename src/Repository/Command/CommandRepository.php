@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repository\Command;
@@ -13,7 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Command[]    findAll()
  * @method Command[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CommandRepository extends ServiceEntityRepository
+final class CommandRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

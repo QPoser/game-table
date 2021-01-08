@@ -1,34 +1,29 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Game\Quiz;
 
-use App\Entity\Game\Game;
 use App\Entity\Game\Quiz\Phase\BasePhase;
 use App\Entity\Game\Quiz\Phase\Prices\PricesPhase;
 use App\Entity\Game\Quiz\Phase\Prices\PricesPhaseQuestion;
 use App\Entity\Game\Quiz\Phase\Prices\PricesQuestion;
-use App\Entity\Game\Quiz\Phase\Questions\QuestionsQuestion;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsPhase;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsPhaseQuestion;
+use App\Entity\Game\Quiz\Phase\Questions\QuestionsQuestion;
 use App\Entity\Game\Quiz\QuizGame;
-use App\Entity\Game\Team\GameTeam;
 use App\Entity\User;
 use App\Exception\AppException;
-use App\Services\Game\GameActionService;
-use App\Services\Notification\GameNotificationTemplateHelper;
 use App\Services\Response\ErrorCode;
-use App\Services\Validation\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 
-class QuizPhaseService
+final class QuizPhaseService
 {
     private EntityManagerInterface $em;
 
     public function __construct(
         EntityManagerInterface $em
-    )
-    {
+    ) {
         $this->em = $em;
     }
 
@@ -53,7 +48,7 @@ class QuizPhaseService
                 break;
         }
 
-        /** @var BasePhase $phase */
+        /* @var BasePhase $phase */
         $phase->setUser($user);
         $game->addPhase($phase);
         $phase->setStatus(BasePhase::STATUS_PREPARED);

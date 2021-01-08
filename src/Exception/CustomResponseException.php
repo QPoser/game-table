@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Exception;
@@ -15,6 +16,6 @@ abstract class CustomResponseException extends Exception
             $message = ErrorCode::getMessage($code);
         }
 
-        parent::__construct((string)$message, $code, $previous);
+        parent::__construct((string) $message, $code, $previous);
     }
 }

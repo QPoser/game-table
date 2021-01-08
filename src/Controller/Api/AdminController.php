@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller\Api;
@@ -8,13 +9,13 @@ use App\Services\Response\Responser;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use Symfony\Component\Routing\Annotation\Route;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/api/admin", name="api.admin")
  */
-class AdminController extends AbstractFOSRestController
+final class AdminController extends AbstractFOSRestController
 {
     /**
      * @Route("/users", name=".users", methods={"GET"})

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Events;
@@ -6,7 +7,7 @@ namespace App\Events;
 use App\Entity\Game\Quiz\QuizGame;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class QuizGameUserEnteredAnswerEvent extends Event
+final class QuizGameUserEnteredAnswerEvent extends Event
 {
     public const NAME = 'game.quiz.user_entered_answer';
 

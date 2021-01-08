@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Chat;
@@ -15,7 +16,7 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\SerializerStamp;
 
-class ChatService
+final class ChatService
 {
     private EntityManagerInterface $em;
 

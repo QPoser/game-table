@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Serializer\Normalizer;
@@ -10,7 +11,7 @@ use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class GameTeamNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
+final class GameTeamNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
     private ObjectNormalizer $normalizer;
 

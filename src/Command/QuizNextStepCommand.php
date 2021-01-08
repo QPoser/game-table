@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Command;
@@ -7,13 +8,12 @@ use App\Entity\Game\Quiz\QuizGame;
 use App\Services\Game\Quiz\QuizGameService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class QuizNextStepCommand extends Command
+final class QuizNextStepCommand extends Command
 {
     protected static $defaultName = 'app:quiz:next-step';
 
@@ -53,6 +53,7 @@ class QuizNextStepCommand extends Command
         if (!$gameId || !$timestamp) {
             $io->error('You should pass arguments: game_id, timestamp');
             $io->error('Current timestamp: ' . time());
+
             return 1;
         }
 
@@ -60,16 +61,19 @@ class QuizNextStepCommand extends Command
 
         if (!($game instanceof QuizGame)) {
             $io->error('Game not found');
+
             return 1;
         }
 
         if ($game->getCurrentStepSeconds() !== null) {
             $io->error('Current game step have time');
+
             return 1;
         }
 
-        if (!$game->getLastAction() || (int)$timestamp < $game->getLastAction()->getTimestamp()) {
+        if (!$game->getLastAction() || (int) $timestamp < $game->getLastAction()->getTimestamp()) {
             $io->error('Game next step command is not in time');
+
             return 1;
         }
 

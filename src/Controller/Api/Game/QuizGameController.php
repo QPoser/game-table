@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller\Api\Game;
@@ -9,18 +10,15 @@ use App\Security\Voter\QuizGameVoter;
 use App\Services\Game\Quiz\QuizGameService;
 use App\Services\Response\Responser;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
-use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Request\ParamFetcher;
+use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Swagger\Annotations as SWG;
 
 /**
  * @Route("/api/game/quiz", name="api.game.quiz")
  */
-class QuizGameController extends AbstractController
+final class QuizGameController extends AbstractController
 {
     private QuizGameService $quizGameService;
 

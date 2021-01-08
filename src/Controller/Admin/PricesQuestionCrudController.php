@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
 use App\Entity\Game\Quiz\Phase\Prices\PricesQuestion;
 use App\Form\Game\Quiz\Phase\Prices\PricesAnswerType;
-use App\Form\Game\Quiz\Phase\Questions\QuestionsAnswerType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
@@ -14,7 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
-class PricesQuestionCrudController extends AbstractCrudController
+final class PricesQuestionCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {

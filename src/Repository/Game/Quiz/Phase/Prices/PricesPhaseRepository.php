@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repository\Game\Quiz\Phase\Prices;
@@ -7,7 +8,7 @@ use App\Entity\Game\Quiz\Phase\Prices\PricesPhase;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-class PricesPhaseRepository extends ServiceEntityRepository
+final class PricesPhaseRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

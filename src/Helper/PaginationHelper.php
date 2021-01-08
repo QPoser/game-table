@@ -1,9 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Helper;
 
-class PaginationHelper
+final class PaginationHelper
 {
     public static function createPaginationArray(?int $total, ?int $limit, ?int $offset): array
     {
@@ -20,7 +21,7 @@ class PaginationHelper
             }
 
             if ($offset !== null) {
-                $pagination['is_last_page'] = (bool)($total <= ($limit + $offset));
+                $pagination['is_last_page'] = (bool) ($total <= ($limit + $offset));
             }
         }
 

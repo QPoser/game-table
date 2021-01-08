@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repository\Game\Chat;
@@ -8,11 +9,10 @@ use App\Entity\Game\Game;
 use App\Entity\User;
 use App\Helper\PaginationHelper;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use function Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
-class MessageRepository extends ServiceEntityRepository
+final class MessageRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -25,8 +25,7 @@ class MessageRepository extends ServiceEntityRepository
         int $limit,
         int $offset,
         ?array $sorting = []
-    ): array
-    {
+    ): array {
         $queryBuilder = $this->createQueryBuilder('m');
 
         $queryBuilder

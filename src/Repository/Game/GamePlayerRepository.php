@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository\Game;
 
 use App\Entity\Game\GamePlayer;
@@ -12,7 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method GamePlayer[]    findAll()
  * @method GamePlayer[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class GamePlayerRepository extends ServiceEntityRepository
+final class GamePlayerRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

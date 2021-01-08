@@ -1,13 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -102,7 +103,7 @@ class User implements UserInterface
 
     public function addRole(string $role): self
     {
-        if (in_array($role, self::ROLES)) {
+        if (in_array($role, self::ROLES, true)) {
             $this->roles[] = $role;
         }
 
@@ -111,7 +112,7 @@ class User implements UserInterface
 
     public function getPassword(): string
     {
-        return (string)$this->password;
+        return (string) $this->password;
     }
 
     public function setPassword(string $password): self
@@ -121,11 +122,11 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getSalt()
+    public function getSalt(): void
     {
     }
 
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
     }
 
@@ -165,7 +166,7 @@ class User implements UserInterface
 
     public function getFormattedRoles(): string
     {
-        $callback = (fn($role) => mb_strtolower(str_replace('ROLE_', '', $role)));
+        $callback = (static fn ($role) => mb_strtolower(str_replace('ROLE_', '', $role)));
 
         return implode(', ', array_map($callback, $this->roles));
     }

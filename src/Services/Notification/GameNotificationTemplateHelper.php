@@ -1,9 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Notification;
 
-use App\AmqpMessages\AmqpChatMessage;
 use App\AmqpMessages\AmqpNotification;
 use App\Entity\Core\Notification;
 use App\Entity\Game\Game;
@@ -13,7 +13,7 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\SerializerStamp;
 
-class GameNotificationTemplateHelper
+final class GameNotificationTemplateHelper
 {
     private EntityManagerInterface $em;
 
@@ -73,7 +73,7 @@ class GameNotificationTemplateHelper
         }
 
         $emails = array_map(static function ($user) {
-            /** @var User $user */
+            /* @var User $user */
             return $user->getEmail();
         }, $users);
 

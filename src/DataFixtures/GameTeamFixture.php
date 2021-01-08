@@ -1,15 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\DataFixtures;
 
-use App\Entity\Game\Quiz\QuizGame;
 use App\Entity\Game\Team\GameTeam;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class GameTeamFixture extends Fixture implements DependentFixtureInterface
+final class GameTeamFixture extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {

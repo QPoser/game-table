@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository\Core;
 
 use App\Entity\Core\Notification;
@@ -12,7 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Notification[]    findAll()
  * @method Notification[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class NotificationRepository extends ServiceEntityRepository
+final class NotificationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

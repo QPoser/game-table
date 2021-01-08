@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Security;
@@ -10,7 +11,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\Authorization\AccessDeniedHandlerInterface;
 
-class AccessDeniedHandler implements AccessDeniedHandlerInterface
+final class AccessDeniedHandler implements AccessDeniedHandlerInterface
 {
     private RouterInterface $router;
 

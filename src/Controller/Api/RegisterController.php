@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller\Api;
@@ -7,15 +8,15 @@ use App\Services\Response\Responser;
 use App\Services\User\RegisterService;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Request\ParamFetcher;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Routing\Annotation\Route;
 use Swagger\Annotations as SWG;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @Route("/api", name="api")
  */
-class RegisterController extends AbstractController
+final class RegisterController extends AbstractController
 {
     private RegisterService $registerService;
 
@@ -45,6 +46,6 @@ class RegisterController extends AbstractController
 
         $result = $this->registerService->registerUser($email, $username, $password);
 
-        return Responser::wrapSuccess((bool)$result);
+        return Responser::wrapSuccess((bool) $result);
     }
 }

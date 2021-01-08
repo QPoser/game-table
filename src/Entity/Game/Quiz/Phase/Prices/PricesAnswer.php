@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity\Game\Quiz\Phase\Prices;
@@ -36,7 +37,7 @@ class PricesAnswer implements AnswerInterface
 
     public function __toString()
     {
-        return (string)$this->answer;
+        return (string) $this->answer;
     }
 
     public function getId(): ?int
@@ -46,7 +47,7 @@ class PricesAnswer implements AnswerInterface
 
     public function getAnswer(): ?string
     {
-        return (string)$this->answer;
+        return (string) $this->answer;
     }
 
     public function getIntAnswer(): ?int

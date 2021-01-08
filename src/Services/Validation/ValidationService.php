@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Validation;
@@ -7,7 +8,7 @@ use App\Exception\ApiException;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class ValidationService
+final class ValidationService
 {
     private const SKIPPED_MESSAGES = [
         'This value should not be blank.'
@@ -29,7 +30,7 @@ class ValidationService
             $errorMessages = [];
 
             foreach ($errors as $error) {
-                if (!in_array($error->getMessage(), self::SKIPPED_MESSAGES)) {
+                if (!in_array($error->getMessage(), self::SKIPPED_MESSAGES, true)) {
                     $errorMessages[] = $error->getMessage();
                 }
             }

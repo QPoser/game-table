@@ -1,9 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Response;
 
-class ErrorCode
+final class ErrorCode
 {
     public const USER_NOT_FOUND_BY_TOKEN = 0;
     public const USER_ALREADY_EXISTS_IN_DATABASE = 1;

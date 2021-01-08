@@ -1,19 +1,20 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller\Api;
 
 use Gesdinet\JWTRefreshTokenBundle\Service\RefreshToken;
+use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Swagger\Annotations as SWG;
 
 /**
  * @Route("/api/token", name="api.token")
  */
-class TokenController extends AbstractController
+final class TokenController extends AbstractController
 {
     /**
      * @Route("/refresh", name=".refresh", methods={"POST"})

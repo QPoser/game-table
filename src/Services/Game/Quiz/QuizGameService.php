@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Game\Quiz;
@@ -30,7 +31,7 @@ use App\Services\Validation\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class QuizGameService
+final class QuizGameService
 {
     private EntityManagerInterface $em;
 
@@ -57,8 +58,7 @@ class QuizGameService
         EventDispatcherInterface $dispatcher,
         GamePlayerTurnService $gamePlayerTurnService,
         ConsoleCommandService $consoleCommandService
-    )
-    {
+    ) {
         $this->em = $em;
         $this->validator = $validator;
         $this->gameNTH = $gameNTH;
@@ -258,6 +258,7 @@ class QuizGameService
 
         if (!$phase->isLastQuestion()) {
             $this->startNextQuestion($phase);
+
             return;
         }
 
@@ -337,7 +338,7 @@ class QuizGameService
             $teams = [];
 
             foreach ($phaseAnswers as $key => $phaseAnswer) {
-                /** @var PricesPhaseAnswer $phaseAnswer */
+                /* @var PricesPhaseAnswer $phaseAnswer */
 
                 $teams[$key] = [
                     'team' => $phaseAnswer->getTeam(),

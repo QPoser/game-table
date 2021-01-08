@@ -1,18 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\DataFixtures;
 
-use App\Entity\Game\Game;
 use App\Entity\Game\Quiz\Phase\Prices\PricesAnswer;
 use App\Entity\Game\Quiz\Phase\Questions\QuestionsAnswer;
-use App\Entity\Game\Quiz\Phase\Questions\QuestionsQuestion;
-use App\Entity\Game\Quiz\QuizGame;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class QuizAnswerFixture extends Fixture implements DependentFixtureInterface
+final class QuizAnswerFixture extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -31,14 +29,14 @@ class QuizAnswerFixture extends Fixture implements DependentFixtureInterface
         }
 
         for ($i = 1; $i <= 3; $i++) {
-                $answer = new PricesAnswer();
-                $answer->setQuestion($this->getReference('question_price_' . $i));
-                $answer->setAnswer(10 * $i);
+            $answer = new PricesAnswer();
+            $answer->setQuestion($this->getReference('question_price_' . $i));
+            $answer->setAnswer(10 * $i);
 
-                $manager->persist($answer);
-                $manager->flush();
+            $manager->persist($answer);
+            $manager->flush();
 
-                $this->addReference('answer_price_' . $i . '_', $answer);
+            $this->addReference('answer_price_' . $i . '_', $answer);
         }
     }
 

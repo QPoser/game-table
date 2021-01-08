@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Events;
@@ -7,7 +8,7 @@ use App\Entity\Game\Quiz\Phase\BasePhase;
 use App\Entity\Game\Quiz\QuizGame;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class QuizGamePhaseFinishedEvent extends Event
+final class QuizGamePhaseFinishedEvent extends Event
 {
     public const NAME = 'game.quiz.phase_finished';
 

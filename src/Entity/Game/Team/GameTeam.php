@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity\Game\Team;
@@ -197,7 +198,7 @@ class GameTeam
         $ids = [];
 
         foreach ($this->players as $player) {
-            /** @var GameTeamPlayer $player */
+            /* @var GameTeamPlayer $player */
             $ids[] = $player->getUser()->getId();
         }
 

@@ -1,14 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity\Game\Quiz\Phase;
 
 use App\Entity\Game\Quiz\QuizGame;
+use App\Entity\User;
 use App\Repository\Game\Quiz\Phase\BasePhaseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use App\Entity\User;
 
 /**
  * @ORM\Table
@@ -86,7 +87,9 @@ abstract class BasePhase
     /**
      * @Groups({"Api", "AMQP"})
      */
-    abstract public function isFreeAnswer(): bool; // Can user answer be unmatched with question answers?
+    abstract public function isFreeAnswer(): bool;
+
+    // Can user answer be unmatched with question answers?
 
     /**
      * @Groups({"Api", "AMQP"})

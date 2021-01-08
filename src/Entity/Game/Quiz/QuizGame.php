@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Entity\Game\Quiz;
@@ -136,6 +137,7 @@ class QuizGame extends Game
 
             if ($phase->getStatus() === BasePhase::STATUS_PREPARED) {
                 $phase->setStatus(BasePhase::STATUS_IN_PROGRESS);
+
                 return;
             }
         }

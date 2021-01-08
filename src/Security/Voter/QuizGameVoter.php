@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Security\Voter;
@@ -9,7 +10,7 @@ use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
-class QuizGameVoter extends Voter
+final class QuizGameVoter extends Voter
 {
     public const ATTRIBUTE_SELECT_PHASE = 'SELECT_PHASE';
     public const ATTRIBUTE_PUT_ANSWER = 'PUT_ANSWER';

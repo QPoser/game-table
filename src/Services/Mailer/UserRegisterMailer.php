@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Mailer;
@@ -8,7 +9,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class UserRegisterMailer
+final class UserRegisterMailer
 {
     private MailerInterface $mailer;
 

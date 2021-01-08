@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller\Api\Game;
@@ -12,14 +13,14 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Request\ParamFetcher;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Swagger\Annotations as SWG;
 
 /**
  * @Route("/api/games", name="api.games")
  */
-class GameController extends AbstractController
+final class GameController extends AbstractController
 {
     private GameService $gameService;
 
@@ -47,8 +48,8 @@ class GameController extends AbstractController
      */
     public function searchAction(ParamFetcher $paramFetcher): array
     {
-        $limit = (int)$paramFetcher->get('limit');
-        $offset = (int)$paramFetcher->get('offset');
+        $limit = (int) $paramFetcher->get('limit');
+        $offset = (int) $paramFetcher->get('offset');
 
         [$games, $pagination] = $this->getDoctrine()->getRepository(Game::class)->getGamesWithPagination($limit, $offset);
 
@@ -161,7 +162,7 @@ class GameController extends AbstractController
         $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_JOIN, $game);
 
         $password = $paramFetcher->get('password');
-        $teamId = (int)$paramFetcher->get('team');
+        $teamId = (int) $paramFetcher->get('team');
         $user = $this->getUser();
 
         $this->gameService->joinGame($user, $game, $teamId, $password);

@@ -1,15 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Game;
 
 use App\Entity\Game\Game;
 use App\Entity\User;
-use App\Services\Game\GameActionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class GamePlayerTurnService
+final class GamePlayerTurnService
 {
     private EntityManagerInterface $em;
 
@@ -21,8 +21,7 @@ class GamePlayerTurnService
         EntityManagerInterface $em,
         GameActionService $gameActionService,
         EventDispatcherInterface $dispatcher
-    )
-    {
+    ) {
         $this->em = $em;
         $this->gameActionService = $gameActionService;
         $this->dispatcher = $dispatcher;

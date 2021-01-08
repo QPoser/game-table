@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\EventListener;
@@ -8,7 +9,7 @@ use App\Events\GameUserLeavedEvent;
 use App\Services\Game\GameActionService;
 use App\Services\Game\GameService;
 
-class GameListener
+final class GameListener
 {
     private GameService $gameService;
 

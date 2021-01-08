@@ -1,0 +1,20 @@
+#!/bin/sh
+export PATH=/usr/local/bin:$PATH
+export COMPOSE_INTERACTIVE_NO_CLI=1
+
+if [ -t 1 ]; then
+    exec >/dev/tty 2>/dev/tty </dev/tty
+fi
+
+errors=0
+
+docker-compose exec -T php composer code-quality
+
+if [ "$?" -ne 0 ]; then
+    errors=1
+fi
+
+if [ "$errors" -eq 1 ]; then
+    echo "Errors detected!"
+    exit 1
+fi

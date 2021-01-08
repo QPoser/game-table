@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Game;
 
 use App\Entity\Game\Game;
-use App\Entity\Game\Team\GameTeamPlayer;
 use App\Entity\Game\Team\GameTeam;
+use App\Entity\Game\Team\GameTeamPlayer;
 use App\Entity\User;
 use App\Events\GameFinishedEvent;
 use App\Events\GameUserJoinedEvent;
@@ -36,8 +37,7 @@ class GameService
         QuizGameService $quizGameService,
         GameNotificationTemplateHelper $gameNTH,
         EventDispatcherInterface $dispatcher
-    )
-    {
+    ) {
         $this->em = $em;
         $this->validator = $validator;
         $this->gameNTH = $gameNTH;

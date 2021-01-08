@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\DataFixtures;
@@ -8,7 +9,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class UserFixture extends Fixture
+final class UserFixture extends Fixture
 {
     private UserPasswordEncoderInterface $userPasswordEncoder;
 
@@ -17,7 +18,7 @@ class UserFixture extends Fixture
         $this->userPasswordEncoder = $userPasswordEncoder;
     }
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $password = 'secret';
         $roles = [

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\AmqpMessages;
@@ -6,7 +7,7 @@ namespace App\AmqpMessages;
 use App\Entity\Game\GameAction;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-class AmqpGameAction extends BaseAmqpMessage
+final class AmqpGameAction extends BaseAmqpMessage
 {
     /**
      * @Groups({"AMQP"})

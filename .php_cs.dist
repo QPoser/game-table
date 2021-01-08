@@ -1,0 +1,43 @@
+<?php
+
+$finder = PhpCsFixer\Finder::create()
+    ->in([
+        __DIR__ . '/src',
+        __DIR__ . '/tests'
+    ])
+;
+
+return PhpCsFixer\Config::create()
+    ->setRules([
+        '@Symfony' => true,
+        'array_syntax' => ['syntax' => 'short'],
+        'concat_space' => ['spacing' => 'one'],
+        'increment_style' => ['style' => 'post'],
+        'no_extra_blank_lines' => ['tokens' => [
+            'extra',
+            'parenthesis_brace_block',
+            'square_brace_block',
+            'throw',
+            'use',
+        ]],
+        'no_superfluous_phpdoc_tags' => false,
+        'phpdoc_align' => ['align' => 'left'],
+        'phpdoc_annotation_without_dot' => false,
+        'trailing_comma_in_multiline_array' => false,
+        'yoda_style' => false,
+        'final_class' => true,
+        'void_return' => true,
+        'use_arrow_functions' => true,
+        'ternary_to_null_coalescing' => true,
+        'ternary_to_elvis_operator' => true,
+        'strict_param' => true,
+        'strict_comparison' => true,
+        'static_lambda' => true,
+        'phpdoc_to_param_type' => true,
+        'phpdoc_to_return_type' => true,
+        'lowercase_constants' => true,
+        'logical_operators' => true,
+        'declare_strict_types' => true,
+    ])
+    ->setFinder($finder)
+;

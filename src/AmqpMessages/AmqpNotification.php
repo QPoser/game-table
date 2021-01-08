@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\AmqpMessages;
@@ -6,7 +7,7 @@ namespace App\AmqpMessages;
 use App\Entity\Core\Notification;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-class AmqpNotification extends BaseAmqpMessage
+final class AmqpNotification extends BaseAmqpMessage
 {
     /**
      * @Groups({"AMQP"})

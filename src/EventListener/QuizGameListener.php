@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\EventListener;
@@ -12,7 +13,7 @@ use App\Services\Game\GameActionService;
 use App\Services\Game\GameService;
 use App\Services\Game\Quiz\QuizGameService;
 
-class QuizGameListener
+final class QuizGameListener
 {
     private GameService $gameService;
 
@@ -24,8 +25,7 @@ class QuizGameListener
         GameService $gameService,
         GameActionService $gameActionService,
         QuizGameService $quizGameService
-    )
-    {
+    ) {
         $this->gameService = $gameService;
         $this->gameActionService = $gameActionService;
         $this->quizGameService = $quizGameService;

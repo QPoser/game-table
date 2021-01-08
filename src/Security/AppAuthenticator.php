@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Security;
@@ -22,7 +23,7 @@ use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticato
 use Symfony\Component\Security\Guard\PasswordAuthenticatedInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
-class AppAuthenticator extends AbstractFormLoginAuthenticator implements PasswordAuthenticatedInterface
+final class AppAuthenticator extends AbstractFormLoginAuthenticator implements PasswordAuthenticatedInterface
 {
     use TargetPathTrait;
 
@@ -39,8 +40,7 @@ class AppAuthenticator extends AbstractFormLoginAuthenticator implements Passwor
         UrlGeneratorInterface $urlGenerator,
         CsrfTokenManagerInterface $csrfTokenManager,
         UserPasswordEncoderInterface $passwordEncoder
-    )
-    {
+    ) {
         $this->entityManager = $entityManager;
         $this->urlGenerator = $urlGenerator;
         $this->csrfTokenManager = $csrfTokenManager;

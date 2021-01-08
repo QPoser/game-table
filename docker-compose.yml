@@ -55,12 +55,6 @@ services:
         networks:
             - app
 
-    php-cs-fixer:
-        image: unibeautify/php-cs-fixer
-        volumes: 
-            - ./:/workdir
-        working_dir: /workdir
-
     websockets:
         image: golang:1.14-alpine
         volumes:

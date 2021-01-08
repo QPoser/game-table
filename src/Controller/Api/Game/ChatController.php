@@ -1,28 +1,27 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller\Api\Game;
 
 use App\Entity\Game\Chat\Message;
 use App\Entity\Game\Game;
-use App\Form\MessageType;
 use App\Security\Voter\GameVoter;
 use App\Services\Chat\ChatService;
 use App\Services\Response\Responser;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
+use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Request\ParamFetcher;
 use Nelmio\ApiDocBundle\Annotation\Model;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
 use Swagger\Annotations as SWG;
-use FOS\RestBundle\Controller\Annotations\RequestParam;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/api/chat", name="api.chat")
  */
-class ChatController extends AbstractController
+final class ChatController extends AbstractController
 {
     private ChatService $chatService;
 
@@ -78,8 +77,8 @@ class ChatController extends AbstractController
     {
         $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
 
-        $offset = (int)$paramFetcher->get('offset');
-        $limit = (int)$paramFetcher->get('limit');
+        $offset = (int) $paramFetcher->get('offset');
+        $limit = (int) $paramFetcher->get('limit');
         $user = $this->getUser();
 
         [$messages, $pagination] = $this->getDoctrine()

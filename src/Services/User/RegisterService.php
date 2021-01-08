@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\User;
@@ -10,7 +11,7 @@ use App\Services\Response\ErrorCode;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
-class RegisterService
+final class RegisterService
 {
     private EntityManagerInterface $em;
 

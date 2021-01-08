@@ -39,5 +39,9 @@ endif
 #    symfony serve -d || symfony server:status
 #endif
 
-init-mutagen:
+cs-fixer-search-errors:
+	$(DOCKER_COMPOSE) exec php vendor/bin/php-cs-fixer fix --dry-run --diff --allow-risky=yes
+
+cs-fixer-fix-errors:
+	$(DOCKER_COMPOSE) exec php vendor/bin/php-cs-fixer fix --allow-risky=yes
 

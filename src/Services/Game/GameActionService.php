@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Game;
@@ -19,7 +20,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\SerializerStamp;
 use Symfony\Component\Routing\RouterInterface;
 
-class GameActionService
+final class GameActionService
 {
     private EntityManagerInterface $em;
 
@@ -162,8 +163,7 @@ class GameActionService
         ?User $user = null,
         bool $sentToAll = false,
         bool $sentToTeam = false
-    ): void
-    {
+    ): void {
         if (!in_array($template, GameAction::TEMPLATES, true)) {
             throw new AppException(ErrorCode::INCORRECT_GAME_ACTION_TYPE);
         }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Events;
@@ -7,7 +8,7 @@ use App\Entity\Game\Team\GameTeam;
 use App\Entity\User;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class GameUserJoinedEvent extends Event
+final class GameUserJoinedEvent extends Event
 {
     public const NAME = 'game.user.joined';
 

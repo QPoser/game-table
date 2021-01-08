@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Form\Game\Quiz\Phase\Prices;
@@ -9,7 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class PricesAnswerType extends AbstractType
+final class PricesAnswerType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

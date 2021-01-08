@@ -8,6 +8,12 @@ else
 	COMPOSER=docker-compose -f docker-compose.yml exec php composer
 endif
 
+ifeq ($(IS_MUTAGEN), true)
+	DOCKER_COMPOSE=mutagen compose -f docker-compose-mutagen.yml
+	SF=mutagen compose -f docker-compose-mutagen.yml exec php php bin/console
+	COMPOSER=mutagen compose -f docker-compose-mutagen.yml exec php composer
+endif
+
 install-project:
 	$(DOCKER_COMPOSE) build
 	$(DOCKER_COMPOSE) up -d
@@ -16,6 +22,9 @@ install-project:
 	sudo rm -R ./app
 
 init:
+ifeq ($(IS_MUTAGEN), true)
+	mutagen daemon start
+endif
 	$(DOCKER_COMPOSE) stop
 	$(DOCKER_COMPOSE) build
 	$(DOCKER_COMPOSE) up -d
@@ -29,4 +38,6 @@ init:
 #    symfony proxy:start
 #    symfony serve -d || symfony server:status
 #endif
+
+init-mutagen:
 

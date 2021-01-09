@@ -26,7 +26,5 @@ final class LoginController extends AbstractController
      * @RequestParam(name="username", requirements="\w+", nullable=false, strict=true, description="User email")
      * @RequestParam(name="password", requirements="\w+", nullable=false, strict=true, description="User password")
      */
-    public function checkAction(): void
-    {
-    }
+    public function checkAction(): void {}
 }

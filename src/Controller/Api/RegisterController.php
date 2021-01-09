@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\Dto\RequestDto\RegisterUserRequest;
+use App\Dto\ResponseDto\ResponseDTO;
 use App\Services\Response\Responser;
 use App\Services\User\RegisterService;
-use FOS\RestBundle\Controller\Annotations\RequestParam;
-use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\Controller\Annotations as Rest;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @Route("/api", name="api")
@@ -27,24 +28,19 @@ final class RegisterController extends AbstractController
 
     /**
      * @Route("/register", name=".register", methods={"POST"})
-     * @RequestParam(name="email", requirements=@Assert\Email(), nullable=false, strict=true, description="Email")
-     * @RequestParam(name="username", requirements="\w+", nullable=false, strict=true, description="Username")
-     * @RequestParam(name="password", requirements="\w+", nullable=false, strict=true, description="Password")
+     * @Rest\View(serializerGroups={"Api"})
      * @SWG\Post(
      *     tags={"Auth"},
      *     @SWG\Response(
      *      response="200",
      *      description="Register action"
-     *     )
+     *     ),
+     *     @SWG\Parameter(name="body", in="body", @Model(type=RegisterUserRequest::class)))
      * )
      */
-    public function actionApiRegister(ParamFetcher $paramFetcher): array
+    public function actionApiRegister(RegisterUserRequest $registerUserRequest): ResponseDTO
     {
-        $email = $paramFetcher->get('email');
-        $password = $paramFetcher->get('password');
-        $username = $paramFetcher->get('username');
-
-        $result = $this->registerService->registerUser($email, $username, $password);
+        $result = $this->registerService->registerUser($registerUserRequest->getEmail(), $registerUserRequest->getUsername(), $registerUserRequest->getPassword());
 
         return Responser::wrapSuccess((bool) $result);
     }

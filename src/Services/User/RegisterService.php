@@ -46,7 +46,7 @@ final class RegisterService
         $user->setPassword($password);
         $user->setUsername($username);
         $user->setRoles([User::ROLE_USER]);
-        $user->setVerifyToken(uniqid());
+        $user->setVerifyToken(uniqid('', true));
 
         $this->em->persist($user);
         $this->em->flush($user);

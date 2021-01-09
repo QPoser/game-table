@@ -4,26 +4,18 @@ declare(strict_types=1);
 
 namespace App\Services\Response;
 
+use App\Dto\ResponseDto\ErrorResponseDTO;
+use App\Dto\ResponseDto\SuccessResponseDTO;
+
 final class Responser
 {
-    const STATUS_SUCCESS = 'success';
-    const STATUS_ERROR = 'error';
-
-    public static function wrapSuccess($data, array $additional = []): array
+    public static function wrapSuccess($data, array $additional = []): SuccessResponseDTO
     {
-        return [
-            'data' => $data,
-            'partials' => $additional,
-            'status' => self::STATUS_SUCCESS,
-        ];
+        return new SuccessResponseDTO($data, $additional);
     }
 
-    public static function wrapError(string $message, int $code): array
+    public static function wrapError(string $message, int $code): ErrorResponseDTO
     {
-        return [
-            'message' => $message,
-            'code' => $code,
-            'status' => self::STATUS_ERROR,
-        ];
+        return new ErrorResponseDTO($message, $code);
     }
 }

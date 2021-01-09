@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\Dto\ResponseDto\ResponseDTO;
 use App\Entity\User;
 use App\Services\Response\Responser;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -32,7 +33,7 @@ final class AdminController extends AbstractFOSRestController
      *     )
      * )
      */
-    public function users(): array
+    public function users(): ResponseDTO
     {
         $users = $this->getDoctrine()->getRepository(User::class)->findAll();
 

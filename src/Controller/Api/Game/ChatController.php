@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Api\Game;
 
+use App\Dto\ResponseDto\ResponseDTO;
 use App\Entity\Game\Chat\Message;
 use App\Entity\Game\Game;
 use App\Security\Voter\GameVoter;
@@ -44,7 +45,7 @@ final class ChatController extends AbstractController
      *     )
      * )
      */
-    public function gameMessage(Game $game, ParamFetcher $paramFetcher): array
+    public function gameMessage(Game $game, ParamFetcher $paramFetcher): ResponseDTO
     {
         $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
 
@@ -73,7 +74,7 @@ final class ChatController extends AbstractController
      *     )
      * )
      */
-    public function getGameMessages(Game $game, ParamFetcher $paramFetcher): array
+    public function getGameMessages(Game $game, ParamFetcher $paramFetcher): ResponseDTO
     {
         $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
 

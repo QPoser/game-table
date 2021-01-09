@@ -45,3 +45,9 @@ services:
             - { name: kernel.event_listener, event: game.quiz.user_entered_answer, method: onUserEnteredAnswer }
             - { name: kernel.event_listener, event: game.quiz.phase_finished, method: onPhaseFinished }
             - { name: kernel.event_listener, event: game.finished, method: onGameFinished }
+
+    App\ArgumentResolver\RequestDTOResolver:
+        arguments:
+            - '@validator'
+        tags:
+            - { name: controller.argument_value_resolver, priority: 50 }

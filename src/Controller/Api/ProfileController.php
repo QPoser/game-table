@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
+use App\Dto\ResponseDto\ResponseDTO;
 use App\Entity\User;
 use App\Services\Response\Responser;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -29,7 +30,7 @@ final class ProfileController extends AbstractFOSRestController
      *     ),
      * )
      */
-    public function index(): array
+    public function index(): ResponseDTO
     {
         return Responser::wrapSuccess($this->getUser());
     }

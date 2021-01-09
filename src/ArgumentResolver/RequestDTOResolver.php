@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace App\ArgumentResolver;
 
 use App\Dto\RequestDto\RequestDTOInterface;
-use App\Exception\ApiException;
 use ReflectionClass;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class RequestDTOResolver implements ArgumentValueResolverInterface
+final class RequestDTOResolver implements ArgumentValueResolverInterface
 {
     private ValidatorInterface $validator;
 

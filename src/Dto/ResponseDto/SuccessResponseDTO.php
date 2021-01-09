@@ -6,7 +6,7 @@ namespace App\Dto\ResponseDto;
 
 use Symfony\Component\Serializer\Annotation\Groups;
 
-class SuccessResponseDTO extends ResponseDTO
+final class SuccessResponseDTO extends ResponseDTO
 {
     private const STATUS = 'success';
 

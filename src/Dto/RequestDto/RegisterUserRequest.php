@@ -7,7 +7,7 @@ namespace App\Dto\RequestDto;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class RegisterUserRequest implements RequestDTOInterface
+final class RegisterUserRequest implements RequestDTOInterface
 {
     /**
      * @Assert\Length(min=6, max=32)

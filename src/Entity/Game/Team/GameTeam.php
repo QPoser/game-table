@@ -139,7 +139,9 @@ class GameTeam
     {
         foreach ($this->players as $teamPlayer) {
             /** @var GameTeamPlayer $teamPlayer */
-            if ($teamPlayer->getUser()->getId() === $user->getId()) {
+            $teamPlayerUser = $teamPlayer->getUser();
+
+            if ($teamPlayerUser && $teamPlayerUser->getId() === $user->getId()) {
                 return true;
             }
         }
@@ -156,7 +158,9 @@ class GameTeam
     {
         foreach ($this->players as $teamPlayer) {
             /** @var GameTeamPlayer $teamPlayer */
-            if ($teamPlayer->getUser()->getId() === $user->getId()) {
+            $teamPlayerUser = $teamPlayer->getUser();
+
+            if ($teamPlayerUser && $teamPlayerUser->getId() === $user->getId()) {
                 return $teamPlayer;
             }
         }

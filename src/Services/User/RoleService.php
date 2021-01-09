@@ -19,6 +19,6 @@ final class RoleService
     public function applyAdminRole(User $user): void
     {
         $user->addRole(User::ROLE_ADMIN);
-        $this->em->flush($user);
+        $this->em->flush();
     }
 }

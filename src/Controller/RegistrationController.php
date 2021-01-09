@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Dto\RegisterUserDto;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Services\User\RegisterService;
@@ -36,7 +37,7 @@ final class RegistrationController extends AbstractController
             $email = $form->get('email')->getData();
             $username = $form->get('username')->getData();
             $password = $form->get('plainPassword')->getData();
-            $this->registerService->registerUser($email, $username, $password);
+            $this->registerService->registerUser(new RegisterUserDto($email, $username, $password));
 
             return $this->redirectToRoute('app.login');
         }

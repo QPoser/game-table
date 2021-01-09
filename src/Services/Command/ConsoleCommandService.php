@@ -28,16 +28,21 @@ final class ConsoleCommandService
 
     public function addCommandToQueueWithDelay20S(string $command): void
     {
+        $uid = uniqid('', true);
+
         $consoleCommand = new Command();
         $consoleCommand->setCommand($command);
-        $consoleCommand->setUid(uniqid('', true));
+        $consoleCommand->setUid($uid);
 
         $this->em->persist($consoleCommand);
-        $this->em->flush($consoleCommand);
+        $this->em->flush();
 
-        $this->bus->dispatch(new Envelope(new ConsoleCommand($command, $consoleCommand->getUid()), [
-            new DelayStamp(30500),
-        ]));
+        $this->bus->dispatch(
+            new Envelope(
+                new ConsoleCommand($command, $uid),
+                [new DelayStamp(30500)]
+            )
+        );
     }
 
     public function executeCommandByUid(string $uid): void
@@ -63,6 +68,6 @@ final class ConsoleCommandService
             $command->setTries($command->getTries() + 1);
         }
 
-        $this->em->flush($command);
+        $this->em->flush();
     }
 }

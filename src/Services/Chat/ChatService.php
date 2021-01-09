@@ -48,7 +48,18 @@ final class ChatService
 
         if ($type === Message::TYPE_TEAM) {
             /** @var GameTeam $team */
-            $team = $game->getTeamPlayerByUser($user)->getTeam();
+            $teamPlayer = $game->getTeamPlayerByUser($user);
+
+            if (!$teamPlayer) {
+                throw new \RuntimeException('Team player does not exists');
+            }
+
+            $team = $teamPlayer->getTeam();
+
+            if (!$team) {
+                throw new \RuntimeException('Team does not exists for team player');
+            }
+
             $message->setTeam($team);
 
             $emails = $this->em->getRepository(User::class)->findUserEmailsByTeam($team);
@@ -57,7 +68,7 @@ final class ChatService
         }
 
         $this->em->persist($message);
-        $this->em->flush($message);
+        $this->em->flush();
 
         $amqpMessage = new AmqpChatMessage($message, $emails);
 

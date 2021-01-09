@@ -7,11 +7,13 @@ namespace App\Controller\Api\Game;
 use App\Dto\ResponseDto\ResponseDTO;
 use App\Entity\Game\Quiz\Phase\BasePhase;
 use App\Entity\Game\Quiz\QuizGame;
+use App\Entity\User;
 use App\Security\Voter\QuizGameVoter;
 use App\Services\Game\Quiz\QuizGameService;
 use App\Services\Response\Responser;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcher;
+use RuntimeException;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -66,8 +68,14 @@ final class QuizGameController extends AbstractController
     {
         $this->denyAccessUnlessGranted(QuizGameVoter::ATTRIBUTE_SELECT_PHASE, $game);
 
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw new RuntimeException('User does not exists');
+        }
+
         $phaseType = $paramFetcher->get('phase_type');
-        $this->quizGameService->addPhase($game, $phaseType, $this->getUser());
+        $this->quizGameService->addPhase($game, $phaseType, $user);
 
         return Responser::wrapSuccess(true);
     }
@@ -89,7 +97,13 @@ final class QuizGameController extends AbstractController
         $this->denyAccessUnlessGranted(QuizGameVoter::ATTRIBUTE_PUT_ANSWER, $game);
         $answer = $paramFetcher->get('answer');
 
-        $this->quizGameService->putAnswer($game, $answer, $this->getUser());
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw new RuntimeException('User does not exists');
+        }
+
+        $this->quizGameService->putAnswer($game, $answer, $user);
 
         return Responser::wrapSuccess(true);
     }

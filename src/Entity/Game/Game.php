@@ -472,7 +472,9 @@ abstract class Game
             } else {
                 foreach ($players as $key => $player) {
                     /** @var GameTeamPlayer $player */
-                    if ($player->getUser()->getId() === $lastUserWithGameAction->getId()) {
+                    $user = $player->getUser();
+
+                    if ($user && $user->getId() === $lastUserWithGameAction->getId()) {
                         /** @var GameTeamPlayer $nextPlayer */
                         $nextPlayer = $players->containsKey($key + 1) ? $players->get($key + 1) : $players->first();
 

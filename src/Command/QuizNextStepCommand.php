@@ -71,7 +71,9 @@ final class QuizNextStepCommand extends Command
             return 1;
         }
 
-        if (!$game->getLastAction() || (int) $timestamp < $game->getLastAction()->getTimestamp()) {
+        $lastAction = $game->getLastAction();
+
+        if (!$lastAction || (int) $timestamp < $lastAction->getTimestamp()) {
             $io->error('Game next step command is not in time');
 
             return 1;

@@ -15,6 +15,7 @@ use App\Entity\User;
 use App\Exception\AppException;
 use App\Services\Response\ErrorCode;
 use Doctrine\ORM\EntityManagerInterface;
+use RuntimeException;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\SerializerStamp;
@@ -44,13 +45,19 @@ final class GameActionService
         ];
 
         $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_GAME_STARTED, null, true);
-        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_YOUR_GAME_STARTED, null);
+        $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_YOUR_GAME_STARTED);
     }
 
     public function createQuizGamePhaseChosenActions(QuizGame $game, User $user, string $phaseType): void
     {
+        $teamPlayer = $game->getTeamPlayerByUser($user);
+
+        if (!$teamPlayer) {
+            throw new RuntimeException('User has no team player');
+        }
+
         $gameActionValues = [
-            'team' => $game->getTeamPlayerByUser($user)->getTeam(),
+            'team' => $teamPlayer->getTeam(),
             'gameId' => $game->getId(),
             'phase' => $phaseType,
         ];
@@ -97,8 +104,13 @@ final class GameActionService
         );
     }
 
-    public function createUserEnteredAnswerAction(Game $game, GameTeam $team, User $user, string $userAnswer, ?AnswerInterface $answer = null): void
-    {
+    public function createUserEnteredAnswerAction(
+        Game $game,
+        GameTeam $team,
+        User $user,
+        string $userAnswer,
+        ?AnswerInterface $answer = null
+    ): void {
         $gameActionValues = [
             'team' => $team->getId(),
             'user' => $user->getId(),
@@ -125,8 +137,12 @@ final class GameActionService
         $this->createGameAction($game, $gameActionValues, GameAction::TEMPLATE_GAME_TURNS_CHANGED);
     }
 
-    public function createNewQuestionInProgressAction(QuizGame $game): void
+    public function createNewQuestionInProgressAction(?QuizGame $game): void
     {
+        if (!$game) {
+            return;
+        }
+
         $gameActionValues = [
             'gameId' => $game->getId(),
             'phase' => $game->getCurrentPhase(),
@@ -172,7 +188,7 @@ final class GameActionService
             $values['userId'] = $user->getId();
         }
 
-        if ($game && !isset($values['gameId'])) {
+        if (!isset($values['gameId'])) {
             $values['gameId'] = $game->getId();
         }
 
@@ -183,13 +199,19 @@ final class GameActionService
         $action->setUser($user);
 
         $this->em->persist($action);
-        $this->em->flush($action);
+        $this->em->flush();
 
         $emails = [];
 
         if (!$sentToAll) {
             if ($sentToTeam && $user) {
-                $emails = $this->em->getRepository(User::class)->findUserEmailsByTeam($game->getTeamPlayerByUser($user)->getTeam());
+                $teamPlayer = $game->getTeamPlayerByUser($user);
+
+                if (!$teamPlayer) {
+                    throw new RuntimeException('Team player does not exists');
+                }
+
+                $emails = $this->em->getRepository(User::class)->findUserEmailsByTeam($teamPlayer->getTeam());
             } else {
                 $emails = $this->em->getRepository(User::class)->findUserEmailsByGame($game);
             }
@@ -207,8 +229,12 @@ final class GameActionService
         );
     }
 
-    public function createGamePointsChangedAction(Game $game): void
+    public function createGamePointsChangedAction(?Game $game): void
     {
+        if (!$game) {
+            return;
+        }
+
         $gameActionValues = [
             'teams' => $game->getTeams(),
         ];

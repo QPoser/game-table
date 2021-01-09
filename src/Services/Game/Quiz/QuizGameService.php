@@ -117,7 +117,7 @@ final class QuizGameService
         $this->refreshGameLastAction($game);
 
         $this->em->persist($game);
-        $this->em->flush($game);
+        $this->em->flush();
 
         $this->quizPhaseService->createPhase(BasePhase::TYPE_QUESTIONS, $game);
         $this->gamePlayerTurnService->setFirstTeamPlayerTurn($game);
@@ -175,30 +175,49 @@ final class QuizGameService
             throw new AppException(ErrorCode::QUIZ_GAME_QUESTION_HAS_NO_THIS_VARIANT);
         }
 
+        $phaseQuestion = $currentPhase->getCurrentPhaseQuestion();
+
+        if (!$phaseQuestion) {
+            return; // @TODO check
+        }
+
         switch ($currentPhase->getType()) {
             case BasePhase::TYPE_QUESTIONS:
                     if (!($answer instanceof QuestionsAnswer)) {
                         $answer = null;
                     }
 
-                    $this->createQuestionsAnswer($game, $userAnswer, $user, $currentPhase->getCurrentPhaseQuestion(), $answer);
+                    $this->createQuestionsAnswer($game, $userAnswer, $user, $phaseQuestion, $answer);
                 break;
             case BasePhase::TYPE_PRICES:
-                $this->createPricesAnswer($game, $userAnswer, $user, $currentPhase->getCurrentPhaseQuestion());
+                $this->createPricesAnswer($game, $userAnswer, $user, $phaseQuestion);
                 break;
         }
     }
 
     private function createQuestionsAnswer(QuizGame $game, string $userAnswer, User $user, PhaseQuestionInterface $phaseQuestion, ?QuestionsAnswer $questionAnswer): void
     {
-        $team = $game->getTeamPlayerByUser($user)->getTeam();
+        $teamPlayer = $game->getTeamPlayerByUser($user);
+
+        if (!$teamPlayer) {
+            return;
+        }
+
+        $team = $teamPlayer->getTeam();
+
+        if (!$team) {
+            return;
+        }
 
         $answer = new QuestionsPhaseAnswer();
 
         $answer->setUser($user);
         $answer->setTeam($team);
-        $answer->setQuestionsAnswer($questionAnswer);
         $answer->setAnswer($userAnswer);
+
+        if ($questionAnswer) {
+            $answer->setQuestionsAnswer($questionAnswer);
+        }
 
         if ($phaseQuestion instanceof QuestionsPhaseQuestion) {
             $answer->setPhaseQuestion($phaseQuestion);
@@ -216,7 +235,17 @@ final class QuizGameService
 
     private function createPricesAnswer(QuizGame $game, string $userAnswer, User $user, PhaseQuestionInterface $phaseQuestion): void
     {
-        $team = $game->getTeamPlayerByUser($user)->getTeam();
+        $teamPlayer = $game->getTeamPlayerByUser($user);
+
+        if (!$teamPlayer) {
+            return;
+        }
+
+        $team = $teamPlayer->getTeam();
+
+        if (!$team) {
+            return;
+        }
 
         $answer = new PricesPhaseAnswer();
 
@@ -300,10 +329,14 @@ final class QuizGameService
         $this->gameActionService->createQuizGamePhaseFinishedAction($game, $phase);
     }
 
-    private function refreshGameLastAction(QuizGame $game): void
+    private function refreshGameLastAction(?QuizGame $game): void
     {
+        if (!$game) {
+            return;
+        }
+
         $game->refreshLastAction();
-        $this->em->flush($game);
+        $this->em->flush();
 
         $command = QuizNextStepCommand::getDefaultName() . ' --game_id=' . $game->getId() . ' --timestamp=' . (time() + 1);
         $this->consoleCommandService->addCommandToQueueWithDelay20S($command);
@@ -327,6 +360,11 @@ final class QuizGameService
                 /** @var QuestionsPhaseAnswer $phaseAnswer */
                 if ($phaseAnswer->isCorrect()) {
                     $team = $phaseAnswer->getTeam();
+
+                    if (!$team) {
+                        continue;
+                    }
+
                     $team->setPoints($team->getPoints() + 1);
                 }
             }
@@ -334,12 +372,17 @@ final class QuizGameService
 
         if ($phase instanceof PricesPhase && $phaseQuestion instanceof PricesPhaseQuestion) {
             /** @var PricesAnswer $answer */
-            $answer = $phaseQuestion->getQuestion()->getAnswers()->first();
+            $question = $phaseQuestion->getQuestion();
+
+            if (!$question) {
+                return;
+            }
+
+            $answer = $question->getAnswers()->first();
             $teams = [];
 
             foreach ($phaseAnswers as $key => $phaseAnswer) {
                 /* @var PricesPhaseAnswer $phaseAnswer */
-
                 $teams[$key] = [
                     'team' => $phaseAnswer->getTeam(),
                     'value' => abs(intval($phaseAnswer->getAnswer()) - $answer->getIntAnswer())
@@ -347,6 +390,10 @@ final class QuizGameService
             }
 
             if (empty($teams)) {
+                return;
+            }
+
+            if (!isset($teams[0])) {
                 return;
             }
 

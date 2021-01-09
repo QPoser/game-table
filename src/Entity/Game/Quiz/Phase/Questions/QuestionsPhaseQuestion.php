@@ -29,14 +29,14 @@ class QuestionsPhaseQuestion implements PhaseQuestionInterface
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"Api", "AMQP"})
      */
-    private QuestionsQuestion $question;
+    private ?QuestionsQuestion $question;
 
     /**
      * @ORM\ManyToOne(targetEntity=QuestionsPhase::class, inversedBy="questions")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"Exclude"})
      */
-    private QuestionsPhase $phase;
+    private ?QuestionsPhase $phase;
 
     /**
      * @ORM\Column(type="string", length=32)

@@ -6,6 +6,7 @@ namespace App\Controller\Api\Game;
 
 use App\Dto\ResponseDto\ResponseDTO;
 use App\Entity\Game\Game;
+use App\Entity\User;
 use App\Security\Voter\GameVoter;
 use App\Services\Game\GameService;
 use App\Services\Response\Responser;
@@ -15,6 +16,7 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
 use FOS\RestBundle\Request\ParamFetcher;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use RuntimeException;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -78,10 +80,15 @@ final class GameController extends AbstractController
      */
     public function create(ParamFetcher $paramFetcher): ResponseDTO
     {
-        $user = $this->getUser();
         $title = $paramFetcher->get('title');
         $type = $paramFetcher->get('type');
         $password = $paramFetcher->get('password');
+
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw new RuntimeException('User does not exists');
+        }
 
         $game = $this->gameService->createGame($title, $type, $user, $password);
 
@@ -143,6 +150,10 @@ final class GameController extends AbstractController
         $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_LEAVE, $game);
         $user = $this->getUser();
 
+        if (!$user instanceof User) {
+            throw new RuntimeException('User does not exists');
+        }
+
         $this->gameService->leaveGame($user, $game);
 
         return Responser::wrapSuccess(true);
@@ -169,6 +180,10 @@ final class GameController extends AbstractController
         $password = $paramFetcher->get('password');
         $teamId = (int) $paramFetcher->get('team');
         $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw new RuntimeException('User does not exists');
+        }
 
         $this->gameService->joinGame($user, $game, $teamId, $password);
 

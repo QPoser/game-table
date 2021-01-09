@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Game;
 
 use App\Entity\Game\Game;
+use App\Entity\Game\Quiz\QuizGame;
 use App\Entity\Game\Team\GameTeam;
 use App\Entity\Game\Team\GameTeamPlayer;
 use App\Entity\User;
@@ -17,6 +18,7 @@ use App\Services\Notification\GameNotificationTemplateHelper;
 use App\Services\Response\ErrorCode;
 use App\Services\Validation\ValidationService;
 use Doctrine\ORM\EntityManagerInterface;
+use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 final class GameService
@@ -76,8 +78,14 @@ final class GameService
             throw new AppException(ErrorCode::GAME_TEAM_HAS_NO_SLOT);
         }
 
-        if (!$team->hasUser($user) && $team->getGame()->hasUser($user)) {
-            $this->leaveGame($user, $team->getGame());
+        $game = $team->getGame();
+
+        if (!$game) {
+            throw new RuntimeException('Team has no active game');
+        }
+
+        if (!$team->hasUser($user) && $game->hasUser($user)) {
+            $this->leaveGame($user, $game);
         }
 
         $teamPlayer = new GameTeamPlayer();
@@ -87,7 +95,7 @@ final class GameService
         $this->validator->validateEntity($teamPlayer);
 
         $this->em->persist($teamPlayer);
-        $this->em->flush($teamPlayer);
+        $this->em->flush();
 
         try {
             $this->em->commit();
@@ -108,6 +116,10 @@ final class GameService
         }
 
         $team = $teamPlayer->getTeam();
+
+        if (!$team) {
+            throw new AppException(ErrorCode::USER_IS_NOT_IN_GAME);
+        }
 
         $this->em->remove($teamPlayer);
         $this->em->flush();
@@ -154,15 +166,11 @@ final class GameService
 
     public function startGame(Game $game, ?User $user = null): void
     {
-        switch ($game->getType()) {
-            case Game::TYPE_QUIZ:
-                $this->quizGameService->startGame($game, $user);
-                break;
-
-            default:
-                throw new AppException(ErrorCode::GAME_TYPE_NOT_FOUND);
-                break;
+        if ($game instanceof QuizGame) {
+            $this->quizGameService->startGame($game, $user);
         }
+
+        throw new AppException(ErrorCode::GAME_TYPE_NOT_FOUND);
     }
 
     public function finishGame(Game $game): void

@@ -38,7 +38,13 @@ final class RolesApplyAdminCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $email = $input->getArgument('email');
+        $emailArgument = $input->getArgument('email');
+
+        if (is_array($emailArgument)) {
+            $email = $emailArgument[0];
+        } else {
+            $email = (string) $emailArgument;
+        }
 
         $user = $this->em->getRepository(User::class)->findOneBy(['email' => $email]);
 

@@ -38,9 +38,9 @@ final class ExceptionListener
 
         if ($exception instanceof BadRequestHttpException) {
             if ($this->isApiRequest($request)) {
-                $exception = new ApiException($exception->getCode(), $exception->getMessage());
+                $exception = new ApiException((int) $exception->getCode(), $exception->getMessage());
             } else {
-                $exception = new AppException($exception->getCode(), $exception->getMessage());
+                $exception = new AppException((int) $exception->getCode(), $exception->getMessage());
             }
         }
 
@@ -58,8 +58,9 @@ final class ExceptionListener
     private function handleAppException(Request $request, CustomResponseException $exception, ExceptionEvent $event): void
     {
         $this->container->get('session')->getFlashBag()->add('error', $exception->getMessage());
+        $referer = $request->headers->get('referer');
 
-        $response = new RedirectResponse($request->headers->get('referer'));
+        $response = new RedirectResponse($referer ?? '/');
 
         $event->setResponse($response);
     }
@@ -67,7 +68,7 @@ final class ExceptionListener
     private function handleApiException(CustomResponseException $exception, ExceptionEvent $event): void
     {
         $data = $this->serializer->serialize(
-            Responser::wrapError($exception->getMessage(), $exception->getCode()),
+            Responser::wrapError($exception->getMessage(), (int) $exception->getCode()),
             'json'
         );
 

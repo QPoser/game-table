@@ -9,12 +9,14 @@ use App\Dto\RequestDto\PaginationRequest;
 use App\Dto\ResponseDto\ResponseDTO;
 use App\Entity\Game\Chat\Message;
 use App\Entity\Game\Game;
+use App\Entity\User;
 use App\Security\Voter\GameVoter;
 use App\Services\Chat\ChatService;
 use App\Services\Response\Responser;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use RuntimeException;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -51,7 +53,13 @@ final class ChatController extends AbstractController
     {
         $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
 
-        $message = $this->chatService->createMessage($game, $this->getUser(), $gameMessageRequest);
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw new RuntimeException('User does not exists');
+        }
+
+        $message = $this->chatService->createMessage($game, $user, $gameMessageRequest);
 
         return Responser::wrapSuccess($message);
     }
@@ -76,6 +84,10 @@ final class ChatController extends AbstractController
     {
         $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
         $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw new RuntimeException('User does not exists');
+        }
 
         [$messages, $pagination] = $this
             ->em

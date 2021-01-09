@@ -36,6 +36,10 @@ final class QuizGameListener
         $game = $event->getGame();
         $phase = $game->getCurrentPhase();
 
+        if (!$phase) {
+            return;
+        }
+
         /** @var QuestionsPhaseQuestion $question */
         $question = $phase->getCurrentPhaseQuestion();
 

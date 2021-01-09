@@ -45,7 +45,7 @@ class QuestionsAnswer implements AnswerInterface
 
     public function __toString()
     {
-        return $this->answer;
+        return (string) $this->answer;
     }
 
     public function getId(): ?int

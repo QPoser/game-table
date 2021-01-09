@@ -127,7 +127,7 @@ class PricesPhaseAnswer
      */
     public function getFormattedAnswer(): ?string
     {
-        if ($this->phaseQuestion->getStatus() === PricesPhaseQuestion::STATUS_ANSWERED) {
+        if ($this->phaseQuestion && $this->phaseQuestion->getStatus() === PricesPhaseQuestion::STATUS_ANSWERED) {
             return $this->answer;
         }
 
@@ -139,7 +139,7 @@ class PricesPhaseAnswer
      */
     public function getFormattedPricesAnswer(): ?PricesAnswer
     {
-        if ($this->phaseQuestion->getStatus() === PricesPhaseQuestion::STATUS_ANSWERED) {
+        if ($this->phaseQuestion && $this->phaseQuestion->getStatus() === PricesPhaseQuestion::STATUS_ANSWERED) {
             return $this->pricesAnswer;
         }
 
@@ -151,12 +151,18 @@ class PricesPhaseAnswer
      */
     public function isCorrect(): ?bool
     {
-        if (!$this->pricesAnswer) {
+        if (!$this->pricesAnswer || !$this->phaseQuestion) {
             return null;
         }
 
         if (in_array($this->phaseQuestion->getStatus(), [PricesPhaseQuestion::STATUS_ANSWERED, PricesPhaseQuestion::STATUS_COUNTED], true)) {
-            return $this->phaseQuestion->getQuestion()->isCorrectAnswer($this->pricesAnswer);
+            $question = $this->phaseQuestion->getQuestion();
+
+            if (!$question) {
+                return null; // @TODO check
+            }
+
+            return $question->isCorrectAnswer($this->pricesAnswer);
         }
 
         return null;

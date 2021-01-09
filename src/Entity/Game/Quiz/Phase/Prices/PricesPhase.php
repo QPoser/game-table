@@ -83,7 +83,7 @@ class PricesPhase extends BasePhase
         return null;
     }
 
-    public function getAnsweredPhaseQuestions(): ArrayCollection
+    public function getAnsweredPhaseQuestions(): Collection
     {
         return $this->questions->filter(static fn ($question) => $question->getStatus() === PricesPhaseQuestion::STATUS_ANSWERED);
     }

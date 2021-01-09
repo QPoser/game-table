@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\User;
 
-use App\Dto\RequestDto\RegisterUserRequest;
+use App\Dto\RegisterDTOInterface;
 use App\Entity\User;
 use App\Exception\AppException;
 use App\Services\Mailer\UserRegisterMailer;
@@ -30,7 +30,7 @@ final class RegisterService
         $this->userRegisterMailer = $userRegisterMailer;
     }
 
-    public function registerUser(RegisterUserRequest $registerUserDto): User
+    public function registerUser(RegisterDTOInterface $registerUserDto): User
     {
         $email = $registerUserDto->getEmail();
         $username = $registerUserDto->getUsername();
@@ -57,7 +57,7 @@ final class RegisterService
         $user->setVerifyToken(uniqid('', true));
 
         $this->em->persist($user);
-        $this->em->flush($user);
+        $this->em->flush();
 
         $this->userRegisterMailer->sendUserRegisterMail($user);
         $this->em->commit();
@@ -74,6 +74,6 @@ final class RegisterService
         }
 
         $user->setVerifyToken(null);
-        $this->em->flush($user);
+        $this->em->flush();
     }
 }

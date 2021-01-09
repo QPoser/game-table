@@ -26,9 +26,15 @@ final class UserRegisterMailer
 
     public function sendUserRegisterMail(User $user): void
     {
+        $userEmail = $user->getEmail();
+
+        if (!$userEmail) {
+            return;
+        }
+
         $email = (new Email())
             ->from($this->senderEmail)
-            ->to($user->getEmail())
+            ->to($userEmail)
             ->subject('Thank you for registration!')
             ->text(
                 'This is your verification link - ' . $this->urlGenerator->generate(

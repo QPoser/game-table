@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\User;
 
+use App\Dto\RequestDto\RegisterUserRequest;
 use App\Entity\User;
 use App\Exception\AppException;
 use App\Services\Mailer\UserRegisterMailer;
@@ -26,8 +27,12 @@ final class RegisterService
         $this->userRegisterMailer = $userRegisterMailer;
     }
 
-    public function registerUser(string $email, string $username, string $password): User
+    public function registerUser(RegisterUserRequest $registerUserDto): User
     {
+        $email = $registerUserDto->getEmail();
+        $username = $registerUserDto->getUsername();
+        $password = $registerUserDto->getPassword();
+
         $this->em->beginTransaction();
         $userRepository = $this->em->getRepository(User::class);
 
@@ -46,7 +51,7 @@ final class RegisterService
         $user->setPassword($password);
         $user->setUsername($username);
         $user->setRoles([User::ROLE_USER]);
-        $user->setVerifyToken(uniqid());
+        $user->setVerifyToken(uniqid('', true));
 
         $this->em->persist($user);
         $this->em->flush($user);

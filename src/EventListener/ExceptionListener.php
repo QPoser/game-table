@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace App\EventListener;
 
+use App\Exception\ApiException;
+use App\Exception\AppException;
 use App\Exception\CustomResponseException;
 use App\Services\Response\Responser;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Serializer\SerializerInterface;
 
 final class ExceptionListener
 {
@@ -18,15 +23,26 @@ final class ExceptionListener
 
     private ContainerInterface $container;
 
-    public function __construct(ContainerInterface $container)
+    private SerializerInterface $serializer;
+
+    public function __construct(ContainerInterface $container, SerializerInterface $serializer)
     {
         $this->container = $container;
+        $this->serializer = $serializer;
     }
 
     public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
         $request = $event->getRequest();
+
+        if ($exception instanceof BadRequestHttpException) {
+            if ($this->isApiRequest($request)) {
+                $exception = new ApiException($exception->getCode(), $exception->getMessage());
+            } else {
+                $exception = new AppException($exception->getCode(), $exception->getMessage());
+            }
+        }
 
         if ($exception instanceof CustomResponseException) {
             if ($this->isApiRequest($request)) {
@@ -50,9 +66,12 @@ final class ExceptionListener
 
     private function handleApiException(CustomResponseException $exception, ExceptionEvent $event): void
     {
-        $response = new JsonResponse(Responser::wrapError($exception->getMessage(), $exception->getCode()));
+        $data = $this->serializer->serialize(
+            Responser::wrapError($exception->getMessage(), $exception->getCode()),
+            'json'
+        );
 
-        $event->setResponse($response);
+        $event->setResponse(new JsonResponse($data, Response::HTTP_OK, [], true));
     }
 
     private function isApiRequest(Request $request): bool

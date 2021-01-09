@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Api;
 
-use FOS\RestBundle\Controller\Annotations\RequestParam;
+use App\Dto\RequestDto\LoginUserRequest;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,12 +22,11 @@ final class LoginController extends AbstractController
      *     @SWG\Response(
      *      response="200",
      *      description="Login check action"
-     *     )
+     *     ),
+     *     @SWG\Parameter(name="body", in="body", @Model(type=LoginUserRequest::class)))
      * )
-     * @RequestParam(name="username", requirements="\w+", nullable=false, strict=true, description="User email")
-     * @RequestParam(name="password", requirements="\w+", nullable=false, strict=true, description="User password")
      */
-    public function checkAction(): void
+    public function checkAction(LoginUserRequest $loginUserRequest): void
     {
     }
 }

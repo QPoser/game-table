@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Api\Game;
 
+use App\Dto\ResponseDto\ResponseDTO;
 use App\Entity\Game\Game;
 use App\Security\Voter\GameVoter;
 use App\Services\Game\GameService;
@@ -46,7 +47,7 @@ final class GameController extends AbstractController
      *     )
      * )
      */
-    public function searchAction(ParamFetcher $paramFetcher): array
+    public function searchAction(ParamFetcher $paramFetcher): ResponseDTO
     {
         $limit = (int) $paramFetcher->get('limit');
         $offset = (int) $paramFetcher->get('offset');
@@ -71,7 +72,7 @@ final class GameController extends AbstractController
      *     )
      * )
      */
-    public function create(ParamFetcher $paramFetcher): array
+    public function create(ParamFetcher $paramFetcher): ResponseDTO
     {
         $user = $this->getUser();
         $title = $paramFetcher->get('title');
@@ -95,7 +96,7 @@ final class GameController extends AbstractController
      *     )
      * )
      */
-    public function currentGame(): array
+    public function currentGame(): ResponseDTO
     {
         $user = $this->getUser();
         $game = $this->getDoctrine()->getRepository(Game::class)->getCurrentUserGame($user);
@@ -115,7 +116,7 @@ final class GameController extends AbstractController
      *     )
      * )
      */
-    public function gameVisit(Game $game): array
+    public function gameVisit(Game $game): ResponseDTO
     {
         $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
 
@@ -133,7 +134,7 @@ final class GameController extends AbstractController
      *     )
      * )
      */
-    public function gameLeave(Game $game): array
+    public function gameLeave(Game $game): ResponseDTO
     {
         $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_LEAVE, $game);
         $user = $this->getUser();
@@ -157,7 +158,7 @@ final class GameController extends AbstractController
      *     )
      * )
      */
-    public function gameJoin(Game $game, ParamFetcher $paramFetcher): array
+    public function gameJoin(Game $game, ParamFetcher $paramFetcher): ResponseDTO
     {
         $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_JOIN, $game);
 

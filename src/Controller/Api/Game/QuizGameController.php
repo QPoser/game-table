@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Api\Game;
 
+use App\Dto\ResponseDto\ResponseDTO;
 use App\Entity\Game\Quiz\Phase\BasePhase;
 use App\Entity\Game\Quiz\QuizGame;
 use App\Security\Voter\QuizGameVoter;
@@ -39,13 +40,12 @@ final class QuizGameController extends AbstractController
      *           type="array",
      *           @SWG\Items(
      *              type="string",
-     *
      *           )
      *      )
      *     )
      * )
      */
-    public function getPhases(): array
+    public function getPhases(): ResponseDTO
     {
         return Responser::wrapSuccess(BasePhase::getFormattedTypes());
     }
@@ -62,7 +62,7 @@ final class QuizGameController extends AbstractController
      *     )
      * )
      */
-    public function selectPhase(QuizGame $game, ParamFetcher $paramFetcher): array
+    public function selectPhase(QuizGame $game, ParamFetcher $paramFetcher): ResponseDTO
     {
         $this->denyAccessUnlessGranted(QuizGameVoter::ATTRIBUTE_SELECT_PHASE, $game);
 
@@ -84,7 +84,7 @@ final class QuizGameController extends AbstractController
      *     )
      * )
      */
-    public function sendQuestionAnswer(QuizGame $game, ParamFetcher $paramFetcher): array
+    public function sendQuestionAnswer(QuizGame $game, ParamFetcher $paramFetcher): ResponseDTO
     {
         $this->denyAccessUnlessGranted(QuizGameVoter::ATTRIBUTE_PUT_ANSWER, $game);
         $answer = $paramFetcher->get('answer');

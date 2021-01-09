@@ -6,6 +6,7 @@ namespace App\Controller\Game;
 
 use App\Entity\Game\Game;
 use App\Security\Voter\GameVoter;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,12 +16,22 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 final class GameController extends AbstractController
 {
+    private EntityManagerInterface $em;
+
+    public function __construct(EntityManagerInterface $em)
+    {
+        $this->em = $em;
+    }
+
     /**
      * @Route("/", name="")
      */
     public function index(): Response
     {
-        [$games, $pagination] = $this->getDoctrine()->getRepository(Game::class)->getGamesWithPagination(20, 0);
+        [$games, $pagination] = $this
+            ->em
+            ->getRepository(Game::class)
+            ->getGamesWithPagination(20, 0);
 
         return $this->render('game/game/index.html.twig', compact('games'));
     }

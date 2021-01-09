@@ -9,6 +9,7 @@ use App\Entity\Game\Game;
 use App\Security\Voter\GameVoter;
 use App\Services\Game\GameService;
 use App\Services\Response\Responser;
+use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
@@ -25,9 +26,12 @@ final class GameController extends AbstractController
 {
     private GameService $gameService;
 
-    public function __construct(GameService $gameService)
+    private EntityManagerInterface $em;
+
+    public function __construct(GameService $gameService, EntityManagerInterface $em)
     {
         $this->gameService = $gameService;
+        $this->em = $em;
     }
 
     /**
@@ -52,7 +56,7 @@ final class GameController extends AbstractController
         $limit = (int) $paramFetcher->get('limit');
         $offset = (int) $paramFetcher->get('offset');
 
-        [$games, $pagination] = $this->getDoctrine()->getRepository(Game::class)->getGamesWithPagination($limit, $offset);
+        [$games, $pagination] = $this->em->getRepository(Game::class)->getGamesWithPagination($limit, $offset);
 
         return Responser::wrapSuccess($games, ['pagination' => $pagination]);
     }
@@ -99,7 +103,7 @@ final class GameController extends AbstractController
     public function currentGame(): ResponseDTO
     {
         $user = $this->getUser();
-        $game = $this->getDoctrine()->getRepository(Game::class)->getCurrentUserGame($user);
+        $game = $this->em->getRepository(Game::class)->getCurrentUserGame($user);
 
         return Responser::wrapSuccess($game);
     }

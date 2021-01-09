@@ -8,12 +8,7 @@ use App\Entity\Game\Quiz\QuizGame;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @method QuizGame|null find($id, $lockMode = null, $lockVersion = null)
- * @method QuizGame|null findOneBy(array $criteria, array $orderBy = null)
- * @method QuizGame[]    findAll()
- * @method QuizGame[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
+
 final class QuizGameRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

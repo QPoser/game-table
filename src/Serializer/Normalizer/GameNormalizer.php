@@ -6,6 +6,7 @@ namespace App\Serializer\Normalizer;
 
 use App\Entity\Game\Game;
 use App\Entity\User;
+use ArrayObject;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -23,7 +24,10 @@ final class GameNormalizer implements NormalizerInterface, CacheableSupportsMeth
         $this->tokenStorage = $tokenStorage;
     }
 
-    public function normalize($object, string $format = null, array $context = []): array
+    /**
+     * @return ArrayObject|array<array-key, mixed>|null|scalar
+     */
+    public function normalize($object, string $format = null, array $context = [])
     {
         /** @var Game $object */
         $token = $this->tokenStorage->getToken();

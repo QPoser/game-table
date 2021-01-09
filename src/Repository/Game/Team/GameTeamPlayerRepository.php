@@ -8,12 +8,7 @@ use App\Entity\Game\Team\GameTeamPlayer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @method GameTeamPlayer|null find($id, $lockMode = null, $lockVersion = null)
- * @method GameTeamPlayer|null findOneBy(array $criteria, array $orderBy = null)
- * @method GameTeamPlayer[]    findAll()
- * @method GameTeamPlayer[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- */
+
 final class GameTeamPlayerRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

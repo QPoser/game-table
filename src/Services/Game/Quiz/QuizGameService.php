@@ -332,7 +332,7 @@ final class QuizGameService
             }
         }
 
-        if ($phase instanceof PricesPhase) {
+        if ($phase instanceof PricesPhase && $phaseQuestion instanceof PricesPhaseQuestion) {
             /** @var PricesAnswer $answer */
             $answer = $phaseQuestion->getQuestion()->getAnswers()->first();
             $teams = [];

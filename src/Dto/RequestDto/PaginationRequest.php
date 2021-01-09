@@ -21,8 +21,8 @@ final class PaginationRequest implements RequestDTOInterface
 
     public function __construct(Request $request)
     {
-        $this->limit = $request->query->get('limit');
-        $this->offset = $request->query->get('offset');
+        $this->limit = $request->query->has('limit') ? (int)$request->query->get('limit') : null;
+        $this->offset = $request->query->has('offset') ? (int)$request->query->get('offset') : null;
     }
 
     public function getLimit(): ?int

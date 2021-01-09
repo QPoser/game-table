@@ -20,8 +20,11 @@ final class RegisterService
 
     private UserRegisterMailer $userRegisterMailer;
 
-    public function __construct(EntityManagerInterface $em, UserPasswordEncoderInterface $userPasswordEncoder, UserRegisterMailer $userRegisterMailer)
-    {
+    public function __construct(
+        EntityManagerInterface $em,
+        UserPasswordEncoderInterface $userPasswordEncoder,
+        UserRegisterMailer $userRegisterMailer
+    ) {
         $this->em = $em;
         $this->userPasswordEncoder = $userPasswordEncoder;
         $this->userRegisterMailer = $userRegisterMailer;

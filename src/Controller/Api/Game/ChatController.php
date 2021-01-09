@@ -12,6 +12,7 @@ use App\Entity\Game\Game;
 use App\Security\Voter\GameVoter;
 use App\Services\Chat\ChatService;
 use App\Services\Response\Responser;
+use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
@@ -25,9 +26,12 @@ final class ChatController extends AbstractController
 {
     private ChatService $chatService;
 
-    public function __construct(ChatService $chatService)
+    private EntityManagerInterface $em;
+
+    public function __construct(ChatService $chatService, EntityManagerInterface $em)
     {
         $this->chatService = $chatService;
+        $this->em = $em;
     }
 
     /**
@@ -74,7 +78,7 @@ final class ChatController extends AbstractController
         $user = $this->getUser();
 
         [$messages, $pagination] = $this
-            ->getDoctrine()
+            ->em
             ->getRepository(Message::class)
             ->getMessagesByGameWithPagination($game, $user, $paginationRequest);
 

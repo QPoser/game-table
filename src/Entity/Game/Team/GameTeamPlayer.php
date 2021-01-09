@@ -59,7 +59,7 @@ class GameTeamPlayer
         return $this;
     }
 
-    public function isPlayerTurn(): ?bool
+    public function isPlayerTurn(): bool
     {
         return $this->playerTurn;
     }

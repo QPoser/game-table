@@ -137,9 +137,9 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getUsername(): ?string
+    public function getUsername(): string
     {
-        return $this->username;
+        return (string) $this->username;
     }
 
     public function getVerifyToken(): ?string

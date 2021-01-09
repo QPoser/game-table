@@ -34,6 +34,7 @@ final class RequestDTOResolver implements ArgumentValueResolverInterface
 
     public function resolve(Request $request, ArgumentMetadata $argument)
     {
+        /** @var string $class */
         $class = $argument->getType();
         $dto = new $class($request);
 

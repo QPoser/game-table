@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repository\Game\Chat;
 
+use App\Dto\RequestDto\PaginationRequest;
 use App\Entity\Game\Chat\Message;
 use App\Entity\Game\Game;
 use App\Entity\User;
@@ -14,6 +15,8 @@ use Doctrine\Persistence\ManagerRegistry;
 
 final class MessageRepository extends ServiceEntityRepository
 {
+    private const DEFAULT_MESSAGES_LIMIT = 60;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Message::class);
@@ -22,8 +25,7 @@ final class MessageRepository extends ServiceEntityRepository
     public function getMessagesByGameWithPagination(
         Game $game,
         User $user,
-        int $limit,
-        int $offset,
+        PaginationRequest $paginationDto,
         ?array $sorting = []
     ): array {
         $queryBuilder = $this->createQueryBuilder('m');
@@ -45,10 +47,13 @@ final class MessageRepository extends ServiceEntityRepository
             ->setParameter('gameType', Message::TYPE_GAME)
             ->setParameter('teamType', Message::TYPE_TEAM)
             ->setParameter('user', $user)
-            ->setParameter('game', $game);
+            ->setParameter('game', $game)
+            ->addOrderBy('m.id', 'DESC');
+
+        $limit = $paginationDto->getLimit() ?? self::DEFAULT_MESSAGES_LIMIT;
+        $offset = $paginationDto->getOffset();
 
         $queryBuilder
-            ->addOrderBy('m.id', 'DESC')
             ->setFirstResult($offset)
             ->setMaxResults($limit);
 

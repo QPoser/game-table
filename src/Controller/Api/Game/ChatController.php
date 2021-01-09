@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Api\Game;
 
+use App\Dto\RequestDto\GameChat\GameMessageRequest;
+use App\Dto\RequestDto\PaginationRequest;
 use App\Dto\ResponseDto\ResponseDTO;
 use App\Entity\Game\Chat\Message;
 use App\Entity\Game\Game;
@@ -11,9 +13,6 @@ use App\Security\Voter\GameVoter;
 use App\Services\Chat\ChatService;
 use App\Services\Response\Responser;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
-use FOS\RestBundle\Controller\Annotations\RequestParam;
-use FOS\RestBundle\Request\ParamFetcher;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,25 +33,21 @@ final class ChatController extends AbstractController
     /**
      * @Route("/{game}/message", name=".message", methods={"POST"})
      * @Rest\View(serializerGroups={"Chat", "Api"})
-     * @RequestParam(name="content", requirements="\w+", nullable=false, strict=true, description="Message content")
-     * @RequestParam(name="type", requirements="team|game", nullable=true, default="game", strict=true, description="Message type")
      * @SWG\Post(
      *     tags={"Chat"},
      *     @SWG\Response(
      *      response="200",
      *      description="Create game message",
      *      @Model(type=Message::class, groups={"Chat", "Api"})
-     *     )
+     *     ),
+     *     @SWG\Parameter(name="body", in="body", @Model(type=GameMessageRequest::class)))
      * )
      */
-    public function gameMessage(Game $game, ParamFetcher $paramFetcher): ResponseDTO
+    public function gameMessage(Game $game, GameMessageRequest $gameMessageRequest): ResponseDTO
     {
         $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
 
-        $content = $paramFetcher->get('content');
-        $type = $paramFetcher->get('type');
-
-        $message = $this->chatService->createMessage($game, $this->getUser(), $content, $type);
+        $message = $this->chatService->createMessage($game, $this->getUser(), $gameMessageRequest);
 
         return Responser::wrapSuccess($message);
     }
@@ -60,8 +55,6 @@ final class ChatController extends AbstractController
     /**
      * @Route("/{game}/messages", name=".messages", methods={"GET"})
      * @Rest\View(serializerGroups={"Chat", "Api"})
-     * @QueryParam(name="offset", nullable=true, default="0", requirements="\d+", strict=true)
-     * @QueryParam(name="limit", nullable=true, default="60", requirements="\d+", strict=true)
      * @SWG\Get(
      *     tags={"Chat"},
      *     @SWG\Response(
@@ -71,20 +64,19 @@ final class ChatController extends AbstractController
      *          type="array",
      *          @Model(type=Message::class, groups={"Chat", "Api"})
      *      )
-     *     )
+     *     ),
+     *     @SWG\Parameter(name="body", in="body", @Model(type=PaginationRequest::class)))
      * )
      */
-    public function getGameMessages(Game $game, ParamFetcher $paramFetcher): ResponseDTO
+    public function getGameMessages(Game $game, PaginationRequest $paginationRequest): ResponseDTO
     {
         $this->denyAccessUnlessGranted(GameVoter::ATTRIBUTE_VISIT, $game);
-
-        $offset = (int) $paramFetcher->get('offset');
-        $limit = (int) $paramFetcher->get('limit');
         $user = $this->getUser();
 
-        [$messages, $pagination] = $this->getDoctrine()
+        [$messages, $pagination] = $this
+            ->getDoctrine()
             ->getRepository(Message::class)
-            ->getMessagesByGameWithPagination($game, $user, $limit, $offset);
+            ->getMessagesByGameWithPagination($game, $user, $paginationRequest);
 
         return Responser::wrapSuccess($messages, ['pagination' => $pagination]);
     }

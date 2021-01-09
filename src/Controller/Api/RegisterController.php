@@ -40,7 +40,7 @@ final class RegisterController extends AbstractController
      */
     public function actionApiRegister(RegisterUserRequest $registerUserRequest): ResponseDTO
     {
-        $result = $this->registerService->registerUser($registerUserRequest->getEmail(), $registerUserRequest->getUsername(), $registerUserRequest->getPassword());
+        $result = $this->registerService->registerUser($registerUserRequest);
 
         return Responser::wrapSuccess((bool) $result);
     }

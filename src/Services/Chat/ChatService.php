@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Chat;
 
 use App\AmqpMessages\AmqpChatMessage;
+use App\Dto\RequestDto\GameChat\GameMessageRequest;
 use App\Entity\Game\Chat\Message;
 use App\Entity\Game\Game;
 use App\Entity\Game\Team\GameTeam;
@@ -28,8 +29,11 @@ final class ChatService
         $this->messageBus = $messageBus;
     }
 
-    public function createMessage(Game $game, User $user, string $content, string $type): Message
+    public function createMessage(Game $game, User $user, GameMessageRequest $gameMessageDto): Message
     {
+        $content = $gameMessageDto->getContent();
+        $type = $gameMessageDto->getType();
+
         if (!in_array($type, Message::TYPES, true)) {
             throw new AppException(ErrorCode::INCORRECT_MESSAGE_TYPE);
         }
